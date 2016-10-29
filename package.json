@@ -1,6 +1,6 @@
 {
   "name": "morose",
-  "version": "0.0.0",
+  "version": "0.0.4",
   "description": "lightweigth alternative to npm registry",
   "main": "index.js",
   "scripts": {

@@ -1,6 +1,7 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as chalk from 'chalk';
+import * as crypto from 'crypto';
 import { Observable } from 'rxjs';
 
 export function writeFile(file: string, buf: BufferSource): Observable<any> {
@@ -11,7 +12,6 @@ export function writeFile(file: string, buf: BufferSource): Observable<any> {
         observer.complete();
       }
 
-      observer.next(`[${chalk.green('✔')}] ${file} saved.`);
       observer.complete();
     });
   });
@@ -40,6 +40,13 @@ export function prepareRootDirectory(dir: string): Observable<any> {
   return makeDirectory(dir, 'tmp')
     .concat(makeDirectory(dir, 'packages'))
     .concat(makeDirectory(dir, 'json'));
+}
+
+export function sha(buf: Buffer): string {
+  return crypto.createHash('sha256')
+    .update(buf)
+    .digest()
+    .toString('hex');
 }
 
 function makeDirectory(dir: string, name: string): Observable<any> {

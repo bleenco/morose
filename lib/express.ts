@@ -3,8 +3,9 @@ import * as bodyParser from 'body-parser';
 import * as path from 'path';
 import * as busboy from 'busboy';
 import * as chalk from 'chalk';
-import { loadPackage } from './package';
+import { savePackage } from './package';
 import { writeFile, rand, prepareRootDirectory } from './utils';
+import { initCache } from './cache';
 
 export class ExpressServer {
   private app: express.Application;
@@ -21,7 +22,9 @@ export class ExpressServer {
 
   init(): void {
     this.routes();
-    prepareRootDirectory(this.root).subscribe(data => {
+    prepareRootDirectory(this.root)
+    .concat(initCache(this.root))
+    .subscribe(data => {
       console.log(data);
     }, err => {
       throw new Error(err);
@@ -47,18 +50,17 @@ export class ExpressServer {
     .on('file', (fieldname, file, filename, encoding, mimetype) => {
       file.on('data', (data) => {
         writeFile(tmpPkgFile, data)
-        .concat(loadPackage(this.root, tmpPkgFile, name, version))
+        .concat(savePackage(this.root, tmpPkgFile, name, version))
         .subscribe(data => {
           console.log(data);
         }, err => {
-          console.log(err);
-          res.status(500).send(err);
+          return res.status(500).send(err);
+        }, () => {
+          return res.status(200).send();
         });
       });
-    })
-    .on('finish', () => {
-      res.status(200).send();
     });
+
     req.pipe(busBoy);
   }
 }

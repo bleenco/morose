@@ -6,9 +6,10 @@ import * as path from 'path';
 import * as request from 'request';
 import * as chalk from 'chalk';
 import { spawn } from 'child_process';
-import { makeTmpDirectory } from './utils';
+import { makeTmpDirectory, sha } from './utils';
+import { getCache, addPackageToCache } from './cache';
 
-export function loadPackage(rootDir: string, pkgPath: string, 
+export function savePackage(rootDir: string, pkgPath: string, 
   name: string, version: string): Observable<any> {
   return new Observable(observer => {
     makeTmpDirectory(rootDir).subscribe(dir => {
@@ -30,7 +31,7 @@ export function loadPackage(rootDir: string, pkgPath: string,
             fs.removeSync(dir);
             let actualName = jsonData.name;
             let actualVersion = jsonData.version;
-            let expectedPkgPath = path.join(rootDir, 'packages', 
+            let destPkgPath = path.join(rootDir, 'packages', actualName, actualVersion,
               `${actualName}-${actualVersion}.tgz`);
 
             if (actualName !== name || actualVersion !== version) {
@@ -38,6 +39,51 @@ export function loadPackage(rootDir: string, pkgPath: string,
                 got ${actualName}@${actualVersion}`);
               observer.complete();
             }
+
+            if (fs.existsSync(destPkgPath)) {
+              observer.error(`[${chalk.red('✖')}] Package already published ${chalk.yellow(`${name}@${version}`)}.`);
+              observer.complete();
+            }
+
+            fs.copy(pkgPath, destPkgPath, err => {
+              if (err) {
+                observer.error(`[${chalk.red('✖')}] Error while copy.`);
+                observer.complete();
+              }
+
+              fs.readFile(destPkgPath, (err, data) => {
+                if (err) {
+                  observer.error(`[${chalk.red('✖')}] Error while read ${destPkgPath}.`);
+                  observer.complete();
+                }
+
+                let destPkgJson = path.join(rootDir, 'json', `${actualName}-${actualVersion}.json`);
+                let pkgJson = {
+                  name: jsonData.name,
+                  version: jsonData.version,
+                  path: destPkgPath,
+                  sha: sha(data),
+                  time: new Date().getTime()
+                };
+
+                fs.writeJson(destPkgJson, pkgJson, err => {
+                  if (err) {
+                    observer.error(`[${chalk.red('✖')}] Error while write JSON data for ${destPkgPath}.`);
+                    observer.complete();
+                  }
+
+                  fs.unlink(pkgPath, err => {
+                    if (err) {
+                      observer.error(`[${chalk.red('✖')}] Error while unlink ${pkgPath}.`);
+                      observer.complete();
+                    }
+
+                    addPackageToCache(pkgJson);
+                    observer.complete();
+                  });
+                });
+              });
+            });
           });
         });
     }, err => {
@@ -61,18 +107,24 @@ export function publish(): Observable<any> {
       const packageUrl = `http://localhost:4720/package/${name}/${version}`;
       let req = request.post(packageUrl, (err, resp, body) => {
         if (err) {
-          observer.error(err);
+          observer.error(`[${chalk.red('✖')}] ${err}`);
           observer.complete();
         }
 
         if (resp.statusCode === 200) {
-          observer.next(`${chalk.green('✔')} Package published.`);
+          observer.next(`[${chalk.green('✔')}] Package published ${chalk.yellow(`${name}@${version}`)}.`);
         } else {
-          observer.error(`Error: ${resp.statusCode}`);
+          observer.error(body);
         }
 
-        fs.unlinkSync(packageFile);
-        observer.complete();
+        fs.unlink(packageFile, err => {
+          if (err) {
+            observer.error(`[${chalk.red('✖')}] ${err}`);
+            observer.complete();
+          }
+          
+          observer.complete();
+        });
       });
       const form = req.form();
       form.append('file', fs.createReadStream(packageFile));
@@ -80,17 +132,36 @@ export function publish(): Observable<any> {
   });
 }
 
+function registerPackageVersion(jsonData: any, pkgPath: string): Observable<any> {
+  return new Observable(observer => {
+    fs.stat(pkgPath, (err, stat) => {
+      if (err) {
+        observer.error(err);
+        observer.complete();
+      }
+
+      const checksum = sha(fs.readFileSync(pkgPath));
+      const name = jsonData.name;
+
+      observer.complete();
+    });
+  });
+}
+
 function makePackageFromCurrentDir(): Observable<any> {
   return new Observable(observer => {
     process.chdir(process.cwd());
-    const spawned = spawn('npm', ['pack'])
+    const spawned = spawn('npm', ['pack']);
+
     spawned.stdout.on('data', data => {
       observer.next(data.toString().trim());
-    })
+    });
+
     spawned.stderr.on('error', err => {
       observer.error(err);
       observer.complete();
-    })
+    });
+
     spawned.on('close', (code) => {
       observer.complete();
     });
