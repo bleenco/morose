@@ -37,7 +37,8 @@ export function rand(): string {
 }
 
 export function prepareRootDirectory(dir: string): Observable<any> {
-  return makeDirectory(dir, 'tmp')
+  return makeDirectory(dir)
+    .concat(makeDirectory(dir, 'tmp'))
     .concat(makeDirectory(dir, 'packages'))
     .concat(makeDirectory(dir, 'json'));
 }
@@ -49,9 +50,9 @@ export function sha(buf: Buffer): string {
     .toString('hex');
 }
 
-function makeDirectory(dir: string, name: string): Observable<any> {
+function makeDirectory(dir: string, name?: string): Observable<any> {
   return new Observable(observer => {
-    let directoryPath = path.join(dir, name);
+    let directoryPath = path.join(dir, name || '');
     if (fs.existsSync(directoryPath)) {
       observer.complete();
     }

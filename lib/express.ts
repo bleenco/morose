@@ -3,6 +3,7 @@ import * as bodyParser from 'body-parser';
 import * as path from 'path';
 import * as busboy from 'busboy';
 import * as chalk from 'chalk';
+import * as os from 'os';
 import { savePackage } from './package';
 import { writeFile, rand, prepareRootDirectory } from './utils';
 import { initCache } from './cache';
@@ -13,11 +14,11 @@ export class ExpressServer {
   private port: number;
   private root: string;
 
-  constructor() {
+  constructor(root?: string, port?: number) {
     this.app = express();
     this.app.use(bodyParser.json());
-    this.port = 4720;
-    this.root = '/Users/jan/Desktop/';
+    this.port = port || 4720;
+    this.root = root || `${os.homedir()}/morose`;
   }
 
   init(): void {
@@ -30,7 +31,7 @@ export class ExpressServer {
       throw new Error(err);
     }, () => {
       this.app.listen(this.port, () => {
-        console.log(`[${chalk.yellow('➥')}] morose server running on port ${this.port}.`);
+        console.log(`[${chalk.green('✔')}] morose server running on port ${this.port}.`);
       });
     });
   }

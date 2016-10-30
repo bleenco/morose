@@ -17,8 +17,7 @@ export function initCache(rootDir: string): Observable<any> {
 
       let fileObservables: Observable<any>[] = files.map(file => readJsonFile(jsonDir, file));
       Observable.merge(...fileObservables).subscribe(data => {
-        cache[data.name] = cache[data.name] || {};
-        cache[data.name][data.version] = { file: data.path, checksum: data.sha, time: data.time };
+        addPackageToCache(data);
       }, err => {
         observer.error(err);
         observer.complete();
