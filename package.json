@@ -1,8 +1,11 @@
 {
   "name": "morose",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "lightweigth alternative to npm registry",
-  "main": "index.js",
+  "bin": {
+    "morose": "./bin/cli.js",
+    "morose-server": "./bin/server.js"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
