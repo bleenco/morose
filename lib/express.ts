@@ -5,7 +5,7 @@ import * as busboy from 'busboy';
 import * as chalk from 'chalk';
 import * as os from 'os';
 import { savePackage, pkgVersions, getPkgData } from './package';
-import { writeFile, rand, prepareRootDirectory } from './utils';
+import { writeFile, rand, prepareRootDirectory, getMoroseVersion } from './utils';
 import { initCache } from './cache';
 import * as semver from 'semver';
 
@@ -38,7 +38,9 @@ export class ExpressServer {
   }
 
   private routes(): void {
-    this.app.get('/', (req, res) => res.status(200).json({ status: true, data: 'morose server running.' }));
+    this.app.get('/', (req, res) => {
+      return res.status(200).json({ status: '✔', version: getMoroseVersion() });
+    });
     this.app.post('/package/:name/:version', this.publishVersion.bind(this));
     this.app.get('/package/:name/:range', this.getPackage.bind(this));
   }

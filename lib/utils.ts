@@ -50,6 +50,11 @@ export function sha(buf: Buffer): string {
     .toString('hex');
 }
 
+export function getMoroseVersion(): string {
+  const pkgJson = fs.readJsonSync(path.resolve(__dirname, '../package.json'));
+  return pkgJson.version;
+}
+
 function makeDirectory(dir: string, name?: string): Observable<any> {
   return new Observable(observer => {
     let directoryPath = path.join(dir, name || '');

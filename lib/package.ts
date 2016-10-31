@@ -93,7 +93,7 @@ export function savePackage(rootDir: string, pkgPath: string,
   });
 }
 
-export function publish(): Observable<any> {
+export function publish(url: string): Observable<any> {
   return new Observable(observer => {
     let packageFile;
     makePackageFromCurrentDir().subscribe(pkg => {
@@ -104,7 +104,7 @@ export function publish(): Observable<any> {
     }, () => {
       const packageJson = fs.readJSONSync(path.join(process.cwd(), 'package.json'));
       const { name, version } = packageJson;
-      const packageUrl = `http://localhost:4720/package/${name}/${version}`;
+      const packageUrl = `${url}/package/${name}/${version}`;
       let req = request.post(packageUrl, (err, resp, body) => {
         if (err) {
           observer.error(`[${chalk.red('✖')}] ${err}`);
