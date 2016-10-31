@@ -4,9 +4,10 @@ import * as path from 'path';
 import * as busboy from 'busboy';
 import * as chalk from 'chalk';
 import * as os from 'os';
-import { savePackage } from './package';
+import { savePackage, pkgVersions, getPkgData } from './package';
 import { writeFile, rand, prepareRootDirectory } from './utils';
 import { initCache } from './cache';
+import * as semver from 'semver';
 
 export class ExpressServer {
   private app: express.Application;
@@ -39,6 +40,7 @@ export class ExpressServer {
   private routes(): void {
     this.app.get('/', (req, res) => res.status(200).json({ status: true, data: 'morose server running.' }));
     this.app.post('/package/:name/:version', this.publishVersion.bind(this));
+    this.app.get('/package/:name/:range', this.getPackage.bind(this));
   }
 
   private publishVersion(req: express.Request, res: express.Response) {
@@ -63,5 +65,24 @@ export class ExpressServer {
     });
 
     req.pipe(busBoy);
+  }
+
+  private getPackage(req: express.Request, res: express.Response) {
+    let { name, range } = req.params;
+    range = range || range === 'latest' ? 'x.x.x' : range;
+    this.returnPackageByRange(name, range, res);
+  }
+
+  private returnPackageByRange(name: string, range: string, res: express.Response) {
+    let version = semver.maxSatisfying(pkgVersions(name), range);
+
+    if (!version) {
+      return res.status(404).send();
+    }
+
+    let pkgData = getPkgData(name, version);
+    res.type('application/x-compressed');
+    res.header('Content-Disposition', `filename=${path.basename(pkgData.file)}`);
+    res.status(200).download(pkgData.file);
   }
 }

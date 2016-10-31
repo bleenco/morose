@@ -132,6 +132,17 @@ export function publish(): Observable<any> {
   });
 }
 
+export function getPkgData(name: string, version: string): any {
+  let data = getCache();
+  return data[name][version];
+}
+
+export function pkgVersions(name: string): string[] {
+  let data = getCache();
+  let pkg = data[name];
+  return pkg ? Object.keys(data[name]) : [];
+}
+
 function registerPackageVersion(jsonData: any, pkgPath: string): Observable<any> {
   return new Observable(observer => {
     fs.stat(pkgPath, (err, stat) => {
