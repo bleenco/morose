@@ -4,6 +4,7 @@ import * as path from 'path';
 import * as busboy from 'busboy';
 import * as chalk from 'chalk';
 import * as os from 'os';
+import * as fs from 'fs';
 import { savePackage, pkgVersions, getPkgData } from './package';
 import { writeFile, rand, prepareRootDirectory, getMoroseVersion } from './utils';
 import { initCache } from './cache';
@@ -53,16 +54,16 @@ export class ExpressServer {
 
     busBoy
     .on('file', (fieldname, file, filename, encoding, mimetype) => {
-      file.on('data', (data) => {
-        writeFile(tmpPkgFile, data)
-        .concat(savePackage(this.root, tmpPkgFile, name, version))
-        .subscribe(data => {
-          console.log(data);
-        }, err => {
-          return res.status(500).send(err);
-        }, () => {
-          return res.status(200).send();
-        });
+      file.pipe(fs.createWriteStream(tmpPkgFile));
+    })
+    .on('finish', () => {
+      savePackage(this.root, tmpPkgFile, name, version)
+      .subscribe(data => {
+        console.log(data);
+      }, err => {
+        return res.status(500).send(err);
+      }, () => {
+        return res.status(200).send();
       });
     });
 

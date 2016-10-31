@@ -161,7 +161,6 @@ function registerPackageVersion(jsonData: any, pkgPath: string): Observable<any>
 
 function makePackageFromCurrentDir(): Observable<any> {
   return new Observable(observer => {
-    process.chdir(process.cwd());
     const spawned = spawn('npm', ['pack']);
 
     spawned.stdout.on('data', data => {
