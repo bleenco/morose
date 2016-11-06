@@ -5,7 +5,7 @@ import * as busboy from 'busboy';
 import * as chalk from 'chalk';
 import * as os from 'os';
 import * as fs from 'fs';
-import { savePackage, pkgVersions, getPkgData } from './package';
+import { savePackage, pkgVersions, getPkgData, getPkgInfo } from './package';
 import { writeFile, rand, prepareRootDirectory, getMoroseVersion } from './utils';
 import { initCache } from './cache';
 import * as semver from 'semver';
@@ -44,6 +44,7 @@ export class ExpressServer {
     });
     this.app.post('/package/:name/:version', this.publishVersion.bind(this));
     this.app.get('/package/:name/:range', this.getPackage.bind(this));
+    this.app.get('/info/:name', this.getPackageInfo.bind(this));
   }
 
   private publishVersion(req: express.Request, res: express.Response) {
@@ -87,5 +88,14 @@ export class ExpressServer {
     res.type('application/x-compressed');
     res.header('Content-Disposition', `filename=${path.basename(pkgData.file)}`);
     res.status(200).download(pkgData.file);
+  }
+
+  private getPackageInfo(req: express.Request, res: express.Response) {
+    let pkgInfo = getPkgInfo(req.params.name);
+    if (!pkgInfo) {
+      res.status(404).send();
+    } else {
+      res.status(200).json(pkgInfo);
+    }
   }
 }

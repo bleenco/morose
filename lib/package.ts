@@ -132,6 +132,23 @@ export function publish(url: string): Observable<any> {
   });
 }
 
+export function getPkgInfo(name: string): any {
+  let data = getCache();
+
+  if (!data[name]) {
+    return null;
+  }
+
+  return Object.keys(data[name]).map(version => {
+    let date = new Date(data[name][version].time);
+    return { 
+      version: version,
+      time: data[name][version].time,
+      timeReleased: `${date.toDateString()}, ${date.toTimeString()}`
+    }
+  });
+}
+
 export function getPkgData(name: string, version: string): any {
   let data = getCache();
   return data[name][version];
