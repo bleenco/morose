@@ -1,6 +1,6 @@
 {
   "name": "morose",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "lightweigth alternative to npm registry",
   "bin": {
     "morose": "./bin/cli.js",
