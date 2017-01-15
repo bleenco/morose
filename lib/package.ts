@@ -9,8 +9,8 @@ import { spawn } from 'child_process';
 import { makeTmpDirectory, sha } from './utils';
 import { getCache, addPackageToCache } from './cache';
 
-export function savePackage(rootDir: string, pkgPath: string, 
-  name: string, version: string): Observable<any> {
+export function savePackage(rootDir: string, pkgPath: string,
+  name: string, version: string, overwrite: string = 'false'): Observable<any> {
   return new Observable(observer => {
     makeTmpDirectory(rootDir).subscribe(dir => {
       fs.createReadStream(pkgPath)
@@ -35,14 +35,15 @@ export function savePackage(rootDir: string, pkgPath: string,
               `${actualName}-${actualVersion}.tgz`);
 
             if (actualName !== name || actualVersion !== version) {
-              observer.error(`Package rejected, expected ${name}@${version}, 
+              observer.error(`Package rejected, expected ${name}@${version},
                 got ${actualName}@${actualVersion}`);
               observer.complete();
             }
 
-            if (fs.existsSync(destPkgPath)) {
+            if (fs.existsSync(destPkgPath) && overwrite === 'false') {
               observer.error(`[${chalk.red('✖')}] Package already published ${chalk.yellow(`${name}@${version}`)}.`);
               observer.complete();
+              return;
             }
 
             fs.copy(pkgPath, destPkgPath, err => {
@@ -93,22 +94,27 @@ export function savePackage(rootDir: string, pkgPath: string,
   });
 }
 
-export function publish(url: string): Observable<any> {
+export function publish(url: string, overwrite: boolean = false): Observable<any> {
   return new Observable(observer => {
     let packageFile;
     makePackageFromCurrentDir().subscribe(pkg => {
       packageFile = pkg;
     }, err => {
-      observer.error(err);
-      observer.complete();
+      observer.error(`[${chalk.red('✖')}] ${err}`);
     }, () => {
       const packageJson = fs.readJSONSync(path.join(process.cwd(), 'package.json'));
       const { name, version } = packageJson;
       const packageUrl = `${url}/package/${name}/${version}`;
-      let req = request.post(packageUrl, (err, resp, body) => {
+
+      let formData = {
+        overwrite: overwrite.toString(),
+        file: fs.createReadStream(packageFile)
+      };
+
+      let req = request.post({ url: packageUrl, formData: formData }, (err, resp, body) => {
         if (err) {
           observer.error(`[${chalk.red('✖')}] ${err}`);
-          observer.complete();
+          return;
         }
 
         if (resp.statusCode === 200) {
@@ -120,14 +126,11 @@ export function publish(url: string): Observable<any> {
         fs.unlink(packageFile, err => {
           if (err) {
             observer.error(`[${chalk.red('✖')}] ${err}`);
-            observer.complete();
           }
-          
+
           observer.complete();
         });
       });
-      const form = req.form();
-      form.append('file', fs.createReadStream(packageFile));
     });
   });
 }
@@ -141,12 +144,13 @@ export function getPkgInfo(name: string): any {
 
   return Object.keys(data[name]).map(version => {
     let date = new Date(data[name][version].time);
-    return { 
+    return {
       version: version,
       time: data[name][version].time,
-      timeReleased: `${date.toDateString()}, ${date.toTimeString()}`
-    }
-  });
+      timeReleased: `${date.toDateString()}, ${date.toTimeString()}`,
+      sha: data.sha
+    };
+  }).sort((a, b) => b.time - a.time);
 }
 
 export function getPkgData(name: string, version: string): any {
@@ -186,7 +190,6 @@ function makePackageFromCurrentDir(): Observable<any> {
 
     spawned.stderr.on('error', err => {
       observer.error(err);
-      observer.complete();
     });
 
     spawned.on('close', (code) => {

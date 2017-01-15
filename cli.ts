@@ -1,31 +1,43 @@
-import * as optimist from 'optimist';
+import * as yargs from 'yargs';
 import { publish } from './lib/package';
+import { getMoroseVersion } from './lib/utils';
 
-const argv = optimist
-  .usage('morose publish [url]              Publish package\n' +
-         'morose info    <package_name>     Display information about remote package')
-  .default({ u: 'http://localhost:4720' })
-  .alias('u', 'url')
-  .demand(['u'])
+let argv = yargs
+  .usage('Usage: $0 [command] [options]')
+  .command('publish', 'publish npm package')
+  .command('info', 'get info of npm package')
+  .help('help').alias('help', 'h')
+  .version('version', getMoroseVersion()).alias('version', 'v')
+  .options({
+    url: {
+      alias: 'u',
+      description: 'morose server url publish to',
+      requiresArg: true,
+      required: true,
+      default: 'http://localhost:4720'
+    },
+    overwrite: {
+      alias: 'o',
+      description: 'overwrite existing package version',
+      requiresArg: false,
+      required: false,
+      default: false
+    }
+  })
   .argv;
 
-if (argv.help) {
-  optimist.showHelp();
-  process.exit(0);
+let command = argv._[0];
+
+if (!command || !argv.url) {
+  yargs.showHelp();
 }
 
-const command = argv._[0];
-const params = argv._.filter((p, i) => i !== 0);
-
-if (command === 'publish') {
-  let url = params[0] || 'http://localhost:4720';
-  publish(url).subscribe(data => {
+if (command === 'publish' && !!argv.url) {
+  publish(argv.url, argv.overwrite).subscribe(data => {
     console.log(data);
   }, err => {
     console.log(err);
   });
 } else if (command === 'info') {
-  
-} else {
-  optimist.showHelp();
+
 }
