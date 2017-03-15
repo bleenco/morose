@@ -11,19 +11,22 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jkuri/morose.git"
+    "url": "git+https://github.com/bleenco/morose.git"
   },
   "keywords": [
     "npm",
     "package",
     "registry"
   ],
-  "author": "Jan Kuri <jkuri88@gmail.com>",
+  "authors": [
+    "Jan Kuri <bleenco88@gmail.com>", 
+    "Irman Abdic <irman.abdic@gmial.com>"
+  ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/jkuri/morose/issues"
+    "url": "https://github.com/bleenco/morose/issues"
   },
-  "homepage": "https://github.com/jkuri/morose#readme",
+  "homepage": "https://github.com/bleenco/morose#readme",
   "dependencies": {
     "body-parser": "^1.15.2",
     "busboy": "^0.2.13",
