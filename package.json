@@ -1,5 +1,5 @@
 {
-  "name": "morose",
+  "name": "@bleenco/morose",
   "version": "0.1.0",
   "description": "lightweigth alternative to npm registry",
   "bin": {
