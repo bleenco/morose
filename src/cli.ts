@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import * as yargs from 'yargs';
 import { publish } from './lib/package';
 import { getMoroseVersion } from './lib/utils';
