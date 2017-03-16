@@ -3,11 +3,15 @@
   "version": "0.2.0",
   "description": "lightweigth alternative to npm registry",
   "bin": {
-    "morose": "./bin/cli.js",
-    "morose-server": "./bin/server.js"
+    "morose": "./dist/cli.js",
+    "morose-server": "./dist/server.js"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "clean": "rimraf dist",
+    "build": "tsc",
+    "build:watch": "tsc -w",
+    "prebuild": "npm run clean",
+    "prepublish": "npm run build"
   },
   "repository": {
     "type": "git",
@@ -19,7 +23,7 @@
     "registry"
   ],
   "authors": [
-    "Jan Kuri <bleenco88@gmail.com>",
+    "Jan Kuri <jkuri88@gmail.com>",
     "Irman Abdic <irman.abdic@gmail.com>"
   ],
   "license": "MIT",
@@ -50,6 +54,7 @@
     "@types/semver": "^5.3.31",
     "@types/tar": "^1.0.29",
     "@types/yargs": "^6.6.0",
+    "rimraf": "^2.6.1",
     "typescript": "^2.2.1"
   }
 }

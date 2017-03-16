@@ -21,7 +21,7 @@ export function makeTmpDirectory(rootDir: string): Observable<any> {
   return new Observable(observer => {
     let dir = path.join(rootDir, 'tmp', rand());
     fs.ensureDir(dir, err => {
-      if (err) { 
+      if (err) {
         observer.error(err);
         observer.complete();
       }
@@ -51,7 +51,7 @@ export function sha(buf: Buffer): string {
 }
 
 export function getMoroseVersion(): string {
-  const pkgJson = fs.readJsonSync(path.resolve(__dirname, '../package.json'));
+  const pkgJson = fs.readJsonSync(path.resolve(__dirname, '../../package.json'));
   return pkgJson.version;
 }
 
@@ -61,7 +61,7 @@ function makeDirectory(dir: string, name?: string): Observable<any> {
     if (fs.existsSync(directoryPath)) {
       observer.complete();
     }
-    
+
     fs.ensureDir(directoryPath, err => {
       if (err) {
         observer.error(err);

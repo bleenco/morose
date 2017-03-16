@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "target": "es2015",
+    "noImplicitAny": false,
+    "sourceMap": false,
+    "declaration": true,
+    "outDir": "dist"
+  },
+  "files": [
+    "src/cli.ts",
+    "src/server.ts"
+  ]
+}
