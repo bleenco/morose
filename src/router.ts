@@ -7,7 +7,8 @@ import * as auth from './auth';
 export let router: express.Router = express.Router();
 
 router.use(bodyParser.json());
-router.use(logger.middleware);
 router.use(auth.middleware);
+router.use(logger.middleware);
 router.put(/\/\-\/user\/org\.couchdb\.user\:(.*)/, routes.doAuth);
+router.delete('/-/user/token/:token', routes.logout);
 router.get('/:package/:version?', auth.hasAccess, routes.getPackage);
