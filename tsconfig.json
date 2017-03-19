@@ -5,11 +5,10 @@
     "target": "es2015",
     "noImplicitAny": false,
     "sourceMap": false,
-    "declaration": true,
+    "declaration": false,
     "outDir": "dist"
   },
   "files": [
-    "src/cli.ts",
-    "src/server.ts"
+    "src/index.ts"
   ]
 }
