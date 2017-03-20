@@ -1,6 +1,11 @@
+
+<p align="center">
+  <img src="https://cloud.githubusercontent.com/assets/1796022/24088848/de5390e0-0d2f-11e7-856f-f0cc80912b14.png">
+</p>
+
 # morose
 
-Lightweight alternative for private npm registry heavily inspired by node-reggie.
+Run npm registry on your own servers.
 
 morose is currently in development mode. It currently supports:
 
@@ -20,7 +25,7 @@ Here's what it doesn't do yet:
 $ npm install morose -g
 ```
 
-## Usage 
+## Usage
 
 #### Running a Server
 
@@ -30,12 +35,12 @@ morose-server
 
 #### Publishing package to registry
 
-`cd` into package root directory you want to publish (should have package.json file) and: 
+`cd` into package root directory you want to publish (should have package.json file) and:
 
 ```sh
 morose publish [url:port]
 ```
-where `url` is the HTTP url where `morose-server` is running. ie: 
+where `url` is the HTTP url where `morose-server` is running. ie:
 
 ```sh
 morose publish https://morose.example.com:4720
