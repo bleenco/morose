@@ -58,6 +58,10 @@ export function getPackage(req: auth.AuthRequest, res: express.Response): void {
   let packageName: string = req.params.package;
   let version: string | null = req.params.version || null;
 
+  if (packageName.indexOf('@') !== -1) {
+    packageName = packageName.replace(/^(@.*)(\/)(.*)$/, '$1%2F$3');
+  }
+
   let pkg = new Package(packageName);
   pkg.setStorage();
 

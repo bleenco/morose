@@ -7,9 +7,11 @@ export function getUplinks(): string[] {
   return config.upstreams;
 }
 
-export function getResponse(url: string, method: 'GET'): Promise<string> {
+export function getResponse(url: string, method: string): Promise<string> {
   return new Promise(resolve => {
-    request(url, { method: method }, (err, response, body) => {
+    request(url, { method: method },
+      (err, response: request.RequestResponse, body) => {
+      logger.httpOut(url, method, response);
       resolve(body);
     });
   });

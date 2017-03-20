@@ -1,6 +1,7 @@
 import * as express from 'express';
 import * as chalk from 'chalk';
 import * as auth from './auth';
+import * as request from 'request';
 
 export function middleware(req: auth.AuthRequest, res: express.Response, next: express.NextFunction): void {
   let time: string = `[${chalk.blue(getDateTime())}]`;
@@ -11,6 +12,13 @@ export function middleware(req: auth.AuthRequest, res: express.Response, next: e
 
   console.log(`${time} ${method} ${url} - ${userInfo}`);
   next();
+}
+
+export function httpOut(url: string, method: string, res: request.RequestResponse): void {
+  let time: string = `[${chalk.blue(getDateTime())}]`;
+  let httpMethod: string = `[${chalk.yellow('HTTP')}] [${chalk.magenta('->')}] ${chalk.green(res.statusCode.toString())} ${method}`;
+
+  console.log(`${time} ${httpMethod} ${url}`);
 }
 
 export function info(msg: string): void {
