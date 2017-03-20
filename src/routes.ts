@@ -4,8 +4,7 @@ import * as logger from './logger';
 import { getConfig, getConfigPath, getFilePath } from './utils';
 import { writeJsonFile } from './fs';
 import { Package } from './package';
-import * as stream from 'stream';
-const str = require('string-to-stream');
+import * as proxy from './storage-proxy';
 
 export function doAuth(
   req: auth.AuthRequest,
@@ -55,7 +54,7 @@ export function logout(req: auth.AuthRequest, res: express.Response): express.Re
   }
 }
 
-export function getPackage(req: auth.AuthRequest, res: express.Response): express.Response {
+export function getPackage(req: auth.AuthRequest, res: express.Response): void {
   let packageName: string = req.params.package;
   let version: string | null = req.params.version || null;
 
@@ -65,13 +64,23 @@ export function getPackage(req: auth.AuthRequest, res: express.Response): expres
   if (version !== null) {
     this.setVersion(version);
     if (!pkg.existsSync(true)) {
-      return res.status(404).json({ message: `version ${version} not found` });
+      // return res.status(404).json({ message: `version ${version} not found` });
     } else {
-      // res.status(200).send(pkg.getTarball(true));
+      pkg.getLatestPackage().then(pkgJsonData => {
+        res.status(200).json(pkgJsonData);
+      });
     }
   } else {
     if (!pkg.existsSync()) {
-      return res.status(404).json({ message: `package not found` });
+      proxy.findUplinkPackages(packageName).then(urls => {
+        if (urls.length) {
+          proxy.getResponse(urls[0], 'GET').then(body => {
+            res.status(200).json(JSON.parse(body));
+          });
+        } else {
+          return res.status(404).json({ message: `package not found` });
+        }
+      });
     } else {
       pkg.getLatestPackage().then(pkgJsonData => {
         res.status(200).json(pkgJsonData);

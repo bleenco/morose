@@ -1,24 +1,39 @@
 import { getConfig } from './utils';
 import * as request from 'request';
+import * as logger from './logger';
 
 export function getUplinks(): string[] {
   let config = getConfig();
   return config.upstreams;
 }
 
-export function syncPackageWithUplinks(name: string, pkginfo: any, options: any): Promise<null> {
+export function getResponse(url: string, method: 'GET'): Promise<string> {
   return new Promise(resolve => {
-    if (!pkginfo) {
-      let exists = false;
-
-      pkginfo = {
-        name: name,
-        versions: {},
-        'dist-tags': {},
-        uplinks: {}
-      };
-    }
-
-    let uplinks = getUplinks();
+    request(url, { method: method }, (err, response, body) => {
+      resolve(body);
+    });
   });
 }
+
+export function findUplinkPackages(name: string, version?: string): Promise<string> {
+  return new Promise(resolve => {
+    let uplinks = getUplinks();
+    Promise.all(uplinks.map(url => getRequestStatusCode(`${url}/${name}`, 'GET')))
+      .then(resp => {
+        let foundUrls = resp.map((r, i) => { return { index: i, code: r.code, url: r.url }; })
+          .filter(r => r.code === 200)
+          .map(r => r.url);
+
+        resolve(foundUrls);
+      });
+  });
+}
+
+function getRequestStatusCode(url: string, method: string): Promise<{ code: number, url: string }> {
+  return new Promise(resolve => {
+    request(url, { method: method }, (err, resp, body) => {
+      resolve({ url: url, code: resp.statusCode });
+    });
+  });
+}
+
