@@ -1,6 +1,6 @@
 {
   "name": "@bleenco/morose",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "lightweigth alternative to npm registry",
   "bin": {
     "morose": "./dist/index.js"
