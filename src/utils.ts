@@ -31,7 +31,8 @@ export function writeInitConfig(): Promise<null> {
     secret: Math.random().toString(36).substr(2, 10),
     users: [
       { name: 'admin', password: hash }
-    ]
+    ],
+    upstreams: ['https://registry.npmjs.org']
   };
 
   logger.info(`initializing \`admin\` user with password \`${password}\``);

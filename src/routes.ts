@@ -1,8 +1,11 @@
 import * as express from 'express';
 import * as auth from './auth';
 import * as logger from './logger';
-import { getConfig, getConfigPath } from './utils';
+import { getConfig, getConfigPath, getFilePath } from './utils';
 import { writeJsonFile } from './fs';
+import { Package } from './package';
+import * as stream from 'stream';
+const str = require('string-to-stream');
 
 export function doAuth(
   req: auth.AuthRequest,
@@ -56,5 +59,44 @@ export function getPackage(req: auth.AuthRequest, res: express.Response): expres
   let packageName: string = req.params.package;
   let version: string | null = req.params.version || null;
 
-  return res.status(404).json({ message: `version ${version} not found` });
+  let pkg = new Package(packageName);
+  pkg.setStorage();
+
+  if (version !== null) {
+    this.setVersion(version);
+    if (!pkg.existsSync(true)) {
+      return res.status(404).json({ message: `version ${version} not found` });
+    } else {
+      // res.status(200).send(pkg.getTarball(true));
+    }
+  } else {
+    if (!pkg.existsSync()) {
+      return res.status(404).json({ message: `package not found` });
+    } else {
+      pkg.getLatestPackage().then(pkgJsonData => {
+        res.status(200).json(pkgJsonData);
+      });
+    }
+  }
 }
+
+export function getTarball(req: auth.AuthRequest, res: express.Response): void {
+  let tarball = req.params.tarball;
+  let tarballPath = getFilePath(`tarballs/${tarball}`);
+  res.type('application/x-compressed');
+  res.header('Content-Disposition', `filename=${tarball}`);
+  res.status(200).download(tarballPath);
+}
+
+export function publishPackage(req: auth.AuthRequest, res: express.Response): void {
+  let name = req.params.package;
+  let metadata = req.body;
+
+  let pkg = new Package(name);
+  pkg.setMetadata(metadata);
+
+  pkg.savePackage().then(() => {
+    res.status(200).json({ message: 'package published' });
+  });
+}
+
