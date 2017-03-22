@@ -10,7 +10,9 @@
     "build": "tsc",
     "build:watch": "tsc -w",
     "prebuild": "npm run clean",
-    "prepublish": "npm run build"
+    "prepublish": "npm run build",
+    "compile": "tsc && node ./dist/index.js",
+    "dev": "nodemon -w src -e ts --exec \"npm run compile\""
   },
   "repository": {
     "type": "git",
@@ -50,6 +52,7 @@
     "@types/node": "^7.0.8",
     "@types/request": "^0.0.41",
     "@types/semver": "^5.3.31",
+    "nodemon": "^1.11.0",
     "rimraf": "^2.6.1",
     "typescript": "^2.2.1"
   }
