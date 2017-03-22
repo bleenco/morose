@@ -21,7 +21,7 @@ $ npm install @bleenco/morose -g
 morose
 ```
 
-### Setting up npm config to use you morose
+### Setting up npm config to use morose
 
 ```sh
 npm set registry http://localhost:10000
