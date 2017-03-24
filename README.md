@@ -1,6 +1,6 @@
 
 <p align="center">
-  <img src="https://cloud.githubusercontent.com/assets/1796022/24088848/de5390e0-0d2f-11e7-856f-f0cc80912b14.png">
+  <img src="https://cloud.githubusercontent.com/assets/1796022/24310656/15cc8b0e-10d1-11e7-9717-0b805b0f0fe8.png" width="200">
 </p>
 
 # morose
