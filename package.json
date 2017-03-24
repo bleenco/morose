@@ -10,9 +10,13 @@
     "build": "tsc",
     "build:watch": "tsc -w",
     "prebuild": "npm run clean",
-    "prepublish": "npm run build",
+    "prepublish": "npm run build && npm run build:app:prod",
     "compile": "tsc && node ./dist/index.js",
-    "dev": "nodemon -w src -e ts --exec \"npm run compile\""
+    "dev": "nodemon -w src -e ts --exec \"npm run compile\"",
+    "build:app": "webpack --env.dev --progress --hide-modules",
+    "build:app:prod": "webpack --env.aot -p --progress --hide-modules",
+    "start": "webpack-dev-server --env.dev --env.serve --progress",
+    "start:aot": "webpack-dev-server --env.aot --env.dev --env.serve --progress"
   },
   "repository": {
     "type": "git",
@@ -43,6 +47,18 @@
     "semver": "^5.3.0"
   },
   "devDependencies": {
+    "@angular/animations": "4.0.0-rc.6",
+    "@angular/common": "^4.0.0-rc.6",
+    "@angular/compiler": "^4.0.0-rc.6",
+    "@angular/compiler-cli": "4.0.0-rc.6",
+    "@angular/core": "^4.0.0-rc.6",
+    "@angular/forms": "^4.0.0-rc.6",
+    "@angular/http": "^4.0.0-rc.6",
+    "@angular/platform-browser": "^4.0.0-rc.6",
+    "@angular/platform-browser-dynamic": "^4.0.0-rc.6",
+    "@angular/platform-server": "^4.0.0-rc.6",
+    "@angular/router": "^4.0.0-rc.6",
+    "@ngtools/webpack": "^1.2.14",
     "@types/body-parser": "1.16.1",
     "@types/chalk": "^0.4.31",
     "@types/express": "^4.0.35",
@@ -52,8 +68,26 @@
     "@types/node": "^7.0.8",
     "@types/request": "^0.0.41",
     "@types/semver": "^5.3.31",
+    "add-asset-html-webpack-plugin": "^1.0.2",
+    "compression-webpack-plugin": "^0.3.2",
+    "copy-webpack-plugin": "^4.0.1",
+    "core-js": "^2.4.1",
+    "css-loader": "^0.27.3",
+    "extract-text-webpack-plugin": "^2.1.0",
+    "html-webpack-plugin": "^2.28.0",
+    "node-sass": "^4.5.1",
     "nodemon": "^1.11.0",
+    "portfinder": "^1.0.13",
+    "raw-loader": "^0.5.1",
     "rimraf": "^2.6.1",
-    "typescript": "^2.2.1"
+    "rxjs": "^5.0.1",
+    "sass-loader": "^6.0.3",
+    "style-loader": "^0.16.0",
+    "typescript": "^2.2.1",
+    "webpack": "^2.3.1",
+    "webpack-dev-server": "^2.4.2",
+    "webpack-dll-bundles-plugin": "^1.0.0-beta.5",
+    "webpack-merge": "^4.1.0",
+    "zone.js": "^0.8.4"
   }
 }
