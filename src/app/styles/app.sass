@@ -1,2 +1,51 @@
+@charset 'utf8'
+@import '../../../node_modules/bulma/bulma'
+@import 'colors'
+
 html, body
-  background: #FFFFFF
+  background: $blue-light
+
+.nav
+  position: fixed
+  top: 0
+  left: 0
+  right: 0
+
+.hero
+  padding-top: 100px
+  position: relative
+
+  &.bg-blue-light
+    background: $blue-light
+
+    .background-svg
+      position: absolute
+      top: 0
+      left: 0
+      right: 0
+      bottom: 0
+
+    .hero-head
+
+      .hero-search-input-container
+        display: flex
+        box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1)
+
+        .hero-search-input-field
+          flex: 1
+          width: 100%
+          outline: none
+          color: $grey-medium
+          font-size: 16px
+          padding: 15px 20px
+          border: none
+
+        .hero-search-input-button
+          border: none
+          background: $white
+          outline: none
+          border-left: 1px solid $grey-border
+          font-size: 15px
+          color: $grey-medium
+          cursor: pointer
+          padding: 0 15px
