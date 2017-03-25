@@ -5,73 +5,65 @@ import {
   readDir,
   readJsonFile,
   writeJsonFile,
-  writeTarball
+  writeTarball,
+  existsSync
 } from './fs';
 import * as semver from 'semver';
 
+export interface IPackageVersions {
+  [version: string]: {
+    name: string;
+    version: string;
+    description: string;
+    main: string;
+    typings: string;
+    scripts: { [script: string]: string },
+    repository: { type: string; url: string; },
+    keywords: string[],
+    author: { name: string; email: string; },
+    authors: string[],
+    licence: string;
+    bugs: { url: string; },
+    homepage: string;
+    readme: string;
+    readmeFilename: string;
+    gitHead: string;
+    dependencies: { [dependency: string]: string; }
+    devDependencies: { [dependency: string]: string; },
+    _id: string;
+    _shasum: string;
+    _from: string;
+    _npmVersion: string;
+    _nodeVersion: string;
+    _npmUser: any;
+    dist: { shasum: string, tarball: string; }
+  };
+}
+
 export interface IPackageMetadata {
   name: string;
-  versions: {
-    [version: string]: {
-      name: string;
-      version: string;
-      description: string;
-      main: string;
-      typings: string;
-      scripts: {
-        [script: string]: string
-      },
-      repository: {
-        type: string;
-        url: string;
-      },
-      keywords: string[],
-      author: {
-        name: string;
-        email: string;
-      },
-      authors: string[],
-      licence: string;
-      bugs: {
-        url: string;
-      },
-      homepage: string;
-      readme: string;
-      readmeFilename: string;
-      gitHead: string;
-      dependencies: {
-        [dependency: string]: string;
-      }
-      devDependencies: {
-        [dependency: string]: string;
-      },
-      _id: string;
-      _shasum: string;
-      _from: string;
-      _npmVersion: string;
-      _nodeVersion: string;
-      _npmUser: any;
-      dist: {
-        shasum: string,
-        tarball: string;
-      }
-    }
-  },
-  'dist-tags': {
-    [version: string]: string;
-  },
+  versions: IPackageVersions;
+  'dist-tags': { [version: string]: string; };
   _attachments: {
     [attachment: string]: {
       content_type: string;
       data: string;
       length: number;
     }
-  }
+  };
 }
 
 export interface IPackageData {
   name: string;
   metadata?: IPackageMetadata;
+}
+
+export interface INpmPackage {
+  _id: string;
+  name: string;
+  description: string;
+  'dist-tags': { [version: string]: string; };
+  versions: IPackageVersions
 }
 
 export class Package {
@@ -90,7 +82,7 @@ export class Package {
       .then(() => this.initDataFromFiles());
   }
 
-  getPackageData(): any {
+  getPackageData(): INpmPackage {
     let versions = this.getVersions();
     let latest = semver.maxSatisfying(versions, 'x.x.x');
     let latestData = this.data.metadata.versions[latest];
@@ -147,6 +139,10 @@ export class Package {
     let versionRoot = join(this.packageRoot, version);
     let versionFile = join(versionRoot, 'package.json');
 
+    if (!existsSync(versionFile)) {
+      return Promise.resolve();
+    }
+
     return readJsonFile(versionFile)
       .then((json: IPackageMetadata) => {
         Object.keys(json.versions).forEach(ver => {
@@ -155,7 +151,7 @@ export class Package {
             versions: {},
             'dist-tags': {},
             _attachments: {}
-          }
+          };
 
           this.data.metadata.versions[ver] = json.versions[ver];
         });

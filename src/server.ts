@@ -3,6 +3,7 @@ import { router } from './router';
 import * as logger from './logger';
 import * as fs from './fs';
 import * as utils from './utils';
+import { initializeStorage } from './storage';
 
 export function start(): void {
   let app: express.Application = express();
@@ -18,13 +19,14 @@ function initMorose(): Promise<null> {
 
   return fs.exists(root).then(exists => {
     if (exists) {
-      return Promise.resolve();
+      return initializeStorage();
     } else {
       return fs.ensureDirectory(root)
         .then(() => utils.writeInitConfig())
         .then(() => fs.ensureDirectory(utils.getFilePath('packages')))
         .then(() => fs.ensureDirectory(utils.getFilePath('logs')))
         .then(() => fs.ensureDirectory(utils.getFilePath('tarballs')))
+        .then(() => initializeStorage())
         .then(() => logger.info(`morose successfully initialized.`));
     }
   });

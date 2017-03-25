@@ -1,61 +1,33 @@
-import * as fs from './fs';
-import * as utils from './utils';
-import { join } from 'path';
-import * as semver from 'semver';
+import { INpmPackage, Package } from './package';
+import { readDir } from './fs';
+import { getFilePath } from './utils';
+import { info } from './logger';
 
-export interface IPackageJson {
-  'name': string;
-  'versions': any;
-  'dist-tags': any;
-  '_attachments': {
-    [name: string]: {
-      'content_type': string;
-      'data': Blob;
-      'length': number;
-    }
-  };
+export interface IStorage {
+  packages: INpmPackage[]
 }
 
-export class Storage {
-  name: string;
-  rootDir: string;
-  json: IPackageJson;
+export let storage: IStorage = {
+  packages: []
+};
 
-  constructor(name: string) {
-    this.name = name;
-    this.rootDir = utils.getFilePath('packages');
-  }
+export function initializeStorage(): Promise<null> {
+  let rootDir = getFilePath('packages');
+  let startTime: number = new Date().getTime();
 
-  existsSync(exact: boolean = false, version: string | null): boolean {
-    let checkPath: string;
-    if (exact && version !== null) {
-      checkPath = join(this.rootDir, this.name, version, 'package.json');
-    } else {
-      checkPath = join(this.rootDir, this.name);
-    }
+  return readDir(rootDir)
+    .then(packages => {
+      return Promise.all(packages.map(packageName => {
+        let pkg: Package = new Package({ name: packageName });
 
-    return fs.existsSync(checkPath);
-  }
-
-  setJson(json: IPackageJson) {
-    this.json = json;
-  }
-
-  getLatestData(): Promise<any> {
-    return fs.readDir(join(this.rootDir, this.name)).then(versions => {
-      let latest = semver.maxSatisfying(versions, 'x.x.x');
-      let pkgJsonPath = join(this.rootDir, this.name, latest, 'package.json');
-      return fs.readJsonFile(pkgJsonPath);
-    });
-  }
-
-  addPackage(): Promise<null> {
-    let dirPath = join(this.rootDir, this.json.name, this.json['dist-tags'].latest);
-    let jsonPath = join(dirPath, 'package.json');
-
-    return fs.ensureDirectory(dirPath)
-      .then(() => fs.writeJsonFile(jsonPath, this.json))
-      .then(() => fs.writeTarball(this.json._attachments));
-  }
+        return pkg.inititialize().then(() => {
+          let pkgData = pkg.getPackageData();
+          storage.packages.push(pkgData);
+        });
+      })).then(() => {
+        let time = new Date().getTime() - startTime;
+        info(`Storage initialized in ${time}ms`);
+      });
+    })
+    .catch(err => console.error(err));
 }
-
