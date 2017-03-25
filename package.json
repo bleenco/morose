@@ -1,6 +1,6 @@
 {
   "name": "@bleenco/morose",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "lightweigth alternative to npm registry",
   "bin": {
     "morose": "./dist/index.js"
@@ -10,9 +10,10 @@
     "build": "tsc",
     "build:watch": "tsc -w",
     "prebuild": "npm run clean",
-    "prepublish": "npm run build && npm run build:app:prod",
+    "prepublish": "npm run build:prod",
     "compile": "tsc && node ./dist/index.js",
     "dev": "nodemon -w src -e ts --exec \"npm run compile\"",
+    "build:prod": "npm run build && npm run build:app:prod",
     "build:app": "webpack --env.dev --progress --hide-modules",
     "build:app:prod": "webpack --env.aot -p --progress --hide-modules",
     "start": "webpack-dev-server --env.dev --env.serve --progress",
