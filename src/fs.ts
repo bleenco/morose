@@ -1,6 +1,6 @@
 import * as fs from 'fs';
+import * as fse from 'fs-extra';
 import * as utils from './utils';
-import * as mkdirp from 'mkdirp';
 import { dirname } from 'path';
 
 export function readFile(filePath: string): Promise<string> {
@@ -41,11 +41,7 @@ export function writeBufferToFile(filePath: string, data: Buffer): Promise<null>
 
 export function ensureDirectory(dirPath: string): Promise<null> {
   return new Promise((resolve, reject) => {
-    if (fs.existsSync) {
-      resolve();
-    }
-
-    mkdirp(dirPath, (err: NodeJS.ErrnoException) => {
+    fse.ensureDir(dirPath, (err: Error) => {
       if (err) {
         reject(err);
       }
