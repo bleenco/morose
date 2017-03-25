@@ -9,35 +9,38 @@ import {
   existsSync
 } from './fs';
 import * as semver from 'semver';
+import { updatePkgStorage } from './storage';
+
+export interface IPackageVersionData {
+  name: string;
+  version: string;
+  description: string;
+  main: string;
+  typings: string;
+  scripts: { [script: string]: string },
+  repository: { type: string; url: string; },
+  keywords: string[],
+  author: { name: string; email: string; },
+  authors: string[],
+  licence: string;
+  bugs: { url: string; },
+  homepage: string;
+  readme: string;
+  readmeFilename: string;
+  gitHead: string;
+  dependencies: { [dependency: string]: string; }
+  devDependencies: { [dependency: string]: string; },
+  _id: string;
+  _shasum: string;
+  _from: string;
+  _npmVersion: string;
+  _nodeVersion: string;
+  _npmUser: any;
+  dist: { shasum: string, tarball: string; };
+}
 
 export interface IPackageVersions {
-  [version: string]: {
-    name: string;
-    version: string;
-    description: string;
-    main: string;
-    typings: string;
-    scripts: { [script: string]: string },
-    repository: { type: string; url: string; },
-    keywords: string[],
-    author: { name: string; email: string; },
-    authors: string[],
-    licence: string;
-    bugs: { url: string; },
-    homepage: string;
-    readme: string;
-    readmeFilename: string;
-    gitHead: string;
-    dependencies: { [dependency: string]: string; }
-    devDependencies: { [dependency: string]: string; },
-    _id: string;
-    _shasum: string;
-    _from: string;
-    _npmVersion: string;
-    _nodeVersion: string;
-    _npmUser: any;
-    dist: { shasum: string, tarball: string; }
-  };
+  [version: string]: IPackageVersionData;
 }
 
 export interface IPackageMetadata {
@@ -96,6 +99,11 @@ export class Package {
     };
   }
 
+  getPackageDataForVersion(ver: string): IPackageVersionData | null {
+    let data = this.getPackageData();
+    return data.versions[ver] || null;
+  }
+
   getLatestData(): Promise<IPackageMetadata | string[]> {
     return readDir(this.packageRoot)
       .then(versions => {
@@ -116,7 +124,11 @@ export class Package {
       .then(() => writeTarball(metadata._attachments))
       .then(() => {
         delete metadata._attachments;
-        return writeJsonFile(jsonPath, metadata);
+        return writeJsonFile(jsonPath, metadata)
+          .then(() => {
+            this.addVersion(metadata);
+            updatePkgStorage(metadata.name, this.getPackageData());
+          });
       })
       .catch(err => console.error(err));
   }
@@ -157,6 +169,11 @@ export class Package {
         });
       })
       .catch(err => console.error(err));
+  }
+
+  private addVersion(metadata: IPackageMetadata): void {
+    this.data.metadata.versions = Object.assign({},
+      this.data.metadata.versions, metadata.versions);
   }
 
   private ensureRootFolders(): Promise<null> {

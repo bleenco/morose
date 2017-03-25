@@ -26,8 +26,12 @@ export function initializeStorage(): Promise<null> {
         });
       })).then(() => {
         let time = new Date().getTime() - startTime;
-        info(`Storage initialized in ${time}ms`);
+        info(`storage initialized in ${time}ms`);
       });
     })
     .catch(err => console.error(err));
+}
+
+export function updatePkgStorage(pkgName: string, data: INpmPackage): void {
+  storage.packages[pkgName] = data;
 }

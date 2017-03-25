@@ -5,6 +5,7 @@ import { getConfig, getConfigPath, getFilePath } from './utils';
 import { writeJsonFile } from './fs';
 import { Package } from './package';
 import * as proxy from './storage-proxy';
+import { storage } from './storage';
 
 export function doAuth(
   req: auth.AuthRequest,
@@ -120,7 +121,15 @@ export function publishPackage(req: auth.AuthRequest, res: express.Response): vo
   let name: string = req.params.package;
   let metadata = req.body;
 
-  let pkg = new Package({ name: name });
+  let pkgIndex = storage.packages.findIndex(pkg => pkg.name === name);
+  let pkgMetadata = {
+    name: name,
+    versions: storage.packages[pkgIndex].versions,
+    'dist-tags': {},
+    _attachments: {}
+  } || null;
+
+  let pkg = new Package({ name: name, metadata: pkgMetadata });
   pkg.saveVersionFromMetadata(metadata)
     .then(() => {
       res.status(200).json({ message: 'package published' });
