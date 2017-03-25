@@ -17,7 +17,7 @@ function getDevStylesConfig() {
 function getProdStylesConfig() {
   return {
     plugins: [
-      new extract('[name].css')
+      new extract('css/[name].css')
     ],
     module: {
       rules: [
