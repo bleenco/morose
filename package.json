@@ -1,6 +1,6 @@
 {
-  "name": "@bleenco/morose",
-  "version": "0.3.2",
+  "name": "morose",
+  "version": "0.3.4",
   "description": "npm registry & proxy server",
   "bin": {
     "morose": "./dist/index.js"
