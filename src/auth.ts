@@ -5,6 +5,9 @@ import { writeJsonFile } from './fs';
 
 export interface AuthRequest extends express.Request {
   remote_user: any;
+  headers: {
+    authorization: any
+  };
 }
 
 export interface IUserBasic {
@@ -20,7 +23,7 @@ export interface IUser extends IUserBasic {
   date: Date
 }
 
-export function middleware(req: express.Request, res: express.Response, next: express.NextFunction): void {
+export function middleware(req: AuthRequest, res: express.Response, next: express.NextFunction): void {
   if (res.locals.remote_user != null && res.locals.remote_user.name !== 'anonymous') {
     return next();
   }
