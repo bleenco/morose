@@ -1,7 +1,7 @@
 {
   "name": "@bleenco/morose",
   "version": "0.3.1",
-  "description": "lightweigth alternative to npm registry",
+  "description": "npm registry & proxy server",
   "bin": {
     "morose": "./dist/index.js"
   },
@@ -88,6 +88,7 @@
     "sass-loader": "^6.0.3",
     "style-loader": "^0.16.0",
     "typescript": "^2.2.1",
+    "typicons-font": "^1.0.0",
     "webpack": "^2.3.1",
     "webpack-dev-server": "^2.4.2",
     "webpack-dll-bundles-plugin": "^1.0.0-beta.5",
