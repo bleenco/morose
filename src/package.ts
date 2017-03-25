@@ -90,8 +90,18 @@ export class Package {
       .then(() => this.initDataFromFiles());
   }
 
-  getPackageData(): IPackageData {
-    return this.data;
+  getPackageData(): any {
+    let versions = this.getVersions();
+    let latest = semver.maxSatisfying(versions, 'x.x.x');
+    let latestData = this.data.metadata.versions[latest];
+
+    return {
+      _id: latestData._id.split('@')[0],
+      name: latestData.name,
+      description: latestData.description,
+      'dist-tags': { latest: latestData.version },
+      versions: this.data.metadata.versions
+    };
   }
 
   getLatestData(): Promise<IPackageMetadata | string[]> {
@@ -140,6 +150,13 @@ export class Package {
     return readJsonFile(versionFile)
       .then((json: IPackageMetadata) => {
         Object.keys(json.versions).forEach(ver => {
+          this.data.metadata = this.data.metadata || {
+            name: this.data.name,
+            versions: {},
+            'dist-tags': {},
+            _attachments: {}
+          }
+
           this.data.metadata.versions[ver] = json.versions[ver];
         });
       })

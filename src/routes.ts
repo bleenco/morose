@@ -62,35 +62,50 @@ export function getPackage(req: auth.AuthRequest, res: express.Response): void {
     packageName = packageName.replace(/^(@.*)(\/)(.*)$/, '$1%2F$3');
   }
 
-  let pkg = new Package(packageName);
-  pkg.setStorage();
+  let pkg = new Package({ name: packageName });
 
-  if (version !== null) {
-    this.setVersion(version);
-    if (!pkg.existsSync(true)) {
-      // return res.status(404).json({ message: `version ${version} not found` });
-    } else {
-      pkg.getLatestPackage().then(pkgJsonData => {
-        res.status(200).json(pkgJsonData);
-      });
-    }
-  } else {
-    if (!pkg.existsSync()) {
-      proxy.findUplinkPackages(packageName).then(urls => {
-        if (urls.length) {
-          proxy.getResponse(urls[0], 'GET').then(body => {
-            res.status(200).json(JSON.parse(body));
-          });
-        } else {
-          return res.status(404).json({ message: `package not found` });
-        }
-      });
-    } else {
-      pkg.getLatestPackage().then(pkgJsonData => {
-        res.status(200).json(pkgJsonData);
-      });
-    }
-  }
+  pkg.inititialize()
+    .then(() => {
+      // TODO: get version if provided
+
+      return pkg.inititialize()
+        .then(() => res.status(200).json(pkg.getPackageData()));
+
+      // return pkg.getLatestData().then(packageMetadata => {
+      //   res.status(200).json(packageMetadata);
+      // });
+
+    })
+    .catch(err => {
+      res.status(500).json({ message: err });
+    });
+
+  // if (version !== null) {
+  //   this.setVersion(version);
+  //   if (!pkg.existsSync(true)) {
+  //     // return res.status(404).json({ message: `version ${version} not found` });
+  //   } else {
+  //     pkg.getLatestPackage().then(pkgJsonData => {
+  //       res.status(200).json(pkgJsonData);
+  //     });
+  //   }
+  // } else {
+  //   if (!pkg.existsSync()) {
+  //     proxy.findUplinkPackages(packageName).then(urls => {
+  //       if (urls.length) {
+  //         proxy.getResponse(urls[0], 'GET').then(body => {
+  //           res.status(200).json(JSON.parse(body));
+  //         });
+  //       } else {
+  //         return res.status(404).json({ message: `package not found` });
+  //       }
+  //     });
+  //   } else {
+  //     pkg.getLatestPackage().then(pkgJsonData => {
+  //       res.status(200).json(pkgJsonData);
+  //     });
+  //   }
+  // }
 }
 
 export function getTarball(req: auth.AuthRequest, res: express.Response): void {
@@ -102,14 +117,16 @@ export function getTarball(req: auth.AuthRequest, res: express.Response): void {
 }
 
 export function publishPackage(req: auth.AuthRequest, res: express.Response): void {
-  let name = req.params.package;
+  let name: string = req.params.package;
   let metadata = req.body;
 
-  let pkg = new Package(name);
-  pkg.setMetadata(metadata);
-
-  pkg.savePackage().then(() => {
-    res.status(200).json({ message: 'package published' });
-  });
+  let pkg = new Package({ name: name });
+  pkg.saveVersionFromMetadata(metadata)
+    .then(() => {
+      res.status(200).json({ message: 'package published' });
+    })
+    .catch(err => {
+      res.status(500).json({ message: 'error saving package version' });
+    });
 }
 
