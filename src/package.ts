@@ -85,7 +85,7 @@ export class Package {
       .then(() => this.initDataFromFiles());
   }
 
-  getPackageData(): INpmPackage {
+  getPackageData(): INpmPackage | null {
     let versions = this.getVersions();
     let latest = semver.maxSatisfying(versions, 'x.x.x');
     let latestData = this.data.metadata.versions[latest];
@@ -117,7 +117,7 @@ export class Package {
   }
 
   saveVersionFromMetadata(metadata: IPackageMetadata): Promise<null> {
-    let dirPath = join(this.packageRoot, metadata['dist-tags'].latest);
+    let dirPath = join(this.packageRoot, metadata['dist-tags']['latest']);
     let jsonPath = join(dirPath, 'package.json');
 
     return ensureDirectory(dirPath)
@@ -134,6 +134,13 @@ export class Package {
   }
 
   getVersions(): string[] {
+    this.data.metadata = this.data.metadata || {
+      name: this.data.name,
+      versions: {},
+      'dist-tags': {},
+      _attachments: {}
+    };
+
     return Object.keys(this.data.metadata.versions);
   }
 

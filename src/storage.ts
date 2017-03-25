@@ -33,5 +33,11 @@ export function initializeStorage(): Promise<null> {
 }
 
 export function updatePkgStorage(pkgName: string, data: INpmPackage): void {
-  storage.packages[pkgName] = data;
+  let index = storage.packages.findIndex(pkg => pkg.name === pkgName);
+  storage.packages[index] = data;
+}
+
+export function findPackage(pkgName: string): INpmPackage | null {
+  let index = storage.packages.findIndex(pkg => pkg.name === pkgName);
+  return storage.packages[index] || null;
 }
