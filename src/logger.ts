@@ -5,7 +5,7 @@ import * as request from 'request';
 
 export function middleware(req: auth.AuthRequest, res: express.Response, next: express.NextFunction): void {
   let time: string = `[${chalk.blue(getDateTime())}]`;
-  let method: string = `[${chalk.yellow('HTTP')}] [${chalk.green('<-')}] ${chalk.green(res.statusCode.toString())} ${req.method}`;
+  let method: string = `[${chalk.green('HTTP')}] [${chalk.green('<-')}] ${chalk.white(res.statusCode.toString())} ${req.method}`;
   let url: string = `${req.originalUrl}`;
   let name: string = res.locals.remote_user && res.locals.remote_user.name || 'anonymous';
   let userInfo: string = `${name}${chalk.yellow('@')}${req.ip}`;
@@ -16,21 +16,21 @@ export function middleware(req: auth.AuthRequest, res: express.Response, next: e
 
 export function httpIn(url: string, method: string, res: request.RequestResponse): void {
   let time: string = `[${chalk.blue(getDateTime())}]`;
-  let httpMethod: string = `[${chalk.yellow('HTTP')}] [${chalk.green('<-')}] ${chalk.green(res.statusCode.toString())} ${method}`;
+  let httpMethod: string = `[${chalk.cyan('HTTP')}] [${chalk.cyan('<-')}] ${chalk.white(res.statusCode.toString())} ${method}`;
 
   console.log(`${time} ${httpMethod} ${url}`);
 }
 
 export function httpOut(url: string, method: string): void {
   let time: string = `[${chalk.blue(getDateTime())}]`;
-  let httpMethod: string = `[${chalk.yellow('HTTP')}] [${chalk.magenta('->')}] ${method}`;
+  let httpMethod: string = `[${chalk.green('HTTP')}] [${chalk.green('->')}] ${method}`;
 
   console.log(`${time} ${httpMethod} ${url}`);
 }
 
 export function info(msg: string): void {
   let time: string = `[${chalk.blue(getDateTime())}]`;
-  let method: string = `[${chalk.yellow('INFO')}] [${chalk.green('--')}]`;
+  let method: string = `[${chalk.yellow('INFO')}] [${chalk.yellow('--')}]`;
   console.log(`${time} ${method} ${msg}`);
 }
 

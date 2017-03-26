@@ -71,7 +71,8 @@ export function getPackage(req: auth.AuthRequest, res: express.Response): expres
     proxy.fetchUplinkPackage(packageName, version)
       .then(resp => {
         return res.status(200).json(resp);
-      });
+      })
+      .catch(err => console.error(err));
     // proxy.fetchUplinkPackages(packageName).then(urls => {
     //   if (urls.length) {
     //     proxy.getResponse(urls[0], 'GET').then(body => {

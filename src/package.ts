@@ -10,6 +10,7 @@ import {
 } from './fs';
 import * as semver from 'semver';
 import { updatePkgStorage } from './storage';
+import semverExtra = require('semver-extra');
 
 export interface IPackageVersionData {
   name: string;
@@ -87,8 +88,13 @@ export class Package {
 
   getPackageData(): INpmPackage | null {
     let versions = this.getVersions();
-    let latest = semver.maxSatisfying(versions, 'x.x.x');
+    let latest = semverExtra.max(versions);
     let latestData = this.data.metadata.versions[latest];
+
+    if (!latestData) {
+      console.log(versions);
+      return null;
+    }
 
     return {
       _id: latestData._id.split('@')[0],
