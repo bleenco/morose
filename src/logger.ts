@@ -14,9 +14,16 @@ export function middleware(req: auth.AuthRequest, res: express.Response, next: e
   next();
 }
 
-export function httpOut(url: string, method: string, res: request.RequestResponse): void {
+export function httpIn(url: string, method: string, res: request.RequestResponse): void {
   let time: string = `[${chalk.blue(getDateTime())}]`;
-  let httpMethod: string = `[${chalk.yellow('HTTP')}] [${chalk.magenta('->')}] ${chalk.green(res.statusCode.toString())} ${method}`;
+  let httpMethod: string = `[${chalk.yellow('HTTP')}] [${chalk.green('<-')}] ${chalk.green(res.statusCode.toString())} ${method}`;
+
+  console.log(`${time} ${httpMethod} ${url}`);
+}
+
+export function httpOut(url: string, method: string): void {
+  let time: string = `[${chalk.blue(getDateTime())}]`;
+  let httpMethod: string = `[${chalk.yellow('HTTP')}] [${chalk.magenta('->')}] ${method}`;
 
   console.log(`${time} ${httpMethod} ${url}`);
 }

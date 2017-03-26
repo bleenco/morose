@@ -32,9 +32,18 @@ export function initializeStorage(): Promise<null> {
     .catch(err => console.error(err));
 }
 
-export function updatePkgStorage(pkgName: string, data: INpmPackage): void {
+export function updatePkgStorage(pkgName: string, data: INpmPackage): Promise<null> {
   let index = storage.packages.findIndex(pkg => pkg.name === pkgName);
-  storage.packages[index] = data;
+  if (index !== -1) {
+    storage.packages[index] = data;
+    return Promise.resolve(null);
+  } else {
+    let pkg: Package = new Package({ name: pkgName });
+    return pkg.inititialize().then(() => {
+      let pkgData = pkg.getPackageData();
+      storage.packages.push(pkgData);
+    });
+  }
 }
 
 export function findPackage(pkgName: string): INpmPackage | null {

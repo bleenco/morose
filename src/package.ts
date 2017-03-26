@@ -121,7 +121,13 @@ export class Package {
     let jsonPath = join(dirPath, 'package.json');
 
     return ensureDirectory(dirPath)
-      .then(() => writeTarball(metadata._attachments))
+      .then(() => {
+        if (Object.keys(metadata._attachments).length) {
+          return writeTarball(metadata._attachments);
+        } else {
+          return Promise.resolve();
+        }
+      })
       .then(() => {
         delete metadata._attachments;
         return writeJsonFile(jsonPath, metadata)
@@ -154,6 +160,18 @@ export class Package {
       .catch(err => console.error(err));
   }
 
+  private addVersion(metadata: IPackageMetadata): void {
+    this.data.metadata = this.data.metadata || {
+      name: this.data.name,
+      versions: {},
+      'dist-tags': {},
+      _attachments: {}
+    };
+
+    this.data.metadata.versions = Object.assign({},
+      this.data.metadata.versions, metadata.versions);
+  }
+
   private mergeData(version: string): Promise<null> {
     let versionRoot = join(this.packageRoot, version);
     let versionFile = join(versionRoot, 'package.json');
@@ -176,11 +194,6 @@ export class Package {
         });
       })
       .catch(err => console.error(err));
-  }
-
-  private addVersion(metadata: IPackageMetadata): void {
-    this.data.metadata.versions = Object.assign({},
-      this.data.metadata.versions, metadata.versions);
   }
 
   private ensureRootFolders(): Promise<null> {

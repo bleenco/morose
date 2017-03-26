@@ -4,7 +4,7 @@ import * as logger from './logger';
 import { getConfig, getConfigPath, getFilePath } from './utils';
 import { writeJsonFile } from './fs';
 import { Package } from './package';
-import * as proxy from './storage-proxy';
+import * as proxy from './proxy';
 import { storage, findPackage } from './storage';
 
 export function doAuth(
@@ -68,15 +68,19 @@ export function getPackage(req: auth.AuthRequest, res: express.Response): expres
   if (data) {
     return res.status(200).json(data);
   } else {
-    proxy.findUplinkPackages(packageName).then(urls => {
-      if (urls.length) {
-        proxy.getResponse(urls[0], 'GET').then(body => {
-          return res.status(200).json(JSON.parse(body));
-        });
-      } else {
-        return res.status(404).json({ message: `package not found` });
-      }
-    });
+    proxy.fetchUplinkPackage(packageName, version)
+      .then(resp => {
+        return res.status(200).json(resp);
+      });
+    // proxy.fetchUplinkPackages(packageName).then(urls => {
+    //   if (urls.length) {
+    //     proxy.getResponse(urls[0], 'GET').then(body => {
+    //       return res.status(200).json(JSON.parse(body));
+    //     });
+    //   } else {
+    //     return res.status(404).json({ message: `package not found` });
+    //   }
+    // });
   }
 }
 

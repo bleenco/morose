@@ -32,7 +32,8 @@ export function writeInitConfig(): Promise<null> {
     users: [
       { name: 'admin', password: hash }
     ],
-    upstreams: ['https://registry.npmjs.org']
+    upstreams: ['https://registry.npmjs.org'],
+    saveUpstreamPackages: false
   };
 
   logger.info(`initializing \`admin\` user with password \`${password}\``);
