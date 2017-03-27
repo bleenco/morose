@@ -97,15 +97,7 @@ export function publishPackage(req: auth.AuthRequest, res: express.Response): vo
   let name: string = req.params.package;
   let metadata = req.body;
 
-  let pkgIndex = storage.packages.findIndex(pkg => pkg.name === name);
-  let pkgMetadata = {
-    name: name,
-    versions: storage.packages[pkgIndex].versions,
-    'dist-tags': {},
-    _attachments: {}
-  } || null;
-
-  let pkg = new Package({ name: name, metadata: pkgMetadata });
+  let pkg = new Package({ name: name });
   pkg.saveVersionFromMetadata(metadata)
     .then(() => {
       return res.status(200).json({ message: 'package published' });
