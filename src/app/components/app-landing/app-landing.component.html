@@ -3,12 +3,20 @@
     <div class="container">
       <div class="columns">
         <div class="column is-8 is-offset-2">
-          <div class="hero-search-input-container">
-            <input type="text" class="hero-search-input-field" placeholder="Search packages ...">
-            <button class="hero-search-input-button">
-              <span class="typcn typcn-zoom"></span>
-            </button>
-          </div>
+          <form (ngSubmit)="searchPackages($event)" #searchForm="ngForm">
+            <div class="hero-search-input-container">
+              <input type="text"
+                     class="hero-search-input-field"
+                     placeholder="Search packages ..."
+                     name="keyword"
+                     [(ngModel)]="keyword"
+                     required
+                     autocomplete="off">
+              <button type="submit" class="hero-search-input-button" [disabled]="!searchForm.form.valid">
+                <span class="typcn typcn-zoom"></span>
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </div>
@@ -23,68 +31,19 @@
               <span>Popular packages</span>
             </div>
             <div class="content-box-main">
-              <div class="columns is-multiline">
-                <div class="column is-4">
-                  <div class="package-item">
-                    <h1>@angular/core</h1>
-                    <h3>4.0.0</h3>
-                    <p>Core Angular Framework</p>
-                  </div>
+              <div class="columns" *ngIf="!packages || !packages.length">
+                <div class="column is-6 is-offset-3 has-text-centered">
+                  <h2 class="sorry-msg">
+                    Sorry! No packages found ...
+                  </h2>
                 </div>
-                <div class="column is-4">
+              </div>
+              <div class="columns is-multiline" *ngIf="packages && packages.length">
+                <div class="column is-4" *ngFor="let pkg of packages; let i = index;">
                   <div class="package-item">
-                    <h1>d3</h1>
-                    <h3>4.7.4</h3>
-                    <p>Data-Driven Documents</p>
-                  </div>
-                </div>
-                <div class="column is-4">
-                  <div class="package-item">
-                    <h1>@bleenco/morose</h1>
-                    <h3>0.3.2</h3>
-                    <p>npm registry & proxy server</p>
-                  </div>
-                </div>
-                <div class="column is-4">
-                  <div class="package-item">
-                    <h1>@angular/core</h1>
-                    <h3>4.0.0</h3>
-                    <p>Core Angular Framework</p>
-                  </div>
-                </div>
-                <div class="column is-4">
-                  <div class="package-item">
-                    <h1>d3</h1>
-                    <h3>4.7.4</h3>
-                    <p>Data-Driven Documents</p>
-                  </div>
-                </div>
-                <div class="column is-4">
-                  <div class="package-item">
-                    <h1>@bleenco/morose</h1>
-                    <h3>0.3.2</h3>
-                    <p>npm registry & proxy server</p>
-                  </div>
-                </div>
-                <div class="column is-4">
-                  <div class="package-item">
-                    <h1>@angular/core</h1>
-                    <h3>4.0.0</h3>
-                    <p>Core Angular Framework</p>
-                  </div>
-                </div>
-                <div class="column is-4">
-                  <div class="package-item">
-                    <h1>d3</h1>
-                    <h3>4.7.4</h3>
-                    <p>Data-Driven Documents</p>
-                  </div>
-                </div>
-                <div class="column is-4">
-                  <div class="package-item">
-                    <h1>@bleenco/morose</h1>
-                    <h3>0.3.2</h3>
-                    <p>npm registry & proxy server</p>
+                    <h1>{{ pkg.name }}</h1>
+                    <h3>{{ pkg['dist-tags'].latest }}</h3>
+                    <p>{{ pkg.description }}</p>
                   </div>
                 </div>
               </div>
