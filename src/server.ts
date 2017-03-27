@@ -1,4 +1,5 @@
 import * as express from 'express';
+import * as cors from 'cors';
 import { router } from './router';
 import * as logger from './logger';
 import * as fs from './fs';
@@ -9,6 +10,7 @@ export function start(): void {
   let app: express.Application = express();
 
   initMorose().then(() => {
+    app.use(cors());
     app.use(router);
     app.listen(10000, () => logger.info(`server running on port 10000`));
   });
