@@ -115,3 +115,37 @@ export function publishPackage(req: auth.AuthRequest, res: express.Response): vo
     });
 }
 
+export function search(req: auth.AuthRequest, res: express.Response): void {
+  let text = req.query.text;
+  let size = req.query.size || 20;
+
+  let packages = storage.packages.map(pkg => {
+    if (!pkg) {
+      return;
+    }
+
+    if (pkg.name.indexOf(text) !== -1) {
+      let versions = Object.keys(pkg.versions).map(ver => pkg.versions[ver]);
+      let latest = versions[versions.length - 1];
+
+      // TODO: date, author and keywords
+      return {
+        package: {
+          name: pkg.name,
+          version: latest.version,
+          description: pkg.description,
+          author: latest.author
+        }
+      };
+    } else {
+      return;
+    }
+  }).filter(Boolean).filter((pkg, i) => i <= size);
+
+  let results = {
+    objects: packages
+  };
+
+  res.status(200).json(results);
+}
+

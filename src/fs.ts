@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import * as fse from 'fs-extra';
 import * as utils from './utils';
 import { dirname } from 'path';
+import * as glob from 'glob';
 
 export function readFile(filePath: string): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -59,6 +60,18 @@ export function readDir(dirPath: string): Promise<string[]> {
       }
 
       resolve(files);
+    });
+  });
+}
+
+export function globSearch(globString: string): Promise<string[]> {
+  return new Promise((resolve, reject) => {
+    glob(globString, (err: Error, matches: string[]) => {
+      if (err) {
+        reject(err);
+      }
+
+      resolve(matches);
     });
   });
 }

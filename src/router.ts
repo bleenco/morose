@@ -20,6 +20,7 @@ router.put(/\/\-\/user\/org\.couchdb\.user\:(.*)/, routes.doAuth);
 router.delete('/-/user/token/:token', routes.logout);
 router.get('/:package/:version?', auth.hasAccess, routes.getPackage);
 router.get('/:package/-/:tarball', auth.hasAccess, routes.getTarball);
+router.get('/-/v1/search', auth.hasAccess, routes.search);
 router.put('/:package/:_rev?/:revision?', auth.hasAccess, routes.publishPackage);
 
 router.all('/*', (req: express.Request, res: express.Response) => {

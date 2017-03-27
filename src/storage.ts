@@ -1,5 +1,5 @@
 import { INpmPackage, Package } from './package';
-import { readDir } from './fs';
+import { readDir, globSearch } from './fs';
 import { getFilePath } from './utils';
 import { info } from './logger';
 
@@ -15,9 +15,14 @@ export function initializeStorage(): Promise<null> {
   let rootDir = getFilePath('packages');
   let startTime: number = new Date().getTime();
 
-  return readDir(rootDir)
+  return globSearch(`${rootDir}/**/package.json`)
     .then(packages => {
-      return Promise.all(packages.map(packageName => {
+      return Promise.all(packages.map(packageUrl => {
+        let packageName: string | string[] = packageUrl.replace(/(.*)packages\//, '').split('/');
+        packageName = packageName
+          .filter((str, i) => i === 0 || (i === 1 && packageName[0].startsWith('@')))
+          .join('/');
+
         let pkg: Package = new Package({ name: packageName });
 
         return pkg.inititialize().then(() => {
@@ -33,7 +38,7 @@ export function initializeStorage(): Promise<null> {
 }
 
 export function updatePkgStorage(pkgName: string, data: INpmPackage): Promise<null> {
-  let index = storage.packages.findIndex(pkg => pkg.name === pkgName);
+  let index = storage.packages.findIndex(pkg => pkg && pkg.name === pkgName);
   if (index !== -1) {
     storage.packages[index] = data;
     return Promise.resolve(null);
@@ -47,6 +52,6 @@ export function updatePkgStorage(pkgName: string, data: INpmPackage): Promise<nu
 }
 
 export function findPackage(pkgName: string): INpmPackage | null {
-  let index = storage.packages.findIndex(pkg => pkg.name === pkgName);
+  let index = storage.packages.findIndex(pkg => pkg && pkg.name === pkgName);
   return storage.packages[index] || null;
 }
