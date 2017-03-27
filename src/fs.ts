@@ -81,9 +81,10 @@ export function exists(filePath: string): Promise<boolean> {
   });
 }
 
-export function writeTarball(attachments: any): Promise<null> {
+export function writeTarball(packageName: string, attachments: any): Promise<null> {
   let name = Object.keys(attachments)[0];
-  let destFile = utils.getFilePath(`tarballs/${name}`);
+  let destFile = utils.getFilePath(`tarballs/${packageName}/${name}`);
+
   return ensureDirectory(dirname(destFile))
     .then(() => {
       let buf = Buffer.from(attachments[name].data, 'base64');

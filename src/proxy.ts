@@ -19,17 +19,11 @@ export function fetchUplinkPackage(packageName: string, version: string): Promis
       body = JSON.parse(body);
       version = version || body['dist-tags']['latest'];
       url = body.versions[version].dist.tarball;
-      let tarball: string;
-      if (url.indexOf('@') !== -1) {
-        let splitted = url.split('/');
-        let index = splitted.findIndex(c => c.indexOf('@') !== -1);
-        tarball = splitted[index] + '/' + splitted[index + 1] + '/' + splitted[splitted.length - 1];
-      } else {
-        tarball = url.split('/').slice(-1)[0];
-      }
+      let tarball = url.split('/').slice(-1)[0];
+      packageName = packageName.replace(/\%2f/ig, '/');
 
       if (config.saveUpstreamPackages) {
-        downloadTarball(url, tarball).then(() => {
+        downloadTarball(url, tarball, packageName).then(() => {
           let pkg = findPackage(packageName);
           if (!pkg) {
             writePackageJson(packageName, version, body).then(() => resolve(body));
@@ -51,16 +45,17 @@ function getResponse(url: string): Promise<any> {
   });
 }
 
-function downloadTarball(url: string, tarball: string): Promise<null> {
+function downloadTarball(url: string, tarball: string, packageName: string): Promise<null> {
   return new Promise(resolve => {
-    ensureDirectory(dirname(getFilePath(`tarballs/${tarball}`))).then(() => {
+    let filePath = getFilePath(`tarballs/${packageName}/${tarball}`);
+    ensureDirectory(dirname(filePath)).then(() => {
       request.get(url)
         .on('response', (resp: any) => {
           logger.httpIn(url, 'GET', resp);
-          logger.info(`${getFilePath(`tarballs/${tarball}`)} saved locally.`);
+          logger.info(`${filePath} saved locally.`);
           resolve();
         })
-        .pipe(createWriteStream(getFilePath(`tarballs/${tarball}`)));
+        .pipe(createWriteStream(filePath));
     });
   });
 }

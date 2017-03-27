@@ -92,7 +92,6 @@ export class Package {
     let latestData = this.data.metadata.versions[latest];
 
     if (!latestData) {
-      console.log(versions);
       return null;
     }
 
@@ -129,7 +128,7 @@ export class Package {
     return ensureDirectory(dirPath)
       .then(() => {
         if (Object.keys(metadata._attachments).length) {
-          return writeTarball(metadata._attachments);
+          return writeTarball(this.data.name, metadata._attachments);
         } else {
           return Promise.resolve();
         }
