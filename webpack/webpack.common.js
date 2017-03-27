@@ -3,7 +3,6 @@ const copy = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-  devtool: 'source-map',
   target: 'web',
   resolve: {
     extensions: ['.ts', '.js']
