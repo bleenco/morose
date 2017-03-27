@@ -14,6 +14,7 @@ export class AppLandingComponent implements OnInit {
   ngOnInit() {
     this.api.getRandomPackages().subscribe(packages => {
       this.packages = packages;
+      this.triggerResize();
     });
   }
 
@@ -21,6 +22,11 @@ export class AppLandingComponent implements OnInit {
     e.preventDefault();
     this.api.getPackagesByKeyword(this.keyword.trim()).subscribe(packages => {
       this.packages = packages;
+      this.triggerResize();
     });
+  }
+
+  triggerResize(): void {
+    window.dispatchEvent(new Event('resize'));
   }
 }

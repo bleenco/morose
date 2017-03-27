@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef } from '@angular/core';
+import { Component, OnInit, ElementRef, HostListener } from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
 import * as d3 from 'd3';
 
@@ -12,29 +12,38 @@ import * as d3 from 'd3';
   `
 })
 export class AppComponent {
+  debounceTime: number;
+  resizeSub: Subscription;
   pkgSub: Subscription;
   el: HTMLElement;
 
-  constructor(private elementRef: ElementRef) { }
+  constructor(private elementRef: ElementRef) {
+    this.debounceTime = 500;
+  }
 
   ngOnInit() {
     this.el = this.elementRef.nativeElement.querySelector('.background-svg');
-    this.renderBackground();
+    this.renderBackground(true);
 
     this.pkgSub = Observable.timer(2000).timeInterval().repeat()
       .subscribe(() => this.colorizePackage());
   }
 
-  renderBackground(): void {
+  renderBackground(initial: boolean = false): void {
     let w = this.el.clientWidth;
     let h = this.el.clientHeight;
 
-    let svg = d3.select(this.el).append('svg')
-      .attr('width', w)
-      .attr('height', h);
+    let svg;
+    let g;
 
-    let g = svg.append('g')
-      .attr('transform', 'translate(0, 0)');
+    if (initial) {
+      svg = d3.select(this.el).append('svg').attr('width', w).attr('height', h);
+      g = svg.append('g').attr('transform', 'translate(0, 0)');
+    } else {
+      svg = d3.select(this.el).select('svg');
+      g = d3.select(this.el).select('g');
+      svg.attr('width', w).attr('height', h);
+    }
 
     let data = d3.range(15).map(() => Math.random() * (4 - 3) + 3);
     let x = d3.scaleLinear().domain([0, data.length - 1]).range([0, w]);
@@ -46,9 +55,17 @@ export class AppComponent {
       .y1((d: any) => y(d) + 150)
       .curve(d3.curveNatural);
 
-    g.append('path')
-      .attr('d', areaMain(data as any))
-      .attr('fill', '#181B26');
+    if (initial) {
+      g.append('path')
+        .attr('d', areaMain(data as any))
+        .attr('fill', '#181B26');
+    } else {
+      d3.select('path')
+        .transition()
+        .duration(500)
+        .attr('d', areaMain(data as any))
+        .attr('fill', '#181B26');
+    }
   }
 
   colorizePackage(): void {
@@ -74,5 +91,15 @@ export class AppComponent {
     top.transition().delay(1500).duration(500).attr('fill', colors[1]);
     left.transition().delay(1500).duration(500).attr('fill', colors[0]);
     right.transition().delay(1500).duration(500).attr('fill', colors[2]);
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event: Event) {
+    if (this.resizeSub) {
+      this.resizeSub.unsubscribe();
+    }
+
+    let src = Observable.of(null).delay(this.debounceTime);
+    this.resizeSub = src.subscribe(() => this.renderBackground());
   }
 }
