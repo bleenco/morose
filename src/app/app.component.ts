@@ -5,10 +5,14 @@ import * as d3 from 'd3';
 @Component({
   selector: 'app-root',
   template: `
-    <app-nav></app-nav>
-    <div class="background-svg"></div>
-    <router-outlet></router-outlet>
-    <app-foot></app-foot>
+    <div class="app-page">
+      <app-nav></app-nav>
+      <main class="app-container">
+        <div class="background-svg"></div>
+        <router-outlet></router-outlet>
+      </main>
+      <app-foot></app-foot>
+    </div>
   `
 })
 export class AppComponent {

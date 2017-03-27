@@ -13,7 +13,7 @@
                      required
                      autocomplete="off">
               <button type="submit" class="hero-search-input-button" [disabled]="!searchForm.form.valid">
-                <span class="typcn typcn-zoom"></span>
+                <span class="typcn typcn-arrow-right"></span>
               </button>
             </div>
           </form>
@@ -27,14 +27,14 @@
         <div class="column is-8 is-offset-2">
           <div class="content-box">
             <div class="content-box-head">
-              <span class="typcn typcn-world"></span>
               <span>Popular packages</span>
             </div>
             <div class="content-box-main">
               <div class="columns" *ngIf="!packages || !packages.length">
                 <div class="column is-6 is-offset-3 has-text-centered">
                   <h2 class="sorry-msg">
-                    Sorry! No packages found ...
+                    <span class="typcn typcn-info-large-outline"></span>
+                    <span>Sorry! No packages found ...</span>
                   </h2>
                 </div>
               </div>

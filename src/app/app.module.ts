@@ -8,6 +8,7 @@ import { ApiServiceProvider } from './services/api.service';
 import { AppComponent } from './app.component';
 import { AppNavComponent } from './components/app-nav';
 import { AppFootComponent } from './components/app-foot';
+import { AppLoginComponent } from './components/app-login';
 import { AppLandingComponent } from './components/app-landing';
 
 @NgModule({
@@ -15,13 +16,15 @@ import { AppLandingComponent } from './components/app-landing';
     AppComponent,
     AppNavComponent,
     AppFootComponent,
+    AppLoginComponent,
     AppLandingComponent
   ],
   imports: [
     BrowserModule,
     CommonModule,
     RouterModule.forRoot([
-      { path: '', pathMatch: 'full', component: AppLandingComponent }
+      { path: '', pathMatch: 'full', component: AppLandingComponent },
+      { path: 'login', pathMatch: 'full', component: AppLoginComponent }
     ]),
     HttpModule,
     FormsModule
