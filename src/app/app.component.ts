@@ -22,7 +22,7 @@ export class AppComponent {
   el: HTMLElement;
 
   constructor(private elementRef: ElementRef) {
-    this.debounceTime = 500;
+    this.debounceTime = 300;
   }
 
   ngOnInit() {
@@ -56,7 +56,7 @@ export class AppComponent {
     let areaMain = d3.area()
       .x((d: any, i: number) => x(i))
       .y0(h)
-      .y1((d: any) => y(d) + 150)
+      .y1((d: any) => y(d) + 250)
       .curve(d3.curveNatural);
 
     if (initial) {

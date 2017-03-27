@@ -10,7 +10,7 @@ Run npm registry & proxy on your own servers.
 ## Installation
 
 ```sh
-$ npm install @bleenco/morose -g
+$ npm install morose -g
 ```
 
 ## Usage
