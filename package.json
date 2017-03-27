@@ -1,6 +1,6 @@
 {
   "name": "morose",
-  "version": "0.3.6",
+  "version": "0.3.7",
   "description": "npm registry & proxy server",
   "bin": {
     "morose": "./dist/index.js"
