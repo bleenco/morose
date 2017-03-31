@@ -8,7 +8,7 @@ import { AuthService } from '../../services/auth.service';
 export class AppNavComponent implements OnInit {
   loggedIn: boolean;
 
-  constructor(private auth: AuthService) { }
+  constructor(public auth: AuthService) { }
 
   ngOnInit() {
     this.auth.loginStatus.subscribe(loggedIn => this.loggedIn = loggedIn);
@@ -17,6 +17,5 @@ export class AppNavComponent implements OnInit {
 
   logout(): void {
     this.auth.logout();
-
   }
 }
