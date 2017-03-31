@@ -86,8 +86,9 @@ export function getPackage(req: auth.AuthRequest, res: express.Response): expres
 }
 
 export function getTarball(req: auth.AuthRequest, res: express.Response): void {
+  let pkgName = req.params.package;
   let tarball = req.params.tarball;
-  let tarballPath = getFilePath(`tarballs/${tarball}`);
+  let tarballPath = getFilePath(`tarballs/${pkgName}/${tarball}`);
   res.type('application/x-compressed');
   res.header('Content-Disposition', `filename=${tarball}`);
   res.status(200).download(tarballPath);
