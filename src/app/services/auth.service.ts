@@ -46,7 +46,7 @@ export class AuthService {
   logout(): void {
     localStorage.removeItem('morose_token');
     this.checkLogin();
-    this.router.navigate(['login']);
+    this.router.navigate(['user/login']);
   }
 }
 
