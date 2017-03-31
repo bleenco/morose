@@ -3,20 +3,35 @@
     <a class="nav-item" routerLink="/">
       <img src="images/morose-logo.png" class="nav-logo" />
     </a>
-    <a class="nav-item">
-      <span class="typcn typcn-archive white"></span>
-      <span>Packages</span>
-    </a>
   </div>
   <div class="nav-right">
     <a class="nav-item" routerLink="/user/login" *ngIf="!auth.user">
       <span class="typcn typcn-user white"></span>
       <span>Login</span>
     </a>
-    <a class="nav-item" (click)="logout()" *ngIf="auth.user">
+    <a class="nav-item drop-menu-act" (click)="toggleMenu()" *ngIf="auth.user">
       <span>Hello,&nbsp;</span>
       <span>{{ auth.user.name }}</span>
       <span class="typcn typcn-arrow-sorted-down white"></span>
+    </a>
+  </div>
+
+  <div class="nav-dropdown" *ngIf="menuDropped">
+    <a class="nav-dropdown-item">
+      <span class="typcn typcn-user-outline"></span>
+      Profile
+    </a>
+    <a class="nav-dropdown-item">
+      <span class="typcn typcn-cog-outline"></span>
+      Settings
+    </a>
+    <a class="nav-dropdown-item">
+      <span class="typcn typcn-group-outline"></span>
+      Organisations
+    </a>
+    <a class="nav-dropdown-item" (click)="logout()">
+      <span class="typcn typcn-eject-outline"></span>
+      Logout
     </a>
   </div>
 </nav>

@@ -1,6 +1,7 @@
 .nav
   background: $dark
   position: fixed
+  width: 100%
   top: 0
   left: 0
   right: 0
@@ -20,3 +21,50 @@
 
     .nav-logo
       margin-right: 10px
+
+  .nav-dropdown
+    position: absolute
+    z-index: 100
+    width: 180px
+    top: 70px
+    right: 20px
+    border-radius: 5px
+    padding-top: 12px
+    background: $white
+    box-shadow: 1px 2px 5px rgba($dark, 0.3)
+
+    &:after
+      content: ''
+      position: absolute
+      top: -7.5px
+      right: 35px
+      background: $white
+      width: 15px
+      height: 15px
+      transform: rotate(-45deg)
+
+    .nav-dropdown-item
+      display: block
+      color: $dark
+      padding: 10px
+      font-size: 12px
+      position: relative
+      text-align: center
+      font-weight: 600
+
+      .typcn
+        position: absolute
+        top: 2px
+        left: 10px
+        font-size: 20px
+
+      &:hover
+        background: $dark
+        color: $white
+
+        .typcn
+          color: $white
+
+      &:last-child
+        border-bottom-left-radius: 5px
+        border-bottom-right-radius: 5px
