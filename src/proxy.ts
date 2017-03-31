@@ -17,17 +17,20 @@ export function fetchUplinkPackage(packageName: string, version: string): Promis
 
     getResponse(url).then(body => {
       body = JSON.parse(body);
-      version = version || body['dist-tags']['latest'] || null;
 
-      if (!version) {
+      if (!config.saveUpstreamPackages) {
         resolve(body);
-      }
+      } else {
+        version = version || body['dist-tags']['latest'] || null;
+        if (!version) {
+          resolve(body);
+        }
 
-      url = body.versions[version].dist.tarball;
-      let tarball = url.split('/').slice(-1)[0];
-      packageName = packageName.replace(/\%2f/ig, '/');
+        url = body.versions[version].dist.tarball;
+        let tarball = url.split('/').slice(-1)[0];
+        packageName = packageName.replace(/\%2f/ig, '/');
 
-      if (config.saveUpstreamPackages) {
+
         downloadTarball(url, tarball, packageName).then(() => {
           let pkg = findPackage(packageName);
           if (!pkg) {
@@ -36,8 +39,6 @@ export function fetchUplinkPackage(packageName: string, version: string): Promis
             resolve(body);
           }
         });
-      } else {
-        resolve(body);
       }
     });
   });
