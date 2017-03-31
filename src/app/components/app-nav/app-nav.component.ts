@@ -11,6 +11,12 @@ export class AppNavComponent implements OnInit {
   constructor(private auth: AuthService) { }
 
   ngOnInit() {
-    this.loggedIn = this.auth.isLoggedIn();
+    this.auth.loginStatus.subscribe(loggedIn => this.loggedIn = loggedIn);
+    this.auth.checkLogin();
+  }
+
+  logout(): void {
+    this.auth.logout();
+
   }
 }

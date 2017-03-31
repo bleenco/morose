@@ -9,9 +9,14 @@
     </a>
   </div>
   <div class="nav-right">
-    <a class="nav-item" routerLink="/login">
+    <a class="nav-item" routerLink="/login" *ngIf="!auth.user">
       <span class="typcn typcn-user white"></span>
       <span>Login</span>
+    </a>
+    <a class="nav-item" (click)="logout()" *ngIf="auth.user">
+      <span>Hello,&nbsp;</span>
+      <span>{{ auth.user.name }}</span>
+      <span class="typcn typcn-arrow-sorted-down white"></span>
     </a>
   </div>
 </nav>

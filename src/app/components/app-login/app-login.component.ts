@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
@@ -6,12 +6,18 @@ import { AuthService } from '../../services/auth.service';
   selector: 'app-login',
   templateUrl: 'app-login.component.html'
 })
-export class AppLoginComponent {
+export class AppLoginComponent implements OnInit {
   error: boolean;
   username: string;
   password: string;
 
   constructor(private auth: AuthService, private router: Router) { }
+
+  ngOnInit() {
+    if (this.auth.user) {
+      this.router.navigate(['']);
+    }
+  }
 
   login(e: Event) {
     e.preventDefault();
@@ -21,6 +27,7 @@ export class AppLoginComponent {
         this.router.navigate(['']);
       } else {
         this.error = true;
+        this.password = '';
       }
     });
   }
