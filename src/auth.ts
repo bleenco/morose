@@ -60,7 +60,7 @@ export function login(user: IUserBasic): Promise<number> {
     let config = getConfig();
     let hash = crypto.createHash('md5').update(user.password).digest('hex');
     let index = config.users.findIndex(u => u.name === user.name && u.password === hash);
-    if (index > -1) {
+    if (index !== -1) {
       resolve(index);
     } else {
       reject();
@@ -98,6 +98,27 @@ export function aesDecrypt(encrypted: string): string {
   let decrypted = decipher.update(encrypted, 'hex', 'utf8');
   decrypted += decipher.final('utf8');
   return decrypted;
+}
+
+export function generateHash(password: string, secret?: string): string {
+  let code: string;
+
+  if (!secret) {
+    let config = getConfig();
+    code = config.secret;
+  } else {
+    code = secret;
+  }
+
+  return crypto.createHash('md5').update(`${password}${code}`).digest('hex');
+}
+
+export function checkUser(username: string, password: string): boolean {
+  let config = getConfig();
+  let hash = generateHash(password);
+  let index = config.users.findIndex(u => u.name === username && u.password === hash);
+
+  return index !== -1 ? true : false;
 }
 
 function anonymousUser(): any {

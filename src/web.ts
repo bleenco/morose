@@ -1,10 +1,14 @@
 import * as express from 'express';
+import * as jwt from 'jsonwebtoken';
 import { storage } from './storage';
-import { getRandomInt } from './utils';
+import { getRandomInt, getConfig } from './utils';
+import { checkUser } from './auth';
 
 export function getRandomPackages(req: express.Request, res: express.Response): express.Response {
   let max = storage.packages.length;
-  let pkgs = [...Array(9).keys()].map(() => storage.packages[getRandomInt(0, max)]);
+  let pkgs = [...Array(9).keys()]
+    .map(() => storage.packages[getRandomInt(0, max)])
+    .filter(Boolean);
 
   return res.status(200).json(pkgs);
 }
@@ -15,4 +19,17 @@ export function searchPackages(req: express.Request, res: express.Response): exp
     .filter(Boolean);
 
   return res.status(200).json(pkgs);
+}
+
+
+export function login(req: express.Request, res: express.Response): express.Response {
+  let config = getConfig();
+  let { username, password } = req.body;
+
+  if (checkUser(username, password)) {
+    let token = jwt.sign({ name: username }, config.secret);
+    return res.status(200).json({ auth: true, token: token });
+  } else {
+    return res.status(200).json({ auth: false });
+  }
 }

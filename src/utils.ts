@@ -4,6 +4,7 @@ import { readFile, writeFile, exists, writeJsonFile } from './fs';
 import * as fs from 'fs';
 import * as crypto from 'crypto';
 import * as logger from './logger';
+import { generateHash } from './auth';
 
 export function getRootDir(): string {
   return join(homedir(), '.morose');
@@ -24,13 +25,13 @@ export function getFilePath(relativePath: string): string {
 
 export function writeInitConfig(): Promise<null> {
   let password = Math.random().toString(36).substr(2, 5);
-  let hash = crypto.createHash('md5').update(password).digest('hex');
+  let secret = Math.random().toString(36).substr(2, 10);
 
   let data = {
     port: 10000,
-    secret: Math.random().toString(36).substr(2, 10),
+    secret: secret,
     users: [
-      { name: 'admin', password: hash }
+      { name: 'admin', password: generateHash(password, secret), fullName: '' }
     ],
     upstreams: ['https://registry.npmjs.org'],
     saveUpstreamPackages: false

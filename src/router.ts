@@ -26,6 +26,7 @@ router.put('/:package/:_rev?/:revision?', auth.hasAccess, routes.publishPackage)
 
 router.get('/api/package/get-random', web.getRandomPackages);
 router.get('/api/package/search', web.searchPackages);
+router.post('/api/user/login', web.login);
 
 router.all('/*', (req: express.Request, res: express.Response) => {
   res.status(200).sendFile(resolve(__dirname, 'app/index.html'));

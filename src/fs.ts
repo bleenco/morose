@@ -18,12 +18,18 @@ export function readFile(filePath: string): Promise<string> {
 
 export function writeFile(filePath: string, data: string): Promise<null> {
   return new Promise((resolve, reject) => {
-    fs.writeFile(filePath, data, 'utf8', (err: NodeJS.ErrnoException) => {
-      if (err) {
-        reject(err);
+    fse.ensureFile(filePath, (error: Error) => {
+      if (error) {
+        reject(error);
       }
 
-      resolve();
+      fs.writeFile(filePath, data, 'utf8', (err: NodeJS.ErrnoException) => {
+        if (err) {
+          reject(err);
+        }
+
+        resolve();
+      });
     });
   });
 }

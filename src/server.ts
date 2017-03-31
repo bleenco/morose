@@ -29,7 +29,8 @@ function initMorose(): Promise<null> {
         .then(() => fs.ensureDirectory(utils.getFilePath('logs')))
         .then(() => fs.ensureDirectory(utils.getFilePath('tarballs')))
         .then(() => initializeStorage())
-        .then(() => logger.info(`morose successfully initialized.`));
+        .then(() => logger.info(`morose successfully initialized.`))
+        .catch(err => console.error(err));
     }
   });
 }
