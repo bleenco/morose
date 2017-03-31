@@ -8,6 +8,10 @@ import { resolve } from 'path';
 
 export let router: express.Router = express.Router();
 
+function index(req: express.Request, res: express.Response): void {
+  return res.status(200).sendFile(resolve(__dirname, 'app/index.html'));
+}
+
 router.use(bodyParser.json({ limit: '100Mb' }));
 router.use(auth.middleware);
 router.use(logger.middleware);
@@ -17,6 +21,11 @@ router.use('/js', express.static(resolve(__dirname, 'app/js'), { index: false })
 router.use('/images', express.static(resolve(__dirname, 'app/images'), { index: false }));
 router.use('/css/fonts', express.static(resolve(__dirname, 'app/fonts'), { index: false }));
 
+router.get('/api/package/get-random', web.getRandomPackages);
+router.get('/api/package/search', web.searchPackages);
+router.post('/api/user/login', web.login);
+router.get('/user/login', index);
+
 router.put(/\/\-\/user\/org\.couchdb\.user\:(.*)/, routes.doAuth);
 router.delete('/-/user/token/:token', routes.logout);
 router.get('/:package/:version?', auth.hasAccess, routes.getPackage);
@@ -24,10 +33,4 @@ router.get('/:package/-/:tarball', auth.hasAccess, routes.getTarball);
 router.get('/-/v1/search', auth.hasAccess, routes.search);
 router.put('/:package/:_rev?/:revision?', auth.hasAccess, routes.publishPackage);
 
-router.get('/api/package/get-random', web.getRandomPackages);
-router.get('/api/package/search', web.searchPackages);
-router.post('/api/user/login', web.login);
-
-router.all('/*', (req: express.Request, res: express.Response) => {
-  res.status(200).sendFile(resolve(__dirname, 'app/index.html'));
-});
+router.all('/*', index);
