@@ -73,15 +73,6 @@ export function getPackage(req: auth.AuthRequest, res: express.Response): expres
         return res.status(200).json(resp);
       })
       .catch(err => console.error(err));
-    // proxy.fetchUplinkPackages(packageName).then(urls => {
-    //   if (urls.length) {
-    //     proxy.getResponse(urls[0], 'GET').then(body => {
-    //       return res.status(200).json(JSON.parse(body));
-    //     });
-    //   } else {
-    //     return res.status(404).json({ message: `package not found` });
-    //   }
-    // });
   }
 }
 
