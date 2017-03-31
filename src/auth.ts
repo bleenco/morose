@@ -43,10 +43,13 @@ export function middleware(req: AuthRequest, res: express.Response, next: expres
   }
 
   let token = authorization[1];
-  let user = aesDecrypt(token).toString().split(':');
+  let user;
 
-  res.locals.remote_user = authenticatedUser(user[0], []);
-  res.locals.remote_user.token = token;
+  try {
+    user = aesDecrypt(token).toString().split(':');
+    res.locals.remote_user = authenticatedUser(user[0], []);
+    res.locals.remote_user.token = token;
+  } catch (e) { }
 
   return next();
 }

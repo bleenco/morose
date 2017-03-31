@@ -34,7 +34,7 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions) {
     CommonModule,
     RouterModule.forRoot([
       { path: '', pathMatch: 'full', component: AppLandingComponent },
-      { path: 'login', pathMatch: 'full', component: AppLoginComponent }
+      { path: 'user/login', pathMatch: 'full', component: AppLoginComponent }
     ]),
     HttpModule,
     FormsModule
