@@ -7,18 +7,33 @@
             <div class="content-box-head">
               <span>Login</span>
             </div>
-            <div class="content-box-body">
-              <form class="control-form">
+            <div class="content-box-main">
+              <div class="notification is-danger" *ngIf="error">
+                <button class="delete" (click)="error = false"></button>
+                Authentication failed.
+              </div>
+              <form class="control-form" (ngSubmit)="login($event)" #loginForm="ngForm">
                 <div class="control-input-container">
                   <label class="control-label">Username</label>
-                  <input type="text" class="control-input-field">
+                  <input type="text"
+                         class="control-input-field"
+                         name="username"
+                         [(ngModel)]="username"
+                         required>
                 </div>
                 <div class="control-input-container">
                   <label class="control-label">Password</label>
-                  <input type="password" class="control-input-field">
+                  <input type="password"
+                         class="control-input-field"
+                         name="password"
+                         [(ngModel)]="password"
+                         required>
                 </div>
                 <div class="control-input-buttons">
-                  <button type="button" class="control-button login-button">
+                  <button type="submit"
+                          class="control-button login-button"
+                          [disabled]="!loginForm.form.valid"
+                          required>
                     Login
                   </button>
                 </div>

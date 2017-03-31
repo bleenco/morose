@@ -6,6 +6,7 @@ import { HttpModule, Http, RequestOptions } from '@angular/http';
 import { FormsModule } from '@angular/forms';
 import { AuthHttp, AuthConfig } from 'angular2-jwt';
 import { ApiServiceProvider } from './services/api.service';
+import { AuthServiceProvider } from './services/auth.service';
 import { AppComponent } from './app.component';
 import { AppNavComponent } from './components/app-nav';
 import { AppFootComponent } from './components/app-foot';
@@ -40,6 +41,7 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions) {
   ],
   providers: [
     ApiServiceProvider,
+    AuthServiceProvider,
     { provide: AuthHttp, useFactory: authHttpServiceFactory, deps: [Http, RequestOptions] }
   ],
   bootstrap: [ AppComponent ]
