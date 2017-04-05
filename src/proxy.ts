@@ -30,13 +30,12 @@ export function fetchUplinkPackage(packageName: string, version: string): Promis
         let tarball = url.split('/').slice(-1)[0];
         packageName = packageName.replace(/\%2f/ig, '/');
 
-
         downloadTarball(url, tarball, packageName).then(() => {
           let pkg = findPackage(packageName);
           if (!pkg) {
             writePackageJson(packageName, version, body).then(() => resolve(body));
           } else {
-            resolve(body);
+            updatePkgStorage(packageName, body).then(() => resolve(body));
           }
         });
       }

@@ -66,7 +66,17 @@ export function getPackage(req: auth.AuthRequest, res: express.Response): expres
   let data = findPackage(req.params.package);
 
   if (data) {
-    return res.status(200).json(data);
+    if (version) {
+      if (!data.versions[version]) {
+        proxy.fetchUplinkPackage(packageName, version).then(resp => {
+          return res.status(200).json(resp);
+        });
+      } else {
+        return res.status(200).json(data);
+      }
+    } else {
+      return res.status(200).json(data);
+    }
   } else {
     proxy.fetchUplinkPackage(packageName, version)
       .then(resp => {
