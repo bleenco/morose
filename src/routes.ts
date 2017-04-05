@@ -58,31 +58,23 @@ export function logout(req: auth.AuthRequest, res: express.Response): express.Re
 export function getPackage(req: auth.AuthRequest, res: express.Response): express.Response {
   let packageName: string = req.params.package;
   let version: string | null = req.params.version || null;
+  let config = getConfig();
 
   if (packageName.indexOf('@') !== -1) {
     packageName = packageName.replace(/^(@.*)(\/)(.*)$/, '$1%2F$3');
   }
 
-  let data = findPackage(req.params.package);
-
-  if (data) {
-    if (version) {
-      if (!data.versions[version]) {
-        proxy.fetchUplinkPackage(packageName, version).then(resp => {
-          return res.status(200).json(resp);
-        });
-      } else {
-        return res.status(200).json(data);
-      }
-    } else {
-      return res.status(200).json(data);
-    }
+  if (config.saveUpstreamPackages) {
+    proxy.fetchUplinkPackage(packageName, version).then(resp => {
+      return res.status(200).json(resp);
+    });
   } else {
-    proxy.fetchUplinkPackage(packageName, version)
-      .then(resp => {
-        return res.status(200).json(resp);
-      })
-      .catch(err => console.error(err));
+    let data = findPackage(req.params.package);
+    if (data) {
+      return res.status(200).json(data);
+    } else {
+      return res.status(404).json({ message: 'package not found' });
+    }
   }
 }
 
