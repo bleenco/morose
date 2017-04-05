@@ -64,12 +64,17 @@ export function getPackage(req: auth.AuthRequest, res: express.Response): expres
     packageName = packageName.replace(/^(@.*)(\/)(.*)$/, '$1%2F$3');
   }
 
+  let data = findPackage(req.params.package);
+
   if (config.saveUpstreamPackages) {
     proxy.fetchUplinkPackage(packageName, version).then(resp => {
+      if (data) {
+        resp.versions = Object.assign({}, resp.versions, data.versions);
+      }
+
       return res.status(200).json(resp);
     });
   } else {
-    let data = findPackage(req.params.package);
     if (data) {
       return res.status(200).json(data);
     } else {
