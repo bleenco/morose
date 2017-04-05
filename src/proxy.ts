@@ -1,7 +1,7 @@
 import * as request from 'request';
 import { createWriteStream } from 'fs';
 import { dirname } from 'path';
-import { writeJsonFile, ensureDirectory } from './fs';
+import { writeJsonFile, ensureDirectory, exists } from './fs';
 import { getFilePath, getConfig } from './utils';
 import { INpmPackage } from './package';
 import { findPackage, storage, updatePkgStorage } from './storage';
@@ -53,14 +53,20 @@ function getResponse(url: string): Promise<any> {
 function downloadTarball(url: string, tarball: string, packageName: string): Promise<null> {
   return new Promise(resolve => {
     let filePath = getFilePath(`tarballs/${packageName}/${tarball}`);
-    ensureDirectory(dirname(filePath)).then(() => {
-      request.get(url)
-        .on('response', (resp: any) => {
-          logger.httpIn(url, 'GET', resp);
-          logger.info(`${filePath} saved locally.`);
-          resolve();
-        })
-        .pipe(createWriteStream(filePath));
+    exists(filePath).then(tarballExists => {
+      if (tarballExists) {
+        resolve();
+      } else {
+        ensureDirectory(dirname(filePath)).then(() => {
+          request.get(url)
+            .on('response', (resp: any) => {
+              logger.httpIn(url, 'GET', resp);
+              logger.info(`${filePath} saved locally.`);
+              resolve();
+            })
+            .pipe(createWriteStream(filePath));
+        });
+      }
     });
   });
 }
