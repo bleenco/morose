@@ -81,7 +81,7 @@
     "bulma": "^0.4.0",
     "chai": "^3.5.0",
     "chai-http": "^3.0.0",
-    "compression-webpack-plugin": "^0.3.2",
+    "compression-webpack-plugin": "^0.4.0",
     "copy-webpack-plugin": "^4.0.1",
     "core-js": "^2.4.1",
     "css-loader": "^0.28.0",
