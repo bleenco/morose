@@ -51,6 +51,7 @@ export class AppComponent {
 
   @HostListener('window:resize', ['$event'])
   onResize(event: Event) {
-
+    d3.select(this.el).select('svg').remove();
+    this.renderBackground();
   }
 }
