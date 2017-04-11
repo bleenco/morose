@@ -109,7 +109,7 @@ export class Package {
     return data.versions[ver] || null;
   }
 
-  getLatestData(): Promise<IPackageMetadata | string[]> {
+  getLatestData(): Promise<IPackageMetadata | string[] | void> {
     return readDir(this.packageRoot)
       .then(versions => {
         let latest = semver.maxSatisfying(versions, 'x.x.x');
