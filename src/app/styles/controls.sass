@@ -38,16 +38,15 @@
       color: $dark
 
 .control-button
-  background: $dark
+  background: $button-background
   color: $white
-  font-size: 13px
+  font-size: 12px
   outline: none
-  border: none
-  border-radius: 3px
+  border: 1px solid $button-border
+  border-radius: 2px
   padding: 10px 20px
   font-weight: 600
   text-align: center
-  transition: background 100ms ease-in
   cursor: pointer
 
   &.is-fullwidth
@@ -55,5 +54,7 @@
     display: block
 
   &:hover
-    background: $grey-dark
+    color: $button-active-text
+    background: $button-active-background
+    border-color: $button-active-border
     box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1)
