@@ -6,13 +6,13 @@
   </div>
   <div class="nav-right">
     <a class="nav-item" routerLink="/user/login" *ngIf="!auth.user">
-      <span class="typcn typcn-user white"></span>
+      <span class="typcn typcn-user"></span>
       <span>Login</span>
     </a>
     <a class="nav-item drop-menu-act" (click)="toggleMenu()" *ngIf="auth.user">
       <span>Hello,&nbsp;</span>
       <span>{{ auth.user.name }}</span>
-      <span class="typcn typcn-arrow-sorted-down white"></span>
+      <span class="typcn typcn-arrow-sorted-down"></span>
     </a>
   </div>
 
