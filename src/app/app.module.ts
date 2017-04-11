@@ -13,6 +13,7 @@ import { AppFootComponent } from './components/app-foot';
 import { AppLoginComponent } from './components/app-login';
 import { AppLandingComponent } from './components/app-landing';
 import { AppStatsComponent } from './components/app-stats';
+import { AppLineChartComponent } from './components/app-line-chart';
 
 export function authHttpServiceFactory(http: Http, options: RequestOptions) {
   return new AuthHttp(new AuthConfig({
@@ -29,7 +30,8 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions) {
     AppFootComponent,
     AppLoginComponent,
     AppLandingComponent,
-    AppStatsComponent
+    AppStatsComponent,
+    AppLineChartComponent
   ],
   imports: [
     BrowserModule,
