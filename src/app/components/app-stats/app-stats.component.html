@@ -9,26 +9,16 @@
             </div>
             <div class="content-box-main">
               <div class="columns is-multiline">
-                <div class="column is-6">
-                  <app-line-chart [value]="loadAvg"></app-line-chart>
-                </div>
-                <div class="column is-6">
-                  <div class="line-chart">
-                    <app-line-chart></app-line-chart>
-                  </div>
-                </div>
                 <div class="column is-4">
-                  <app-line-chart></app-line-chart>
+                  <app-line-chart [value]="loadAvg1Min" [options]="{ color: '#3A84C5', title: 'Load Average 1min' }"></app-line-chart>
                 </div>
                 <div class="column is-4">
                   <div class="line-chart">
-                    <app-line-chart></app-line-chart>
+                    <app-line-chart [value]="loadAvg5Min" [options]="{ color: '#65DBFF', title: 'Load Average 5min' }"></app-line-chart>
                   </div>
                 </div>
                 <div class="column is-4">
-                  <div class="line-chart">
-                    <app-line-chart></app-line-chart>
-                  </div>
+                  <app-line-chart [value]="loadAvg15Min" [options]="{ color: '#6E7F9A', title: 'Load Average 15min' }"></app-line-chart>
                 </div>
               </div>
             </div>

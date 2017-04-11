@@ -1,12 +1,18 @@
-import { Component, OnInit, ElementRef, Input, OnChanges, SimpleChange } from '@angular/core';
+import { Component, OnInit, ElementRef, Input, OnChanges, SimpleChanges } from '@angular/core';
 import * as d3 from 'd3';
+
+export interface LineChartOptions {
+  title: string;
+  color: string;
+}
 
 @Component({
   selector: 'app-line-chart',
   templateUrl: 'app-line-chart.component.html'
 })
 export class AppLineChartComponent implements OnInit, OnChanges {
-  @Input() value: any;
+  @Input() value: number;
+  @Input() options: LineChartOptions;
 
   lineChartEl: HTMLElement;
   svg: any;
@@ -31,15 +37,20 @@ export class AppLineChartComponent implements OnInit, OnChanges {
     this.duration = 1000;
     this.now = new Date(Date.now() - this.duration);
 
+    this.options = this.options || {
+      title: '',
+      color: '#3A84C5'
+    };
+
     this.render();
   }
 
-  ngOnChanges() {
+  ngOnChanges(changes: SimpleChanges) {
     if (!this.value || !this.svg) {
       return;
     }
 
-    this.updateData(this.value[2]);
+    this.updateData(this.value);
   }
 
   render() {
@@ -48,7 +59,7 @@ export class AppLineChartComponent implements OnInit, OnChanges {
 
     this.svg.attr('width', w).attr('height', h);
 
-    this.data = d3.range(10).map(i => i);
+    this.data = d3.range(10).map(i => 1);
 
     this.x = d3.scaleTime().range([0, w]);
     this.y = d3.scaleLinear().range([h, 0]);
@@ -62,7 +73,7 @@ export class AppLineChartComponent implements OnInit, OnChanges {
       .curve(d3.curveBasis);
 
     this.path = this.g.append('path')
-      .attr('stroke', '#3A84C5')
+      .attr('stroke', this.options.color)
       .attr('stroke-width', '3')
       .attr('fill', 'transparent');
   }
@@ -70,7 +81,9 @@ export class AppLineChartComponent implements OnInit, OnChanges {
   updateData = (value: number) => {
     this.data.push(value);
     this.now = new Date();
+
     this.x.domain([<any>this.now - (this.limit - 2) * this.duration, <any>this.now - this.duration]);
+    this.y.domain([0, 8]);
 
     this.path
       .transition()
