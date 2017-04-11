@@ -12,6 +12,7 @@ import { AppNavComponent } from './components/app-nav';
 import { AppFootComponent } from './components/app-foot';
 import { AppLoginComponent } from './components/app-login';
 import { AppLandingComponent } from './components/app-landing';
+import { AppStatsComponent } from './components/app-stats';
 
 export function authHttpServiceFactory(http: Http, options: RequestOptions) {
   return new AuthHttp(new AuthConfig({
@@ -27,14 +28,16 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions) {
     AppNavComponent,
     AppFootComponent,
     AppLoginComponent,
-    AppLandingComponent
+    AppLandingComponent,
+    AppStatsComponent
   ],
   imports: [
     BrowserModule,
     CommonModule,
     RouterModule.forRoot([
       { path: '', pathMatch: 'full', component: AppLandingComponent },
-      { path: 'user/login', pathMatch: 'full', component: AppLoginComponent }
+      { path: 'user/login', component: AppLoginComponent },
+      { path: 'statistics', component: AppStatsComponent }
     ]),
     HttpModule,
     FormsModule
