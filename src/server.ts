@@ -6,6 +6,7 @@ import * as fs from './fs';
 import * as utils from './utils';
 import { initializeStorage } from './storage';
 import { ISocketServerOptions, SocketServer } from './socket';
+import { loadAverage } from './system';
 
 export function start(): void {
   let app: express.Application = express();
@@ -19,7 +20,19 @@ export function start(): void {
 
     socketServer.start();
     socketServer.connections.subscribe(conn => {
-      console.log('Connected');
+      conn.next({ type: 'status', message: 'connected' });
+
+      conn.subscribe(data => {
+        data = JSON.parse(data);
+
+        loadAverage().subscribe(loadAvg => {
+          conn.next({ type: 'loadavg', message: loadAvg });
+        });
+
+        if (data.type === 'close') {
+          conn.unsubscribe();
+        }
+      });
     });
   });
 }
