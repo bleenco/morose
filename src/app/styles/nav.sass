@@ -8,7 +8,7 @@
   padding: 0 10px
 
   .nav-item
-    color: $morose-blue
+    color: $blue
     font-size: 12px
     font-weight: 600
 
@@ -28,7 +28,8 @@
     border-radius: 5px
     padding-top: 12px
     background: $white
-    box-shadow: 1px 2px 5px rgba($morose-blue, 0.3)
+    box-shadow: 0 2px 10px rgba(10, 10, 10, 0.1)
+    border: 1px solid $border
 
     &:after
       content: ''
@@ -39,10 +40,12 @@
       width: 15px
       height: 15px
       transform: rotate(-45deg)
+      border-top: 1px solid $border
+      border-right: 1px solid $border
 
     .nav-dropdown-item
       display: block
-      color: $morose-blue
+      color: $blue
       padding: 10px
       font-size: 12px
       position: relative
@@ -56,7 +59,7 @@
         font-size: 20px
 
       &:hover
-        background: $morose-blue
+        background: $blue
         color: $white
 
         .typcn
