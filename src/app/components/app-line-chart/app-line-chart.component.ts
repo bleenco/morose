@@ -1,11 +1,13 @@
-import { Component, OnInit, ElementRef } from '@angular/core';
+import { Component, OnInit, ElementRef, Input, OnChanges, SimpleChange } from '@angular/core';
 import * as d3 from 'd3';
 
 @Component({
   selector: 'app-line-chart',
   templateUrl: 'app-line-chart.component.html'
 })
-export class AppLineChartComponent implements OnInit {
+export class AppLineChartComponent implements OnInit, OnChanges {
+  @Input() value: any;
+
   lineChartEl: HTMLElement;
   svg: any;
   g: any;
@@ -32,13 +34,21 @@ export class AppLineChartComponent implements OnInit {
     this.render();
   }
 
+  ngOnChanges() {
+    if (!this.value || !this.svg) {
+      return;
+    }
+
+    this.updateData(this.value[2]);
+  }
+
   render() {
     let w = this.lineChartEl.clientWidth;
     let h = this.lineChartEl.clientHeight;
 
     this.svg.attr('width', w).attr('height', h);
 
-    this.data = d3.range(10).map(i => this.getRandomInt());
+    this.data = d3.range(10).map(i => i);
 
     this.x = d3.scaleTime().range([0, w]);
     this.y = d3.scaleLinear().range([h, 0]);
@@ -52,28 +62,25 @@ export class AppLineChartComponent implements OnInit {
       .curve(d3.curveBasis);
 
     this.path = this.g.append('path')
-      .attr('d', this.line(this.data))
       .attr('stroke', '#3A84C5')
       .attr('stroke-width', '3')
       .attr('fill', 'transparent');
-
-    this.tick();
   }
 
-  tick = () => {
+  updateData = (value: number) => {
+    this.data.push(value);
     this.now = new Date();
-    this.data.push(this.getRandomInt());
-
     this.x.domain([<any>this.now - (this.limit - 2) * this.duration, <any>this.now - this.duration]);
 
     this.path
+      .transition()
+      .duration(0)
       .attr('d', this.line(this.data))
       .attr('transform', null)
       .transition()
       .duration(this.duration)
       .ease(d3.easeLinear)
-      .attr('transform', `translate(${this.x(<any>this.now - (this.limit - 1) * this.duration)})`)
-      .on('end', this.tick);
+      .attr('transform', `translate(${this.x(<any>this.now - (this.limit - 1) * this.duration)})`);
 
     this.data.shift();
   }
