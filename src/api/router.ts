@@ -9,7 +9,7 @@ import { resolve } from 'path';
 export let router: express.Router = express.Router();
 
 function index(req: express.Request, res: express.Response): void {
-  return res.status(200).sendFile(resolve(__dirname, 'app/index.html'));
+  return res.status(200).sendFile(resolve(__dirname, '../app/index.html'));
 }
 
 router.use(bodyParser.json({ limit: '100Mb' }));
