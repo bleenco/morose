@@ -29,6 +29,10 @@ export function writeInitConfig(): Promise<null> {
 
   let data = {
     port: 10000,
+    ssl: false,
+    sslKey: null,
+    sslCert: null,
+    wsPort: 10001,
     secret: secret,
     users: [
       { name: 'admin', password: generateHash(password, secret), fullName: '' }

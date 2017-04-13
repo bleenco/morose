@@ -10,30 +10,38 @@ import { loadAverage } from './system';
 
 export function start(): void {
   let app: express.Application = express();
-  let socketOptions: ISocketServerOptions = { port: 10001 };
-  let socketServer = new SocketServer(socketOptions);
 
-  initMorose().then(() => {
-    app.use(cors());
-    app.use(router);
-    app.listen(10000, () => logger.info(`server running on port 10000`));
+  initMorose()
+    .then(() => utils.getConfig())
+    .then(config => {
+      app.use(cors());
+      app.use(router);
+      app.listen(config.port, () => logger.info(`server running on port ${config.port}`));
 
-    socketServer.start();
-    socketServer.connections.subscribe(conn => {
-      conn.next({ type: 'status', message: 'connected' });
+      let socketOptions: ISocketServerOptions = {
+        port: config.wsPort,
+        ssl: config.ssl,
+        sslKey: config.sslKey,
+        sslCert: config.sslCert
+      };
+      let socketServer = new SocketServer(socketOptions);
 
-      conn.subscribe(data => {
-        data = JSON.parse(data);
+      socketServer.start();
+      socketServer.connections.subscribe(conn => {
+        conn.next({ type: 'status', message: 'connected' });
 
-        loadAverage().subscribe(loadAvg => {
-          conn.next({ type: 'loadavg', message: loadAvg });
+        conn.subscribe(data => {
+          data = JSON.parse(data);
+
+          loadAverage().subscribe(loadAvg => {
+            conn.next({ type: 'loadavg', message: loadAvg });
+          });
+
+          if (data.type === 'close') {
+            conn.unsubscribe();
+          }
         });
-
-        if (data.type === 'close') {
-          conn.unsubscribe();
-        }
       });
-    });
   });
 }
 
