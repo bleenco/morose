@@ -7,11 +7,11 @@ export interface LineChartOptions {
 }
 
 @Component({
-  selector: 'app-line-chart',
-  templateUrl: 'app-line-chart.component.html'
+  selector: 'app-cpu-line-chart',
+  templateUrl: 'app-cpu-line-chart.component.html'
 })
-export class AppLineChartComponent implements OnInit, OnChanges {
-  @Input() value: number;
+export class AppCpuLineChartComponent implements OnInit, OnChanges {
+  @Input() value: { load: number, cores: number };
   @Input() options: LineChartOptions;
 
   lineChartEl: HTMLElement;
@@ -50,7 +50,7 @@ export class AppLineChartComponent implements OnInit, OnChanges {
       return;
     }
 
-    this.updateData(this.value);
+    this.updateData(this.value.load, this.value.cores);
   }
 
   render() {
@@ -59,7 +59,7 @@ export class AppLineChartComponent implements OnInit, OnChanges {
 
     this.svg.attr('width', w).attr('height', h);
 
-    this.data = d3.range(10).map(i => 1);
+    this.data = d3.range(10).map(i => 0);
 
     this.x = d3.scaleTime().range([0, w]);
     this.y = d3.scaleLinear().range([h, 0]);
@@ -78,12 +78,12 @@ export class AppLineChartComponent implements OnInit, OnChanges {
       .attr('fill', 'transparent');
   }
 
-  updateData = (value: number) => {
+  updateData = (value: number, cores: number) => {
     this.data.push(value);
     this.now = new Date();
 
     this.x.domain([<any>this.now - (this.limit - 2) * this.duration, <any>this.now - this.duration]);
-    this.y.domain([0, 8]);
+    this.y.domain([0, cores]);
 
     this.path
       .transition()
