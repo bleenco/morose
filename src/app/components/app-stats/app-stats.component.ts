@@ -8,9 +8,9 @@ import { Subscription } from 'rxjs';
 })
 export class AppStatsComponent implements OnInit, OnDestroy {
   messages: Subscription;
-  loadAvg1Min: number;
-  loadAvg5Min: number;
-  loadAvg15Min: number;
+  loadAvg1Min: { load: number, cores: number };
+  loadAvg5Min: { load: number, cores: number };
+  loadAvg15Min: { load: number, cores: number };
 
   constructor(private socket: SocketService) { }
 
@@ -22,9 +22,9 @@ export class AppStatsComponent implements OnInit, OnDestroy {
         this.loadAvg15Min = null;
 
         setTimeout(() => {
-          this.loadAvg1Min = data.message[0];
-          this.loadAvg5Min = data.message[1];
-          this.loadAvg15Min = data.message[2];
+          this.loadAvg1Min = { load: data.message.load[0], cores: data.message.cores };
+          this.loadAvg5Min = { load: data.message.load[1], cores: data.message.cores };
+          this.loadAvg15Min = { load: data.message.load[2], cores: data.message.cores };
         });
       }
 
