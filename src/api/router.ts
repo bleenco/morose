@@ -16,10 +16,13 @@ router.use(bodyParser.json({ limit: '100Mb' }));
 router.use(auth.middleware);
 router.use(logger.middleware);
 
-router.use('/css', express.static(resolve(__dirname, 'app/css'), { index: false }));
-router.use('/js', express.static(resolve(__dirname, 'app/js'), { index: false }));
-router.use('/images', express.static(resolve(__dirname, 'app/images'), { index: false }));
-router.use('/css/fonts', express.static(resolve(__dirname, 'app/fonts'), { index: false }));
+router.use('/css', express.static(resolve(__dirname, '../app/css'), { index: false }));
+router.use('/js', express.static(resolve(__dirname, '../app/js'), { index: false }));
+router.use('/images', express.static(resolve(__dirname, '../app/images'), { index: false }));
+router.use('/css/fonts', express.static(resolve(__dirname, '../app/fonts'), { index: false }));
+
+router.get('/statistics', index);
+router.get('/user/login', index);
 
 router.get('/api/package/get-random', web.getRandomPackages);
 router.get('/api/package/search', web.searchPackages);
