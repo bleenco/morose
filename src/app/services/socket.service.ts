@@ -32,6 +32,7 @@ export class SocketService {
     })
     .share()
     .retryWhen(errors => errors.switchMap(err => {
+
       this.connectionState.next(ConnectionStates.RETRYING);
 
       if (navigator.onLine) {

@@ -5,7 +5,11 @@ export class ConfigService {;
   wsurl: string;
 
   constructor() {
-    this.wsurl = `ws://${location.hostname}:10001`;
+    let loc: Location = document.location;
+    let port: string = loc.port;
+    let protocol = (port === '') ? 'wss://' : 'ws://';
+
+    this.wsurl = `${protocol}${loc.hostname}:10001`;
   }
 }
 
