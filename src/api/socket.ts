@@ -1,9 +1,15 @@
 import * as ws from 'ws';
 import { Observable, Observer, ReplaySubject, Subject } from 'rxjs';
 import { info } from './logger';
+import * as http from 'http';
+import * as https from 'https';
+import { readFileSync } from 'fs';
 
 export interface ISocketServerOptions {
   port: number;
+  ssl: boolean;
+  sslKey?: string;
+  sslCert?: string;
 }
 
 export class SocketServer {
@@ -21,8 +27,19 @@ export class SocketServer {
 
   private createRxServer = (options: ws.IServerOptions) => {
     return new Observable((observer: Observer<any>) => {
-      info(`socket server running on port ${options.port}`);
-      let wss: ws.Server = new ws.Server(options);
+      info(`socket server running on port ${options.port} with SSL ${this.options.ssl}`);
+      let app: any;
+
+      if (this.options.ssl) {
+        app = https.createServer({
+          key: readFileSync(this.options.sslKey),
+          cert: readFileSync(this.options.sslCert)
+        }).listen(options.port);
+      } else {
+        app = http.createServer().listen(options.port);
+      }
+
+      let wss: ws.Server = new ws.Server({ server: app });
       wss.on('connection', (client: ws) => observer.next(client));
 
       return () => {
