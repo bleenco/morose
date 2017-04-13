@@ -3,7 +3,7 @@
   "version": "0.3.17",
   "description": "npm registry & proxy server",
   "bin": {
-    "morose": "./dist/index.js"
+    "morose": "./dist/api/index.js"
   },
   "scripts": {
     "clean": "rimraf dist",
@@ -11,8 +11,8 @@
     "build:watch": "tsc -w",
     "prebuild": "npm run clean",
     "prepublish": "npm run build:prod",
-    "compile": "tsc && node ./dist/index.js",
-    "dev": "nodemon -w src -i src/app -e ts --exec \"npm run compile\"",
+    "compile": "tsc && node ./dist/api/index.js",
+    "dev": "nodemon -w src/api -i src/app -e ts --exec \"npm run compile\"",
     "build:prod": "npm run build && npm run build:app:prod",
     "build:app": "webpack --env.dev --progress --hide-modules",
     "build:app:prod": "webpack --env.aot -p --progress --hide-modules",
