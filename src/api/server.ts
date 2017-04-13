@@ -6,7 +6,7 @@ import * as fs from './fs';
 import * as utils from './utils';
 import { initializeStorage } from './storage';
 import { ISocketServerOptions, SocketServer } from './socket';
-import { loadAverage } from './system';
+import { loadAverage, networkUtilization } from './system';
 
 export function start(): void {
   let app: express.Application = express();
@@ -35,6 +35,10 @@ export function start(): void {
 
           loadAverage().subscribe(loadAvg => {
             conn.next({ type: 'loadavg', message: loadAvg });
+          });
+
+          networkUtilization().subscribe(data => {
+            conn.next({ type: 'netutil', message: data });
           });
 
           if (data.type === 'close') {

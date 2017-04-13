@@ -50,3 +50,11 @@ export function getRandomInt(min: number, max: number): number {
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
+
+export function getHumanSize(bytes: number, decimals: number = 2): string {
+  const sizes: string[] = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+  const k = 1000;
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(decimals))} ${sizes[i]}`;
+}
