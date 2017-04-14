@@ -17,7 +17,7 @@ export interface INetworkIface {
 }
 
 export function loadAverage(): Observable<{ load: number[], cores: number }> {
-  return Observable.timer(1000)
+  return Observable.timer(0, 2000)
     .timeInterval()
     .map(() => {
       return { load: os.loadavg(), cores: os.cpus().length };
@@ -27,21 +27,20 @@ export function loadAverage(): Observable<{ load: number[], cores: number }> {
 let inputUtilization: number[] = [];
 let outputUtilization: number[] = [];
 
-export function networkUtilization(): Observable<any> {
-
-  return Observable.timer(1000)
+export function networkUtilization(): Observable<INetworkIface[]> {
+  return Observable.timer(0, 2000)
     .timeInterval()
     .mergeMap(() => netstat(['-in']))
     .map(res => {
       let output = parseNetstatOutput(res);
       return output.map((iface, i) => {
-        let inSpeed = iface.in - inputUtilization[i];
-        iface.inSpeed = inSpeed || 0;
-        iface.inSpeedHuman = getHumanSize(inSpeed || 0);
+        let inSpeed = (iface.in  || 0) - (inputUtilization[i]  || 0);
+        iface.inSpeed = inSpeed;
+        iface.inSpeedHuman = getHumanSize(inSpeed);
 
-        let outSpeed = iface.out - outputUtilization[i];
-        iface.outSpeed = outSpeed || 0;
-        iface.outSpeedHuman = getHumanSize(outSpeed || 0);
+        let outSpeed = (iface.out || 0) - (outputUtilization[i] || 0);
+        iface.outSpeed = outSpeed;
+        iface.outSpeedHuman = getHumanSize(outSpeed);
 
         inputUtilization[i] = iface.in;
         outputUtilization[i] = iface.out;
