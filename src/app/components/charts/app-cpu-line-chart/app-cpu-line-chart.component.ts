@@ -34,7 +34,7 @@ export class AppCpuLineChartComponent implements OnInit, OnChanges {
     this.g = this.svg.append('g').attr('transform', 'translate(0, 0)');
 
     this.limit = 10;
-    this.duration = 1000;
+    this.duration = 2000;
     this.now = new Date(Date.now() - this.duration);
 
     this.options = this.options || {

@@ -27,12 +27,6 @@ export class AppStatsComponent implements OnInit, OnDestroy {
           this.loadAvg15Min = { load: data.message.load[2], cores: data.message.cores };
         });
       }
-
-      this.socket.emit({
-        type: 'echo',
-        message: 'Serbus Jože!'
-      });
-
     });
   }
 
