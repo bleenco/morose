@@ -52,6 +52,10 @@ export function getRandomInt(min: number, max: number): number {
 }
 
 export function getHumanSize(bytes: number, decimals: number = 2): string {
+  if (!bytes) {
+    return '0 Bytes';
+  }
+
   const sizes: string[] = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
   const k = 1000;
   const i = Math.floor(Math.log(bytes) / Math.log(k));
