@@ -11,6 +11,7 @@ export class AppStatsComponent implements OnInit, OnDestroy {
   loadAvg1Min: { load: number, cores: number };
   loadAvg5Min: { load: number, cores: number };
   loadAvg15Min: { load: number, cores: number };
+  netData: any[];
 
   constructor(private socket: SocketService) { }
 
@@ -26,6 +27,19 @@ export class AppStatsComponent implements OnInit, OnDestroy {
           this.loadAvg5Min = { load: data.message.load[1], cores: data.message.cores };
           this.loadAvg15Min = { load: data.message.load[2], cores: data.message.cores };
         });
+      } else if (data.type === 'netutil') {
+        if (!this.netData) {
+          this.netData = data.message;
+        } else {
+          this.netData.forEach((net, i) => {
+            setTimeout(() => {
+              this.netData[i].in = data.message[i].in;
+              this.netData[i].out = data.message[i].out;
+              this.netData[i].inSpeed = data.message[i].inSpeed;
+              this.netData[i].outSpeed = data.message[i].outSpeed;
+            });
+          });
+        }
       }
     });
   }
