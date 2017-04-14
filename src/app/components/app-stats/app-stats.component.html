@@ -30,16 +30,8 @@
                 <div class="column is-12">
                   <h3>Network Utilization</h3>
                 </div>
-                <div class="column is-4">
-                  <app-cpu-line-chart [value]="loadAvg1Min" [options]="{ color: '#3A84C5', title: 'Load Average 1min' }"></app-cpu-line-chart>
-                </div>
-                <div class="column is-4">
-                  <div class="line-chart">
-                    <app-cpu-line-chart [value]="loadAvg5Min" [options]="{ color: '#65DBFF', title: 'Load Average 5min' }"></app-cpu-line-chart>
-                  </div>
-                </div>
-                <div class="column is-4">
-                  <app-cpu-line-chart [value]="loadAvg15Min" [options]="{ color: '#6E7F9A', title: 'Load Average 15min' }"></app-cpu-line-chart>
+                <div class="column is-4" *ngFor="let net of netData; let i = index;">
+                  <app-network-line-chart [value]="net" [valueIn]="net.inSpeed" [valueOut]="net.outSpeed" [in]="net.in" [out]="net.out"></app-network-line-chart>
                 </div>
               </div>
 

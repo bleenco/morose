@@ -16,6 +16,7 @@ import { AppLoginComponent } from './components/app-login';
 import { AppLandingComponent } from './components/app-landing';
 import { AppStatsComponent } from './components/app-stats';
 import { AppCpuLineChartComponent } from './components/charts/app-cpu-line-chart';
+import { AppNetworkLineChartComponent } from './components/charts/app-network-line-chart';
 
 export function authHttpServiceFactory(http: Http, options: RequestOptions) {
   return new AuthHttp(new AuthConfig({
@@ -33,7 +34,8 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions) {
     AppLoginComponent,
     AppLandingComponent,
     AppStatsComponent,
-    AppCpuLineChartComponent
+    AppCpuLineChartComponent,
+    AppNetworkLineChartComponent
   ],
   imports: [
     BrowserModule,
