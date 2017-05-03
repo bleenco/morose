@@ -61,7 +61,7 @@ export function hasAccess(req: AuthRequest, res: express.Response, next: express
 export function login(user: IUserBasic): Promise<number> {
   return new Promise((resolve, reject) => {
     let config = getConfig();
-    let hash = crypto.createHash('md5').update(user.password).digest('hex');
+    let hash = generateHash(user.password, config.secret);
     let index = config.users.findIndex(u => u.name === user.name && u.password === hash);
     if (index !== -1) {
       resolve(index);
