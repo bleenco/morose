@@ -31,6 +31,7 @@ router.get('/user/login', index);
 
 router.put(/\/\-\/user\/org\.couchdb\.user\:(.*)/, routes.doAuth);
 router.delete('/-/user/token/:token', routes.logout);
+router.get('/-/whoami', routes.whoami);
 router.get('/:package/:version?', auth.hasAccess, routes.getPackage);
 router.get('/:package/-/:tarball', auth.hasAccess, routes.getTarball);
 router.get('/-/v1/search', auth.hasAccess, routes.search);

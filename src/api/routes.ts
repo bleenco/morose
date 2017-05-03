@@ -106,6 +106,10 @@ export function publishPackage(req: auth.AuthRequest, res: express.Response): vo
     });
 }
 
+export function whoami(req: auth.AuthRequest, res: express.Response): express.Response {
+  return res.status(200).json({ "username": res.locals.remote_user.name });
+}
+
 export function search(req: auth.AuthRequest, res: express.Response): void {
   let text = req.query.text;
   let size = req.query.size || 20;
