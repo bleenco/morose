@@ -8,13 +8,11 @@ import { AuthHttp, AuthConfig } from 'angular2-jwt';
 import { ApiServiceProvider } from './services/api.service';
 import { AuthServiceProvider } from './services/auth.service';
 import { ConfigServiceProvider } from './services/config.service';
-import { SocketServiceProvider } from './services/socket.service';
 import { AppComponent } from './app.component';
 import { AppNavComponent } from './components/app-nav';
 import { AppFootComponent } from './components/app-foot';
 import { AppLoginComponent } from './components/app-login';
 import { AppLandingComponent } from './components/app-landing';
-import { AppStatsComponent } from './components/app-stats';
 import { AppCpuLineChartComponent } from './components/charts/app-cpu-line-chart';
 import { AppNetworkLineChartComponent } from './components/charts/app-network-line-chart';
 
@@ -33,7 +31,6 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions) {
     AppFootComponent,
     AppLoginComponent,
     AppLandingComponent,
-    AppStatsComponent,
     AppCpuLineChartComponent,
     AppNetworkLineChartComponent
   ],
@@ -42,8 +39,7 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions) {
     CommonModule,
     RouterModule.forRoot([
       { path: '', pathMatch: 'full', component: AppLandingComponent },
-      { path: 'user/login', component: AppLoginComponent },
-      { path: 'statistics', component: AppStatsComponent }
+      { path: 'user/login', component: AppLoginComponent }
     ]),
     HttpModule,
     FormsModule
@@ -52,7 +48,6 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions) {
     ApiServiceProvider,
     AuthServiceProvider,
     ConfigServiceProvider,
-    SocketServiceProvider,
     { provide: AuthHttp, useFactory: authHttpServiceFactory, deps: [Http, RequestOptions] }
   ],
   bootstrap: [ AppComponent ]
