@@ -18,19 +18,19 @@ export interface IPackageVersionData {
   description: string;
   main: string;
   typings: string;
-  scripts: { [script: string]: string },
-  repository: { type: string; url: string; },
-  keywords: string[],
-  author: { name: string; email: string; },
-  authors: string[],
+  scripts: { [script: string]: string };
+  repository: { type: string; url: string; };
+  keywords: string[];
+  author: { name: string; email: string; };
+  authors: string[];
   licence: string;
-  bugs: { url: string; },
+  bugs: { url: string; };
   homepage: string;
   readme: string;
   readmeFilename: string;
   gitHead: string;
-  dependencies: { [dependency: string]: string; }
-  devDependencies: { [dependency: string]: string; },
+  dependencies: { [dependency: string]: string; };
+  devDependencies: { [dependency: string]: string; };
   _id: string;
   _shasum: string;
   _from: string;
@@ -67,7 +67,7 @@ export interface INpmPackage {
   name: string;
   description: string;
   'dist-tags': { [version: string]: string; };
-  versions: IPackageVersions
+  versions: IPackageVersions;
 }
 
 export class Package {

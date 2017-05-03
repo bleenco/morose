@@ -20,10 +20,11 @@ export interface IUser extends IUserBasic {
   email: string;
   type: string;
   roles: string[];
-  date: Date
+  date: Date;
 }
 
-export function middleware(req: AuthRequest, res: express.Response, next: express.NextFunction): void {
+export function middleware(req: AuthRequest, res: express.Response,
+  next: express.NextFunction): void {
   if (res.locals.remote_user != null && res.locals.remote_user.name !== 'anonymous') {
     return next();
   }
@@ -54,7 +55,8 @@ export function middleware(req: AuthRequest, res: express.Response, next: expres
   return next();
 }
 
-export function hasAccess(req: AuthRequest, res: express.Response, next: express.NextFunction): void {
+export function hasAccess(req: AuthRequest, res: express.Response,
+  next: express.NextFunction): void {
   next();
 }
 

@@ -51,7 +51,7 @@ export function getRandomInt(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-export function getHumanSize(bytes: number, decimals: number = 2): string {
+export function getHumanSize(bytes: number, decimals = 2): string {
   if (!bytes) {
     return '0 Bytes';
   }

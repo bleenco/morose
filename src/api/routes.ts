@@ -48,7 +48,7 @@ export function logout(req: auth.AuthRequest, res: express.Response): express.Re
   if (token !== null) {
     auth.logout(token).then(name => {
       logger.info(`${name} logged out.`);
-      return res.status(200).json({ message: 'successfully logged out' })
+      return res.status(200).json({ message: 'successfully logged out' });
     });
   } else {
     return res.status(401).json({ message: 'not logged in' });
@@ -103,7 +103,7 @@ export function publishPackage(req: auth.AuthRequest, res: express.Response): vo
 }
 
 export function whoami(req: auth.AuthRequest, res: express.Response): express.Response {
-  return res.status(200).json({ "username": res.locals.remote_user.name });
+  return res.status(200).json({ username: res.locals.remote_user.name });
 }
 
 export function search(req: auth.AuthRequest, res: express.Response): void {

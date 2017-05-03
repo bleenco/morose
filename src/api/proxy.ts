@@ -82,6 +82,7 @@ function writePackageJson(packageName: string, version: string, body: any): Prom
   let filePath = getFilePath(`packages/${packageName}/${version}/package.json`);
 
   return ensureDirectory(dirname(filePath))
-    .then(() => writeJsonFile(getFilePath(`packages/${packageName}/${version}/package.json`), packageData))
-    .then(() => updatePkgStorage(packageName, packageData));
+    .then(() =>
+      writeJsonFile(getFilePath(`packages/${packageName}/${version}/package.json`), packageData))
+      .then(() => updatePkgStorage(packageName, packageData));
 }

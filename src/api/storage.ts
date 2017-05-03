@@ -4,7 +4,7 @@ import { getFilePath } from './utils';
 import { info } from './logger';
 
 export interface IStorage {
-  packages: INpmPackage[]
+  packages: INpmPackage[];
 }
 
 export let storage: IStorage = {
