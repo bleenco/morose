@@ -66,7 +66,7 @@ export function getPackage(req: auth.AuthRequest, res: express.Response): expres
 
   let data = findPackage(req.params.package);
 
-  if (config.saveUpstreamPackages) {
+  if (config.saveUpstreamPackages || !data) {
     proxy.fetchUplinkPackage(packageName, version).then(resp => {
       if (data) {
         resp.versions = Object.assign({}, resp.versions, data.versions);
@@ -75,11 +75,7 @@ export function getPackage(req: auth.AuthRequest, res: express.Response): expres
       return res.status(200).json(resp);
     });
   } else {
-    if (data) {
-      return res.status(200).json(data);
-    } else {
-      return res.status(404).json({ message: 'package not found' });
-    }
+    return res.status(200).json(data);
   }
 }
 
