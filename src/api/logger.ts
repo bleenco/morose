@@ -6,27 +6,30 @@ import * as request from 'request';
 export function middleware(req: auth.AuthRequest, res: express.Response,
   next: express.NextFunction): void {
   let time = `[${chalk.blue(getDateTime())}]`;
-  let method = `[${chalk.green('HTTP')}] [${chalk.green('<-')}]
-    ${chalk.white(res.statusCode.toString())} ${req.method}`;
+  let method = `[${chalk.green('HTTP')}] [${chalk.green('<-')}] ` +
+    `${chalk.yellow(res.statusCode.toString())} ${req.method}`;
   let url = `${req.originalUrl}`;
   let name = res.locals.remote_user && res.locals.remote_user.name || 'anonymous';
-  let userInfo = `${name}${chalk.yellow('@')}${req.ip}`;
+  let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+  let userInfo = `${name}${chalk.yellow('@')}${ip}`;
 
   console.log(`${time} ${method} ${url} - ${userInfo}`);
   next();
 }
 
 export function httpIn(url: string, method: string, res: request.RequestResponse): void {
+  let statusCode = res && res.statusCode ? res.statusCode.toString() : '200';
   let time = `[${chalk.blue(getDateTime())}]`;
-  let httpMethod = `[${chalk.cyan('HTTP')}] [${chalk.cyan('<-')}]
-    ${chalk.white(res.statusCode.toString())} ${method}`;
+  let httpMethod = `[${chalk.cyan('HTTP')}] [${chalk.cyan('<-')}] ` +
+    `${chalk.yellow(statusCode)} ${method}`;
 
   console.log(`${time} ${httpMethod} ${url}`);
 }
 
-export function httpOut(url: string, method: string): void {
+export function httpOut(url: string, method: string, statusCode: string): void {
   let time = `[${chalk.blue(getDateTime())}]`;
-  let httpMethod = `[${chalk.green('HTTP')}] [${chalk.green('->')}] ${method}`;
+  let httpMethod = `[${chalk.green('HTTP')}] [${chalk.green('->')}] ` +
+    `${chalk.yellow(statusCode)} ${method}`;
 
   console.log(`${time} ${httpMethod} ${url}`);
 }

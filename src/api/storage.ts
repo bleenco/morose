@@ -15,14 +15,10 @@ export function initializeStorage(): Promise<null> {
   let rootDir = getFilePath('packages');
   let startTime: number = new Date().getTime();
 
-  return globSearch(`${rootDir}/**/package.json`)
+  return globSearch(`${rootDir}/*`)
     .then(packages => {
       return Promise.all(packages.map(packageUrl => {
-        let packageName: string | string[] = packageUrl.replace(/(.*)packages\//, '').split('/');
-        packageName = packageName
-          .filter((str, i) => i === 0 || (i === 1 && packageName[0].startsWith('@')))
-          .join('/');
-
+        let packageName: string | string[] = packageUrl.replace(/(.*)packages\//, '');
         let pkg: Package = new Package({ name: packageName });
 
         return pkg.inititialize().then(() => {

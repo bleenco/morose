@@ -2,7 +2,6 @@ import { homedir } from 'os';
 import { resolve, join } from 'path';
 import { readFile, writeFile, exists, writeJsonFile } from './fs';
 import * as fs from 'fs';
-import * as crypto from 'crypto';
 import * as logger from './logger';
 import { generateHash } from './auth';
 
@@ -30,15 +29,13 @@ export function writeInitConfig(): Promise<null> {
   let data = {
     port: 10000,
     ssl: false,
-    sslKey: null,
-    sslCert: null,
-    wsPort: 10001,
     secret: secret,
     users: [
       { name: 'admin', password: generateHash(password, secret), fullName: '' }
     ],
-    upstreams: ['https://registry.npmjs.org'],
-    saveUpstreamPackages: false
+    upstream: 'https://registry.npmjs.org',
+    useUpstream: true,
+    saveUpstreamPackages: true
   };
 
   logger.info(`initializing \`admin\` user with password \`${password}\``);

@@ -1,88 +1,37 @@
 import * as request from 'request';
-import { createWriteStream } from 'fs';
-import { dirname } from 'path';
-import { writeJsonFile, ensureDirectory, exists } from './fs';
-import { getFilePath, getConfig } from './utils';
 import { INpmPackage } from './package';
-import { findPackage, storage, updatePkgStorage } from './storage';
 import * as logger from './logger';
 
-export function fetchUplinkPackage(packageName: string, version: string): Promise<any> {
-  return new Promise(resolve => {
-    let config = getConfig();
-    let upstream = config.upstreams[0];
-
-    packageName = version ? `${packageName}/${version}` : packageName;
-    let url = `${upstream}/${packageName}`;
-
-    getResponse(url).then(body => {
-      body = JSON.parse(body);
-
-      if (!config.saveUpstreamPackages) {
-        resolve(body);
-      } else {
-        version = version || body['dist-tags']['latest'] || null;
-        if (!version) {
-          resolve(body);
-        }
-
-        url = body.versions[version].dist.tarball;
-        let tarball = url.split('/').slice(-1)[0];
-        packageName = packageName.replace(/\%2f/ig, '/');
-
-        downloadTarball(url, tarball, packageName).then(() => {
-          let pkg = findPackage(packageName);
-          if (!pkg) {
-            writePackageJson(packageName, version, body).then(() => resolve(body));
-          } else {
-            updatePkgStorage(packageName, body).then(() => resolve(body));
-          }
-        });
-      }
-    });
+export function fetchUpstreamData(upstreamUrl: string, pkgName: string,
+  baseUrl: string): Promise<INpmPackage> {
+  let fetchUrl = upstreamUrl + '/' + pkgName;
+  return getResponse(fetchUrl).then(body => {
+    return JSON.parse(body);
   });
+}
+
+export function changeUpstreamDistUrls(upstreamUrl: string, baseUrl: string, body: any): any {
+  let versions = Object.keys(body.versions).reduce((acc, curr) => {
+    acc[curr] = body.versions[curr];
+    acc[curr].dist.tarball = acc[curr].dist.tarball.replace(upstreamUrl, baseUrl);
+    delete acc[curr]._npmOperationalInternal;
+    return acc;
+  }, {});
+
+  body.versions = versions;
+  return body;
 }
 
 function getResponse(url: string): Promise<any> {
-  return new Promise(resolve => {
-    logger.httpOut(url, 'GET');
-    request(url, { method: 'GET' }, (err, resp, body) => resolve(body));
-  });
-}
-
-function downloadTarball(url: string, tarball: string, packageName: string): Promise<null> {
-  return new Promise(resolve => {
-    let filePath = getFilePath(`tarballs/${packageName}/${tarball}`);
-    exists(filePath).then(tarballExists => {
-      if (tarballExists) {
-        resolve();
-      } else {
-        ensureDirectory(dirname(filePath)).then(() => {
-          request.get(url)
-            .on('response', (resp: any) => {
-              logger.httpIn(url, 'GET', resp);
-              logger.info(`${filePath} saved locally.`);
-              resolve();
-            })
-            .pipe(createWriteStream(filePath));
-        });
+  return new Promise((resolve, reject) => {
+    request(url, { method: 'GET' }, (err, resp, body) => {
+      if (err) {
+        logger.httpOut(url, 'GET', '500');
+        reject(err);
       }
+
+      logger.httpOut(url, 'GET', '200');
+      resolve(body);
     });
   });
-}
-
-function writePackageJson(packageName: string, version: string, body: any): Promise<null> {
-  let packageData: INpmPackage = {
-    _id: packageName,
-    name: packageName,
-    description: body.description,
-    'dist-tags': { 'latest': version },
-    versions: body.versions
-  };
-  let filePath = getFilePath(`packages/${packageName}/${version}/package.json`);
-
-  return ensureDirectory(dirname(filePath))
-    .then(() =>
-      writeJsonFile(getFilePath(`packages/${packageName}/${version}/package.json`), packageData))
-      .then(() => updatePkgStorage(packageName, packageData));
 }

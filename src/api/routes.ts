@@ -2,10 +2,13 @@ import * as express from 'express';
 import * as auth from './auth';
 import * as logger from './logger';
 import { getConfig, getConfigPath, getFilePath } from './utils';
-import { writeJsonFile } from './fs';
+import { writeJsonFile, exists, ensureDirectory, readJsonFile } from './fs';
 import { Package } from './package';
 import * as proxy from './proxy';
 import { storage, findPackage } from './storage';
+import { createReadStream, createWriteStream } from 'fs';
+import * as request from 'request';
+import { dirname } from 'path';
 
 export function doAuth(
   req: auth.AuthRequest,
@@ -55,37 +58,59 @@ export function logout(req: auth.AuthRequest, res: express.Response): express.Re
   }
 }
 
-export function getPackage(req: auth.AuthRequest, res: express.Response): express.Response {
-  let packageName: string = req.params.package;
-  let version: string | null = req.params.version || null;
+export function getPackage(req: auth.AuthRequest, res: express.Response): void | express.Response {
+  let baseUrl = req.protocol + '://' + req.get('host');
+  let pkgName: string = req.params.package;
   let config = getConfig();
 
-  if (packageName.indexOf('@') !== -1) {
-    packageName = packageName.replace(/^(@.*)(\/)(.*)$/, '$1%2F$3');
+  let pkgJsonPath = getFilePath(`packages/${pkgName}/package.json`);
+  if (pkgName.indexOf('@') !== -1) {
+    pkgName = pkgName.replace(/^(@.*)(\/)(.*)$/, '$1%2F$3');
   }
 
-  let data = findPackage(req.params.package);
-
-  if (config.saveUpstreamPackages || !data) {
-    proxy.fetchUplinkPackage(packageName, version).then(resp => {
-      if (data) {
-        resp.versions = Object.assign({}, resp.versions, data.versions);
-      }
-
-      return res.status(200).json(resp);
-    });
-  } else {
-    return res.status(200).json(data);
-  }
+  exists(pkgJsonPath).then(e => {
+    if (e) {
+      readJsonFile(pkgJsonPath).then(jsonData => res.status(200).json(jsonData));
+    } else {
+      proxy.fetchUpstreamData(config.upstream, pkgName, baseUrl).then(body => {
+        body = proxy.changeUpstreamDistUrls(config.upstream, baseUrl, body);
+        ensureDirectory(dirname(pkgJsonPath)).then(() => {
+          writeJsonFile(pkgJsonPath, body).then(() => res.status(200).json(body));
+        });
+      });
+    }
+  });
 }
 
-export function getTarball(req: auth.AuthRequest, res: express.Response): void {
+export function getTarball(req: auth.AuthRequest, res: express.Response) {
+  let config = getConfig();
+  let baseUrl = req.protocol + '://' + req.get('host');
   let pkgName = req.params.package;
   let tarball = req.params.tarball;
-  let tarballPath = getFilePath(`tarballs/${pkgName}/${tarball}`);
-  res.type('application/x-compressed');
-  res.header('Content-Disposition', `filename=${tarball}`);
-  res.status(200).download(tarballPath);
+  let tarballPath = getFilePath(`tarballs/${pkgName.replace('%2F', '/')}/${tarball}`);
+  let fetchUrl = config.upstream + '/' + pkgName + '/-/' + tarball;
+
+  exists(tarballPath).then(e => {
+    if (e) {
+      logger.httpIn(req.originalUrl, 'GET', null);
+      createReadStream(tarballPath).pipe(res);
+    } else {
+      if (config.useUpstream) {
+        ensureDirectory(dirname(tarballPath)).then(() => {
+          request({ url: fetchUrl, headers: { 'Accept-Encoding': 'gzip' }})
+            .pipe(createWriteStream(tarballPath))
+            .on('finish', () => {
+              logger.httpOut(fetchUrl, 'GET', '200');
+              res.type('application/x-compressed');
+              res.header('Content-Disposition', `filename=${tarball}`);
+              res.status(200).download(tarballPath);
+            });
+        });
+      } else {
+        res.status(404).json({ message: 'not found' });
+      }
+    }
+  });
 }
 
 export function publishPackage(req: auth.AuthRequest, res: express.Response): void {
