@@ -3,7 +3,7 @@ import * as auth from './auth';
 import * as logger from './logger';
 import { getConfig, getConfigPath, getFilePath } from './utils';
 import { writeJsonFile, exists, ensureDirectory, readJsonFile } from './fs';
-import { Package } from './package';
+import { IPackage } from './package';
 import * as proxy from './proxy';
 import { storage, findPackage } from './storage';
 import { createReadStream, createWriteStream } from 'fs';
@@ -70,9 +70,9 @@ export function getPackage(req: auth.AuthRequest, res: express.Response): void |
 
   exists(pkgJsonPath).then(e => {
     if (e) {
-      readJsonFile(pkgJsonPath).then(jsonData => res.status(200).json(jsonData));
+      readJsonFile(pkgJsonPath).then((jsonData: IPackage) => res.status(200).json(jsonData));
     } else {
-      proxy.fetchUpstreamData(config.upstream, pkgName, baseUrl).then(body => {
+      proxy.fetchUpstreamData(config.upstream, pkgName, baseUrl).then((body: IPackage) => {
         body = proxy.changeUpstreamDistUrls(config.upstream, baseUrl, body);
         ensureDirectory(dirname(pkgJsonPath)).then(() => {
           writeJsonFile(pkgJsonPath, body).then(() => res.status(200).json(body));
