@@ -1,6 +1,6 @@
 {
   "name": "morose",
-  "version": "0.3.17",
+  "version": "0.3.18",
   "description": "npm registry & proxy server",
   "bin": {
     "morose": "./dist/api/index.js"
@@ -31,7 +31,8 @@
   ],
   "authors": [
     "Jan Kuri <jkuri88@gmail.com>",
-    "Irman Abdic <irman.abdic@gmail.com>"
+    "Irman Abdic <irman.abdic@gmail.com>",
+    "Izak Lipnik <izak.lipnik@gmail.com>"
   ],
   "license": "MIT",
   "bugs": {
