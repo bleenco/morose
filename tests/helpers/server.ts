@@ -1,5 +1,5 @@
 import * as express from 'express';
-import { router } from '../../src/router';
+import { router } from '../../src/api/router';
 
 export class TestServer {
   app: express.Application;
