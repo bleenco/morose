@@ -98,7 +98,6 @@ export class Package {
 
   saveTarballFromData(): Promise<null> {
     return this.ensureRootFolders()
-      .then(() => this.initDataFromPkgJson())
       .then(() => {
         let latestVersion = this.data['dist-tags'].latest;
         let tarballPath = this.tarballRoot + '/' + this.data.name + '-' + latestVersion + '.tgz';
