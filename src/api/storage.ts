@@ -1,29 +1,20 @@
-import { INpmPackage, Package } from './package';
-import { readDir, globSearch } from './fs';
+import { IPackage, Package } from './package';
+import { readDir, globSearch, readJsonFile } from './fs';
 import { getFilePath } from './utils';
 import { info } from './logger';
+import { resolve } from 'path';
 
-export interface IStorage {
-  packages: INpmPackage[];
-}
-
-export let storage: IStorage = {
-  packages: []
-};
+export let storage: IPackage[] = [];
 
 export function initializeStorage(): Promise<null> {
   let rootDir = getFilePath('packages');
   let startTime: number = new Date().getTime();
 
-  return globSearch(`${rootDir}/*`)
+  return globSearch(`${rootDir}/**/package.json`)
     .then(packages => {
-      return Promise.all(packages.map(packageUrl => {
-        let packageName: string | string[] = packageUrl.replace(/(.*)packages\//, '');
-        let pkg: Package = new Package({ name: packageName });
-
-        return pkg.inititialize().then(() => {
-          let pkgData = pkg.getPackageData();
-          storage.packages.push(pkgData);
+      return Promise.all(packages.map(jsonPath => {
+        return readJsonFile(jsonPath).then((pkgJsonData: IPackage) => {
+          storage.push(pkgJsonData);
         });
       })).then(() => {
         let time = new Date().getTime() - startTime;
@@ -33,21 +24,12 @@ export function initializeStorage(): Promise<null> {
     .catch(err => console.error(err));
 }
 
-export function updatePkgStorage(pkgName: string, data: INpmPackage): Promise<null> {
-  let index = storage.packages.findIndex(pkg => pkg && pkg.name === pkgName);
-  if (index !== -1) {
-    storage.packages[index] = data;
-    return Promise.resolve(null);
-  } else {
-    let pkg: Package = new Package({ name: pkgName });
-    return pkg.inititialize().then(() => {
-      let pkgData = pkg.getPackageData();
-      storage.packages.push(pkgData);
-    });
-  }
+export function updatePkgStorage(pkgName: string): Promise<null> {
+  let pkg = new Package(null, name);
+  return pkg.initDataFromPkgJson();
 }
 
-export function findPackage(pkgName: string): INpmPackage | null {
-  let index = storage.packages.findIndex(pkg => pkg && pkg.name === pkgName);
-  return storage.packages[index] || null;
+export function findPackage(pkgName: string): IPackage | null {
+  let index = storage.findIndex(pkg => pkg.name === pkgName);
+  return storage[index] || null;
 }

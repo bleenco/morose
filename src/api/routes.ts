@@ -135,7 +135,7 @@ export function search(req: auth.AuthRequest, res: express.Response): void {
   let text = req.query.text;
   let size = req.query.size || 20;
 
-  let packages = storage.packages.map(pkg => {
+  let packages = storage.map(pkg => {
     if (!pkg) {
       return;
     }

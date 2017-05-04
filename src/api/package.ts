@@ -2,9 +2,7 @@ import { getFilePath } from './utils';
 import { join } from 'path';
 import {
   ensureDirectory,
-  readDir,
   readJsonFile,
-  writeJsonFile,
   writeTarball,
   exists
 } from './fs';
@@ -63,10 +61,18 @@ export class Package {
   tarballRoot: string;
   pkgJsonPath: string;
 
-  constructor(data: IPackage) {
-    this.data = data;
-    this.packageRoot = getFilePath(`packages/${this.data.name}`);
-    this.tarballRoot = getFilePath(`tarballs/${this.data.name}`);
+  constructor(data?: IPackage, name?: string) {
+    if (data) {
+      this.data = data;
+      this.packageRoot = getFilePath(`packages/${this.data.name}`);
+      this.tarballRoot = getFilePath(`tarballs/${this.data.name}`);
+    }
+
+    if (name) {
+      this.packageRoot = getFilePath(`packages/${name}`);
+      this.tarballRoot = getFilePath(`tarballs/${name}`);
+    }
+
     this.pkgJsonPath = join(this.packageRoot, 'package.json');
   }
 
