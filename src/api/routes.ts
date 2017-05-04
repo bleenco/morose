@@ -3,7 +3,7 @@ import * as auth from './auth';
 import * as logger from './logger';
 import { getConfig, getConfigPath, getFilePath } from './utils';
 import { writeJsonFile, exists, ensureDirectory, readJsonFile } from './fs';
-import { IPackage } from './package';
+import { IPackage, Package } from './package';
 import * as proxy from './proxy';
 import { storage, findPackage } from './storage';
 import { createReadStream, createWriteStream } from 'fs';
@@ -115,10 +115,10 @@ export function getTarball(req: auth.AuthRequest, res: express.Response) {
 
 export function publishPackage(req: auth.AuthRequest, res: express.Response): void {
   let name: string = req.params.package;
-  let metadata = req.body;
+  let data: IPackage = req.body;
 
-  let pkg = new Package({ name: name });
-  pkg.saveVersionFromMetadata(metadata)
+  let pkg = new Package(data);
+  pkg.saveTarballFromData()
     .then(() => {
       return res.status(200).json({ message: 'package published' });
     })
