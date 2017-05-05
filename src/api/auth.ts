@@ -1,6 +1,6 @@
 import * as crypto from 'crypto';
 import * as express from 'express';
-import { getConfig, getConfigPath } from './utils';
+import { getConfig, getAuth, getAuthPath } from './utils';
 import { writeJsonFile } from './fs';
 
 export interface AuthRequest extends express.Request {
@@ -63,8 +63,9 @@ export function hasAccess(req: AuthRequest, res: express.Response,
 export function login(user: IUserBasic): Promise<number> {
   return new Promise((resolve, reject) => {
     let config = getConfig();
+    let auth = getAuth();
     let hash = generateHash(user.password, config.secret);
-    let index = config.users.findIndex(u => u.name === user.name && u.password === hash);
+    let index = auth.users.findIndex(u => u.name === user.name && u.password === hash);
     if (index !== -1) {
       resolve(index);
     } else {
@@ -74,16 +75,16 @@ export function login(user: IUserBasic): Promise<number> {
 }
 
 export function logout(token: string): Promise<null> {
-  let config = getConfig();
-
-  let i = config.users.reduce((acc, curr, i) => {
+  let auth = getAuth();
+  let i = auth.users.reduce((acc, curr, i) => {
     return acc.concat(curr.tokens.map(token => { return { index: i, token: token }; }));
   }, []).find(u => u.token === token);
 
   if (i) {
-    let name = config.users[i.index].name;
-    config.users[i.index].tokens = config.users[i.index].tokens.filter(t => t !== token);
-    return writeJsonFile(getConfigPath(), config).then(() => name);
+    let name = auth.users[i.index].name;
+    auth.users[i.index].tokens =
+      auth.users[i.index].tokens.filter(t => t !== token);
+    return writeJsonFile(getAuthPath(), auth).then(() => name);
   } else {
     return Promise.reject('user or token not found');
   }
@@ -119,9 +120,9 @@ export function generateHash(password: string, secret?: string): string {
 }
 
 export function checkUser(username: string, password: string): boolean {
-  let config = getConfig();
+  let auth = getAuth();
   let hash = generateHash(password);
-  let index = config.users.findIndex(u => u.name === username && u.password === hash);
+  let index = auth.users.findIndex(u => u.name === username && u.password === hash);
 
   return index !== -1 ? true : false;
 }

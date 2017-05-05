@@ -13,9 +13,18 @@ export function getConfigPath(): string {
   return join(getRootDir(), 'config.json');
 }
 
+export function getAuthPath(): string {
+  return join(getRootDir(), 'auth.json');
+}
+
 export function getConfig(): any {
   let configPath = getConfigPath();
   return JSON.parse(fs.readFileSync(configPath, 'utf8'));
+}
+
+export function getAuth(): any {
+  let path = getAuthPath();
+  return JSON.parse(fs.readFileSync(path, 'utf8'));
 }
 
 export function getFilePath(relativePath: string): string {
@@ -23,23 +32,38 @@ export function getFilePath(relativePath: string): string {
 }
 
 export function writeInitConfig(): Promise<null> {
-  let password = Math.random().toString(36).substr(2, 5);
   let secret = Math.random().toString(36).substr(2, 10);
 
   let data = {
     port: 10000,
     ssl: false,
     secret: secret,
-    users: [
-      { name: 'admin', password: generateHash(password, secret), fullName: '' }
-    ],
     upstream: 'https://registry.npmjs.org',
     useUpstream: true,
     saveUpstreamPackages: true
   };
 
+  return writeJsonFile(getConfigPath(), data).then(() => writeAuth(secret));
+}
+
+export function writeAuth(secret: string): Promise<null> {
+  let password = Math.random().toString(36).substr(2, 5);
+  let data = {
+    organizations: [
+      {
+        name: 'bleenco',
+        teams: [ { name: 'developers', members: [ 'admin' ] } ],
+        members: [ { name: 'admin', role: 'owner' } ],
+        packages: []
+      }
+    ],
+    users: [
+      { name: 'admin', password: generateHash(password, secret), fullName: '' }
+    ]
+  };
+
   logger.info(`initializing \`admin\` user with password \`${password}\``);
-  return writeJsonFile(getConfigPath(), data);
+  return writeJsonFile(getAuth(), data);
 }
 
 export function getRandomInt(min: number, max: number): number {

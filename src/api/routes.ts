@@ -1,7 +1,7 @@
 import * as express from 'express';
 import * as auth from './auth';
 import * as logger from './logger';
-import { getConfig, getConfigPath, getFilePath } from './utils';
+import { getConfig, getAuthPath, getFilePath, getAuth } from './utils';
 import { writeJsonFile, exists, ensureDirectory, readJsonFile } from './fs';
 import { IPackage, Package } from './package';
 import * as proxy from './proxy';
@@ -27,11 +27,11 @@ export function doAuth(
   if (token) {
     auth.login({ name: req.body.name, password: req.body.password })
       .then(index => {
-        let config = getConfig();
-        config.users[index].tokens = config.users[index].token || [];
-        config.users[index].tokens.push(token);
+        let auth = getAuth();
+        auth.users[index].tokens = auth.users[index].token || [];
+        auth.users[index].tokens.push(token);
 
-        writeJsonFile(getConfigPath(), config).then(() => {
+        writeJsonFile(getAuthPath(), auth).then(() => {
           logger.info(`${req.body.name} logged in.`);
           res.status(201).json({ token: token });
         });

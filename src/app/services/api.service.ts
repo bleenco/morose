@@ -23,6 +23,10 @@ export class ApiService {
     return this.get(`${this.url}/package/search`, params);
   }
 
+  getOrganizations(username: string): Observable<any[]> {
+    return this.post(`${this.url}/user/organizations`, { username });
+  }
+
   login(username: string, password: string): Observable<any> {
     let user = { username, password };
 

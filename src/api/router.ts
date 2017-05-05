@@ -27,6 +27,7 @@ router.get('/user/login', index);
 router.get('/api/package/get-random', web.getRandomPackages);
 router.get('/api/package/search', web.searchPackages);
 router.post('/api/user/login', web.login);
+router.post('/api/user/organizations', web.getUserOrganizations);
 router.get('/user/login', index);
 
 router.put(/\/\-\/user\/org\.couchdb\.user\:(.*)/, routes.doAuth);

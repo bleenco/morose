@@ -13,6 +13,8 @@ import { AppNavComponent } from './components/app-nav';
 import { AppFootComponent } from './components/app-foot';
 import { AppLoginComponent } from './components/app-login';
 import { AppLandingComponent } from './components/app-landing';
+import { AppOrganizationsComponent } from './components/app-organizations';
+import { AppAddOrganizationComponent } from './components/app-addorganization';
 import { AppCpuLineChartComponent } from './components/charts/app-cpu-line-chart';
 import { AppNetworkLineChartComponent } from './components/charts/app-network-line-chart';
 
@@ -31,6 +33,8 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions) {
     AppFootComponent,
     AppLoginComponent,
     AppLandingComponent,
+    AppOrganizationsComponent,
+    AppAddOrganizationComponent,
     AppCpuLineChartComponent,
     AppNetworkLineChartComponent
   ],
@@ -39,7 +43,9 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions) {
     CommonModule,
     RouterModule.forRoot([
       { path: '', pathMatch: 'full', component: AppLandingComponent },
-      { path: 'user/login', component: AppLoginComponent }
+      { path: 'user/login', component: AppLoginComponent },
+      { path: 'org/new', component: AppAddOrganizationComponent },
+      { path: 'org', component: AppOrganizationsComponent }
     ]),
     HttpModule,
     FormsModule

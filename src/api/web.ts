@@ -1,7 +1,7 @@
 import * as express from 'express';
 import * as jwt from 'jsonwebtoken';
 import { storage } from './storage';
-import { getRandomInt, getConfig } from './utils';
+import { getRandomInt, getConfig, getAuth } from './utils';
 import { checkUser } from './auth';
 
 export function getRandomPackages(req: express.Request, res: express.Response): express.Response {
@@ -32,4 +32,15 @@ export function login(req: express.Request, res: express.Response): express.Resp
   } else {
     return res.status(200).json({ auth: false });
   }
+}
+
+export function getUserOrganizations(
+  req: express.Request,
+  res: express.Response): express.Response {
+    let username = req.body.username;
+    let auth = getAuth();
+    let orgs = auth.organizations
+      .filter(org => org.members.findIndex(u => u.name === username) !== -1);
+
+    return res.status(200).json(orgs);
 }

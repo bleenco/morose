@@ -1,0 +1,46 @@
+<div class="hero hero-landing">
+  <div class="hero-body">
+    <div class="container">
+      <div class="columns is-multiline">
+        <div class="column is-8 is-offset-2">
+          <div class="content-box">
+            <div class="content-box-head">
+              <span>{{ auth.user.name }}  Organizations:</span>
+            </div>
+            <div class="content-box-main">
+              <div class="columns" *ngIf="!organizations || !organizations.length">
+                <div class="column is-6 is-offset-3 has-text-centered">
+                  <h2 class="sorry-msg">
+                    <span class="typcn typcn-info-large-outline"></span>
+                    <span>No organizations</span>
+                  </h2>
+                </div>
+              </div>
+              <div class="columns is-multiline" *ngIf="organizations && organizations.length">
+                <div class="column is-4" *ngFor="let org of organizations; let i = index;">
+                  <div class="organization-item">
+                    <ul>
+                      <li>{{ org.name }}</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="content-box">
+            <div class="content-box-head">
+              <span>Create new organization</span>
+            </div>
+            <div >
+              <div class="control-input-buttons">
+                <button id="addOrganization" class="control-button login-button" (click)="addOrganization()">
+                  Add
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

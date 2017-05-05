@@ -48,6 +48,14 @@ export class AuthService {
     this.checkLogin();
     this.router.navigate(['user/login']);
   }
+
+  getUserOrganizations(username: string): any {
+    return this.api.getOrganizations(username)
+      .toPromise()
+      .then(data => {
+        return data;
+      })
+  }
 }
 
 export let AuthServiceProvider: Provider = {
