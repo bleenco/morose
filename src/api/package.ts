@@ -4,7 +4,6 @@ import {
   ensureDirectory,
   readJsonFile,
   writeTarball,
-  exists,
   writeJsonFile
 } from './fs';
 
