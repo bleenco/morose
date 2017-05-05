@@ -119,6 +119,7 @@ export function publishPackage(req: auth.AuthRequest, res: express.Response): vo
 
   let pkg = new Package(data);
   pkg.saveTarballFromData()
+    .then(() => pkg.initPkgJsonFromData())
     .then(() => {
       return res.status(200).json({ message: 'package published' });
     })
