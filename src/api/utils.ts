@@ -63,7 +63,7 @@ export function writeAuth(secret: string): Promise<null> {
   };
 
   logger.info(`initializing \`admin\` user with password \`${password}\``);
-  return writeJsonFile(getAuth(), data);
+  return writeJsonFile(getAuthPath(), data);
 }
 
 export function getRandomInt(min: number, max: number): number {
