@@ -94,6 +94,18 @@ export function exists(filePath: string): Promise<boolean> {
   });
 }
 
+export function removeFile(filePath: string): Promise<null> {
+  return new Promise((resolve, reject) => {
+    fs.unlink(filePath, (err: NodeJS.ErrnoException) => {
+      if (err) {
+        reject(err);
+      }
+
+      resolve();
+    });
+  });
+}
+
 export function writeTarball(packageName: string, attachments: any): Promise<null> {
   let name = Object.keys(attachments)[0];
   let destFile = utils.getFilePath(`tarballs/${packageName}/${name}`);

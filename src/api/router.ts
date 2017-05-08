@@ -29,6 +29,7 @@ router.get('/api/package/search', web.searchPackages);
 router.post('/api/user/login', web.login);
 router.post('/api/user/organizations', web.getUserOrganizations);
 router.get('/user/login', index);
+router.post('/user/add', web.addUser);
 
 router.put(/\/\-\/user\/org\.couchdb\.user\:(.*)/, routes.doAuth);
 router.delete('/-/user/token/:token', routes.logout);
