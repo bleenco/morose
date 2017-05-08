@@ -59,7 +59,8 @@ export function writeAuth(secret: string): Promise<null> {
     ],
     users: [
       { name: 'admin', password: generateHash(password, secret), fullName: '' }
-    ]
+    ],
+    packages: []
   };
 
   logger.info(`initializing \`admin\` user with password \`${password}\``);
