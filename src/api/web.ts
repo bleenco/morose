@@ -1,8 +1,9 @@
 import * as express from 'express';
 import * as jwt from 'jsonwebtoken';
 import { storage } from './storage';
-import { getRandomInt, getConfig, getAuth } from './utils';
-import { checkUser } from './auth';
+import { getRandomInt, getConfig, getAuth, getAuthPath } from './utils';
+import * as auth from './auth';
+import { writeJsonFile } from './fs';
 
 export function getRandomPackages(req: express.Request, res: express.Response): express.Response {
   let max = storage.length;
@@ -43,4 +44,17 @@ export function getUserOrganizations(
       .filter(org => org.members.findIndex(u => u.name === username) !== -1);
 
     return res.status(200).json(orgs);
+}
+
+export function addUser(req: express.Request, res: express.Response): express.Response | void {
+  auth.newUser(req.body)
+    .then(auth => {
+      writeJsonFile(getAuthPath(), auth)
+        .then(() => {
+          return res.status(200).json({ message: 'User successfully added.' });
+        });
+    })
+    .catch(err => {
+      return res.status(200).json({ message: err });
+    });
 }

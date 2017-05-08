@@ -23,6 +23,13 @@ export interface IUser extends IUserBasic {
   date: Date;
 }
 
+export interface UserData {
+  name: string;
+  fullName: string;
+  email: string;
+  password: string;
+}
+
 export function middleware(req: AuthRequest, res: express.Response,
   next: express.NextFunction): void {
   if (res.locals.remote_user != null && res.locals.remote_user.name !== 'anonymous') {
@@ -135,25 +142,23 @@ function authenticatedUser(name: string, groups: string[] = []): any {
   return { name: name, groups: groups.concat(['&all', '$anonymous']), real_groups: groups };
 }
 
-export function newUser(req: express.Request, res: express.Response): express.Response | void {
-  let { username, fullname, email, password } = req.body;
+export function newUser(data: UserData): Promise<string> {
+  let { name, fullName, email, password } = data;
   let auth = getAuth();
   let config = getConfig();
-  let hash = generateHash(password, config.secret);
   let user = {
-    name: username,
-    password: hash,
-    fullName: fullname,
-    email: email
+    name: name,
+    fullName: fullName,
+    email: email,
+    password: generateHash(password, config.secret)
   };
-  let index = auth.users.findIndex(u => u.name === username);
+  let index = auth.users.findIndex(u => u.name === name);
+
   if (index === -1) {
     auth.users.push(user);
-    writeJsonFile(getAuthPath(), auth).then(() => {
-      res.status(200).json({ success: 'User successfully added.' });
-    });
+    return Promise.resolve(auth);
   } else {
-    return res.status(200).json({ warning: 'User with the same username allready exists.' });
+    return Promise.reject('User with the same username allready exists.');
   }
 }
 
