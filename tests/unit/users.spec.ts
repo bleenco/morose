@@ -1,12 +1,14 @@
 import { expect, should } from 'chai';
 import * as fs from '../../src/api/fs';
 import * as auth from '../../src/api/auth';
-import { getConfig } from '../../src/api/utils';
 import { resolve } from 'path';
 
 let testPath = resolve(__dirname, 'test.json');
 let testAuth: any;
-let testConfig = getConfig();
+let testConfig = {
+  port: 10000,
+  secret: '8kjsi3tb2r'
+};
 
 describe('User roles, affiliation and permission specific tests', () => {
 

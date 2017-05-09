@@ -1,7 +1,6 @@
 import { expect } from 'chai';
 import * as fs from '../../src/api/fs';
 import * as auth from '../../src/api/auth';
-import { getConfig } from '../../src/api/utils';
 import { resolve } from 'path';
 
 let testPath = resolve(__dirname, 'test.json');
@@ -19,7 +18,6 @@ let testAuth = {
   ],
   packages: []
 };
-let config = getConfig();
 
 describe('Publishing packages specific tests', () => {
 
