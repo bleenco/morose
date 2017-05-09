@@ -29,6 +29,17 @@ router.get('/api/package/search', web.searchPackages);
 router.post('/api/user/login', web.login);
 router.post('/api/user/organizations', web.getUserOrganizations);
 router.get('/user/login', index);
+router.post('/user/add', web.newUser);
+router.post('/org/add', web.newOrganization);
+router.post('/team/add', web.newTeam);
+router.post('/org/user/add', web.addUserToOrganization);
+router.post('/team/user/add', web.addUserToTeam);
+router.post('/team/delete', web.deleteTeam);
+router.post('/team/user/delete', web.deleteUserFromTeam);
+router.post('/org/user/delete', web.deleteUserFromOrganization);
+router.post('/org/delete', web.deleteOrganization);
+router.post('/org/user/role', web.changeUserRole);
+router.post('/pkg/publish', web.publishPackage);
 
 router.put(/\/\-\/user\/org\.couchdb\.user\:(.*)/, routes.doAuth);
 router.delete('/-/user/token/:token', routes.logout);

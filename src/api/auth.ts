@@ -23,6 +23,19 @@ export interface IUser extends IUserBasic {
   date: Date;
 }
 
+export interface UserData {
+  name: string;
+  fullName: string;
+  email: string;
+  password: string;
+}
+
+export interface OrganizationTeamData {
+  username: string;
+  organization: string;
+  team: string;
+}
+
 export function middleware(req: AuthRequest, res: express.Response,
   next: express.NextFunction): void {
   if (res.locals.remote_user != null && res.locals.remote_user.name !== 'anonymous') {
@@ -135,221 +148,241 @@ function authenticatedUser(name: string, groups: string[] = []): any {
   return { name: name, groups: groups.concat(['&all', '$anonymous']), real_groups: groups };
 }
 
-export function newUser(req: express.Request, res: express.Response): express.Response | void {
-  let { username, fullname, email, password } = req.body;
-  let auth = getAuth();
-  let config = getConfig();
-  let hash = generateHash(password, config.secret);
-  let user = {
-    name: username,
-    password: hash,
-    fullName: fullname,
-    email: email
-  };
-  let index = auth.users.findIndex(u => u.name === username);
-  if (index === -1) {
-    auth.users.push(user);
-    writeJsonFile(getAuthPath(), auth).then(() => {
-      res.status(200).json({ success: 'User successfully added.' });
-    });
-  } else {
-    return res.status(200).json({ warning: 'User with the same username allready exists.' });
-  }
-}
-
-export function newOrganization(req: express.Request, res: express.Response):
-  express.Response | void {
-    let name = req.body.organization;
-    let username = req.body.username;
-    let auth = getAuth();
-    let organization = {
+export function newUser(data: UserData, auth: any, config: any): Promise<string> {
+  return new Promise((resolve, reject) => {
+    let { name, fullName, email, password } = data;
+    let hash = generateHash(password, config.secret);
+    let user = {
       name: name,
-      teams: [{ name: 'developers', members: [username] }],
-      members: [{ name: username, role: 'owner' }],
-      packages: []
+      password: hash,
+      fullName: fullName,
+      email: email
     };
-    let index = auth.organizations.findIndex(org => org.name === name);
+    let index = auth.users.findIndex(u => u.name === name);
     if (index === -1) {
-      auth.organizations.push(organization);
-      writeJsonFile(getAuthPath(), auth).then(
-        () => res.status(200).json({ success: 'Organization successfully added.' }));
+      auth.users.push(user);
+      resolve(auth);
     } else {
-      return res.status(200).json({ warning: 'Organization with the same name allready exists.' });
+      reject();
     }
+  });
 }
 
-export function newTeam(req: express.Request, res: express.Response): express.Response | void {
-  let teamName = req.body.team;
-  let { organization, username } = req.body;
-  let auth = getAuth();
-  let team = {
-    name: teamName,
-    members: [ username ]
-  };
-  let orgIndex = auth.organizations.findIndex(org => org.name === organization);
-  let teamIndex = auth.organizations[orgIndex].teams.findIndex(t => t.name === teamName);
-
-  if (teamIndex === -1) {
-    auth.organizations[orgIndex].teams.push(team);
-    writeJsonFile(getAuthPath(), auth).then(() => {
-      res.status(200).json({ success: 'Team successfully added.' });
+export function newOrganization(
+  organization: string, username: string, auth: any): Promise<string> {
+    return new Promise((resolve, reject) => {
+      let org = {
+        name: organization,
+        teams: [{ name: 'developers', members: [username] }],
+        members: [{ name: username, role: 'owner' }],
+        packages: []
+      };
+      let index = auth.organizations.findIndex(org => org.name === organization);
+      if (index === -1) {
+        auth.organizations.push(org);
+        resolve(auth);
+      } else {
+        reject();
+      }
     });
-  } else {
-    return res.status(200).json({ warning: 'Team with the same name allready exists.' });
-  }
+}
+
+export function newTeam(data: OrganizationTeamData, auth: any): Promise<string> {
+  return new Promise((resolve, reject) => {
+    let { username, team, organization } = data;
+    let teamObject = {
+      name: team,
+      members: [ username ]
+    };
+    let orgIndex = auth.organizations.findIndex(org => org.name === organization);
+    if (orgIndex !== -1) {
+      let teamIndex = auth.organizations[orgIndex].teams.findIndex(t => t.name === team);
+      if (teamIndex === -1) {
+        auth.organizations[orgIndex].teams.push(teamObject);
+        resolve(auth);
+      } else {
+        reject();
+      }
+    } else {
+      reject();
+    }
+  });
 }
 
 export function addUserToOrganization(
-  req: express.Request, res: express.Response): express.Response | void {
-    let { organization, username, role } = req.body;
-    let auth = getAuth();
-    let member = {
-      name: username,
-      role: role
-    };
+  username: string, organization: string, role: string, auth: any): Promise<string> {
+    return new Promise((resolve, reject) => {
+      let member = {
+        name: username,
+        role: role
+      };
+      let orgIndex = auth.organizations.findIndex(org => org.name === organization);
+      if (orgIndex !== -1) {
+        let memberIndex = auth.organizations[orgIndex].members.findIndex(m => m.name === username);
+        if (memberIndex === -1) {
+          let developersTeamIndex = auth.organizations[orgIndex].teams
+            .findIndex(team => team.name === 'developers');
+          auth.organizations[orgIndex].members.push(member);
+          if (developersTeamIndex !== -1) {
+            auth.organizations[orgIndex].teams[developersTeamIndex].members.push(username);
+            resolve(auth);
+          } else {
+            reject();
+          }
+        } else {
+          reject();
+        }
+      } else {
+        reject();
+      }
+    });
+}
+
+export function addUserToTeam(data: OrganizationTeamData, auth: any): Promise<string> {
+  return new Promise((resolve, reject) => {
+    let { username, team, organization } = data;
     let orgIndex = auth.organizations.findIndex(org => org.name === organization);
-
-    let developersTeamIndex = auth.organizations[orgIndex].teams
-      .findIndex(team => team.name === 'developers');
-    let memberIndex = auth.organizations[orgIndex].members.findIndex(m => m.name === username);
-
-    if (memberIndex === -1) {
-      auth.organizations[orgIndex].members.push(member);
-      if (developersTeamIndex !== -1) {
-        auth.organizations[orgIndex].teams[developersTeamIndex].members.push(username);
-        writeJsonFile(getAuthPath(), auth).then(
-          () => res.status(200).json({ success: 'User successfully added to organization.'}));
+    if (orgIndex !== -1) {
+      let teamIndex = auth.organizations[orgIndex].teams.findIndex(t => t.name === team);
+      if (teamIndex !== -1) {
+        let memberIndex = auth.organizations[orgIndex].teams[teamIndex].members
+          .findIndex(m => m === username);
+        if (memberIndex === -1) {
+          auth.organizations[orgIndex].teams[teamIndex].members.push(username);
+          resolve(auth);
+        } else {
+          reject();
+        }
+      } else {
+        reject();
       }
     } else {
-      return res.status(200).json({ warning: 'User allready exists in the organization.' });
+      reject();
     }
+  });
 }
 
-export function addUserToTeam(
-  req: express.Request, res: express.Response): express.Response | void {
-    let { organization, username, team } = req.body;
-    let auth = getAuth();
+export function deleteTeam(team: string, organization: string, auth: any): Promise<string> {
+  return new Promise((resolve, reject) => {
     let orgIndex = auth.organizations.findIndex(org => org.name === organization);
-    let teamIndex = auth.organizations[orgIndex].teams.findIndex(t => t.name === team);
-    let memberIndex = auth.organizations[orgIndex].teams[teamIndex].members
-      .findIndex(m => m === username);
+    if (orgIndex !== -1) {
+      let teamIndex = auth.organizations[orgIndex].teams.findIndex(t => t.name === team);
+      if (teamIndex !== -1) {
+        auth.organizations[orgIndex].teams.splice(teamIndex, 1);
+        resolve(auth);
+      }
+    }
+  });
+}
 
-    if (memberIndex === -1) {
-      auth.organizations[orgIndex].teams[teamIndex].members.push(username);
-      writeJsonFile(getAuthPath(), auth).then(() => {
-        res.status(200).json({ success: 'User successfully added to team.' });
-      });
+export function deleteUserFromTeam(data: OrganizationTeamData, auth: any): Promise<string> {
+  return new Promise((resolve, reject) => {
+    let { username, team, organization } = data;
+    let orgIndex = auth.organizations.findIndex(org => org.name === organization);
+    if (orgIndex !== -1) {
+      let teamIndex = auth.organizations[orgIndex].teams.findIndex(t => t.name === team);
+      if (teamIndex !== -1) {
+        let userIndex = auth.organizations[orgIndex].teams[teamIndex]
+          .members.findIndex(u => u === username);
+        if (userIndex !== -1) {
+          auth.organizations[orgIndex].teams[teamIndex].members.splice(userIndex, 1);
+          resolve(auth);
+        } else {
+          reject();
+        }
+      } else {
+        reject();
+      }
     } else {
-      return res.status(200).json({ warning: 'User allready exists in the team.' });
+      reject();
     }
-}
-
-export function deleteTeam(req: express.Request, res: express.Response): express.Response | void {
-  let { team, organization } = req.body;
-  let auth = getAuth();
-  let orgIndex = auth.organizations.findIndex(org => org.name === organization);
-  let teamIndex = auth.organizations[orgIndex].teams.findIndex(t => t.name === team);
-
-  if (orgIndex !== -1) {
-    if (teamIndex !== -1) {
-      auth.organizations[orgIndex].teams.splice(teamIndex, 1);
-      writeJsonFile(getAuthPath(), auth).then(() => {
-        res.status(200).json({ success: 'Team successfully deleted.' });
-      });
-    }
-  }
-}
-
-export function deleteUserFromTeam(
-  req: express.Request, res: express.Response): express.Response | void {
-    let { username, team, organization } = req.body;
-    let auth = getAuth();
-    let orgIndex = auth.organizations.findIndex(org => org.name === organization);
-    let teamIndex = auth.organizations[orgIndex].teams.findIndex(t => t.name === team);
-    let userIndex = auth.organizations[orgIndex].teams[teamIndex]
-      .members.findIndex(u => u === username);
-    auth.organizations[orgIndex].teams[teamIndex].members.splice(userIndex, 1);
-    writeJsonFile(getAuthPath(), auth).then(() => {
-      res.status(200).json({ success: 'User successfully deleted from a team.' });
-    });
+  });
 }
 
 export function deleteUserFromOrganization(
-  req: express.Request, res: express.Response): express.Response | void {
-    let { username, organization } = req.body;
-    let auth = getAuth();
-    let orgIndex = auth.organizations.findIndex(org => org.name === organization);
-    let usrIndex = auth.organizations[orgIndex].members.findIndex(u => u.name === username);
-    auth.organizations[orgIndex].members.splice(usrIndex, 1);
-    writeJsonFile(getAuthPath(), auth).then(
-      () => res.status(200).json({ success: 'User successfully deleted from an organization.' }));
-}
-
-export function deleteOrganization(
-  req: express.Request, res: express.Response): express.Response | void {
-    let organization = req.body.organization;
-    let auth = getAuth();
-    let index = auth.organizations.findIndex(org => org.name === organization);
-    auth.organizations.splice(index, 1);
-    writeJsonFile(getAuthPath(), auth).then(() => {
-      res.status(200).json({ success: 'Organization successfully deleted.' });
+  username: string, organization: string, auth: any): Promise<string> {
+    return new Promise((resolve, reject) => {
+      let orgIndex = auth.organizations.findIndex(org => org.name === organization);
+      if (orgIndex !== -1) {
+        let usrIndex = auth.organizations[orgIndex].members.findIndex(u => u.name === username);
+        if (usrIndex !== -1) {
+          auth.organizations[orgIndex].members.splice(usrIndex, 1);
+          resolve(auth);
+        } else {
+          reject();
+        }
+      } else {
+        reject();
+      }
     });
 }
 
+export function deleteOrganization(organization: string, auth: any): Promise<string> {
+  return new Promise((resolve, reject) => {
+    let index = auth.organizations.findIndex(org => org.name === organization);
+    auth.organizations.splice(index, 1);
+    resolve(auth);
+  });
+}
+
 export function changeUserRole(
-  req: express.Request, res: express.Response): express.Response | void {
-    let { username, organization, role } = req.body;
-    let auth = getAuth();
-    let orgIndex = auth.organizations.findIndex(org => org.name === organization);
-    let usrIndex = auth.organizations[orgIndex].members.findIndex(u => u.name === username);
-    auth.organizations[orgIndex].members[usrIndex].role = role;
-    writeJsonFile(getAuthPath(), auth).then(() => {
-      res.status(200).json({ success: 'User role successfully updated.' });
+  username: string, organization: string, role: string, auth: any): Promise<string> {
+    return new Promise((resolve, reject) => {
+      let orgIndex = auth.organizations.findIndex(org => org.name === organization);
+
+      if (orgIndex !== -1) {
+        let usrIndex = auth.organizations[orgIndex].members.findIndex(u => u.name === username);
+        if (usrIndex !== -1) {
+          auth.organizations[orgIndex].members[usrIndex].role = role;
+          resolve(auth);
+        } else {
+          reject();
+        }
+      } else {
+        reject();
+      }
     });
 }
 
 export function publishPackage(
-  req: express.Request, res: express.Response): express.Response | void {
-    let { name, username, organization, version } = req.body;
-    let auth = getAuth();
-
-    if (!organization) {
-      let pkg = {
-        name: name,
-        version: version,
-        teamPermissions: [],
-        memberPermissions: [{ name: username, role: 'owner' }],
-        owner: username
-      };
-      let pkgIndex = auth.packages.findIndex(p => p.name === name && p.version === version);
-
-      if (pkgIndex === -1) {
-        auth.packages.push(pkg);
-        writeJsonFile(getAuthPath(), auth).then(() => {
-          res.status(200).json({ success: 'Package successfully published.' });
-        });
+  pkgName: string, username: string, organization: string,
+  version: string, auth: any): Promise<string> {
+    return new Promise((resolve, reject) => {
+      if (!organization) {
+        let pkg = {
+          name: pkgName,
+          version: version,
+          owner: username
+        };
+        let pkgIndex = auth.packages.findIndex(p => p.name === pkgName && p.version === version);
+        if (pkgIndex === -1) {
+          auth.packages.push(pkg);
+          resolve(auth);
+        } else {
+          reject();
+        }
       } else {
-        return res.status(200).json({
-          warning: 'Package with specified name and version allready exists.' });
-      }
-    } else {
-      let pkg = {
-        name: name,
-        version: version,
-        owner: username
-      };
-      let orgIndex = auth.organizations.findIndex(org => org.name === organization);
-      let pkgIndex = auth.organizations[orgIndex].packages
-        .findIndex(p => p.name === name && p.version === version);
+        let pkg = {
+          name: pkgName,
+          version: version,
+          teamPermissions: [],
+          memberPermissions: [{ name: username, role: 'owner' }],
+          owner: username
+        };
+        let orgIndex = auth.organizations.findIndex(org => org.name === organization);
+        if (orgIndex !== -1) {
+          let pkgIndex = auth.organizations[orgIndex].packages
+            .findIndex(p => p.name === pkgName && p.version === version);
 
-      if (pkgIndex === -1) {
-        auth.organizations[orgIndex].packages.push(pkg);
-        writeJsonFile(getAuthPath(), auth).then(() => {
-          res.status(200).json({ success: 'Package successfully published.' });
-        });
-      } else {
-        return res.status(200).json({
-          warning: 'Package with specified name and version allready exists.' });
+          if (pkgIndex === -1) {
+            auth.organizations[orgIndex].packages.push(pkg);
+            resolve(auth);
+          } else {
+            reject();
+          }
+        } else {
+          reject();
+        }
       }
-    }
+    });
 }
