@@ -58,28 +58,132 @@ export function logout(req: auth.AuthRequest, res: express.Response): express.Re
   }
 }
 
-export function getPackage(req: auth.AuthRequest, res: express.Response): void | express.Response {
-  let baseUrl = req.protocol + '://' + req.get('host');
-  let pkgName: string = req.params.package;
-  let config = getConfig();
-
-  let pkgJsonPath = getFilePath(`packages/${pkgName}/package.json`);
-  if (pkgName.indexOf('@') !== -1) {
-    pkgName = pkgName.replace(/^(@.*)(\/)(.*)$/, '$1%2F$3');
+export function getUser(req: auth.AuthRequest, res: express.Response): void | express.Response {
+  let auth = getAuth();
+  let user = auth.users.find(u => u.name === req.params[0]);
+  if (user) {
+    return res.status(200).json({
+      _id: 'org.couchdb.user:admin', email: user.email, name: user.name
+    });
+  } else {
+    return res.status(404).json('');
   }
+}
 
-  exists(pkgJsonPath).then(e => {
-    if (e) {
-      readJsonFile(pkgJsonPath).then((jsonData: IPackage) => res.status(200).json(jsonData));
+export function getPackage(req: auth.AuthRequest, res: express.Response): void | express.Response {
+  let request = req.headers.referer.split(' ');
+  if (request[0] === 'owner') {
+    let pkgName: string = req.params.package;
+    let auth = getAuth();
+    let pkg = auth.packages.find(p => p.name === pkgName);
+    if (pkg) {
+      let usernames = pkg.owners;
+      let users = usernames.map(username => {
+        let user = auth.users.find(u => u.name === username);
+        if (user) {
+          return { name: username, email: user.email };
+        } else {
+          return false;
+        }
+      }).filter(Boolean);
+
+      res.status(200).json({ name: pkgName, 'maintainers': users });
     } else {
-      proxy.fetchUpstreamData(config.upstream, pkgName, baseUrl).then((body: IPackage) => {
-        body = proxy.changeUpstreamDistUrls(config.upstream, baseUrl, body);
-        ensureDirectory(dirname(pkgJsonPath)).then(() => {
-          writeJsonFile(pkgJsonPath, body).then(() => res.status(200).json(body));
-        });
-      });
+      return res.status(404).json('');
     }
-  });
+  } else {
+    let baseUrl = req.protocol + '://' + req.get('host');
+    let pkgName: string = req.params.package;
+    let config = getConfig();
+
+    let pkgJsonPath = getFilePath(`packages/${pkgName}/package.json`);
+    if (pkgName.indexOf('@') !== -1) {
+      pkgName = pkgName.replace(/^(@.*)(\/)(.*)$/, '$1%2F$3');
+    }
+
+    exists(pkgJsonPath).then(e => {
+      if (e) {
+        readJsonFile(pkgJsonPath).then((jsonData: IPackage) => res.status(200).json(jsonData));
+      } else {
+        if (config.useUpstream) {
+          proxy.fetchUpstreamData(config.upstream, pkgName, baseUrl).then((body: IPackage) => {
+            if (body.versions) {
+              body = proxy.changeUpstreamDistUrls(config.upstream, baseUrl, body);
+              ensureDirectory(dirname(pkgJsonPath)).then(() => {
+                writeJsonFile(pkgJsonPath, body).then(() => res.status(200).json(body));
+              });
+            } else {
+              return res.status(404).json('');
+            }
+          });
+        } else {
+          return res.status(404).json('');
+        }
+      }
+    });
+  }
+}
+
+export function updatePackage(
+  req: auth.AuthRequest, res: express.Response): void | express.Response {
+    let request = req.headers.referer.split(' ');
+    if (request[0] === 'owner') {
+      if (request[1] === 'add') {
+        let pkgName: string = request[3];
+        let username: string = request[2];
+        let authFile = getAuth();
+        let user = authFile.users
+          .find(u => u.tokens.findIndex(t => t === res.locals.remote_user.token) != -1);
+        auth.isOwner(user.name, pkgName, authFile)
+        .then(owner => {
+          if (owner) {
+            let pkg = authFile.packages.find(p => p.name === pkgName);
+            let userIndex = pkg.owners.findIndex(o => o === username);
+            if (userIndex < 0 && pkg) {
+              pkg.owners.push(username);
+              writeJsonFile(getAuthPath(), authFile)
+              .then(() => res.status(200).json({ name: pkgName, 'maintainers': pkg.owners }));
+            } else {
+              return res.status(406).json('');
+            }
+          } else {
+            return res.status(403).json({ error: `you do not have permission to publish `
+              + `"${pkgName}". Are you logged in as the correct user?` });
+          }
+        })
+        .catch(() => res.status(404).json(''));
+      } else if (request[1] === 'rm') {
+        let pkgName: string = request[3];
+        let username: string = request[2];
+        let authFile = getAuth();
+        let user = authFile.users
+          .find(u => u.tokens.findIndex(t => t === res.locals.remote_user.token) != -1);
+        auth.isOwner(user.name, pkgName, authFile)
+        .then(owner => {
+          if (owner) {
+            let pkg = authFile.packages.find(p => p.name === pkgName);
+            if (pkg) {
+              let index = pkg.owners.findIndex(u => u === username);
+              if (index !== -1 && pkg.owners.length > 1) {
+                pkg.owners.splice(index, 1);
+                writeJsonFile(getAuthPath(), authFile)
+                .then(() => res.status(200).json({ name: pkgName, 'maintainers': pkg.owners }));
+              } else {
+                return res.status(404).json('');
+              }
+            }
+          } else {
+            return res.status(403).json({ error: `you do not have permission to publish `
+              + `"${pkgName}". Are you logged in as the correct user?` });
+          }
+        })
+        .catch(() => res.status(304).json(''));
+      } else {
+        return res.status(200).json({ success: true });
+      }
+    } else {
+      return res.status(200).json({ success: true });
+    }
 }
 
 export function getTarball(req: auth.AuthRequest, res: express.Response) {
@@ -130,6 +234,10 @@ export function publishPackage(req: auth.AuthRequest, res: express.Response): vo
 
 export function whoami(req: auth.AuthRequest, res: express.Response): express.Response {
   return res.status(200).json({ username: res.locals.remote_user.name });
+}
+
+export function ping(req: auth.AuthRequest, res: express.Response): express.Response {
+  return res.status(200).json({ success: true });
 }
 
 export function search(req: auth.AuthRequest, res: express.Response): void {

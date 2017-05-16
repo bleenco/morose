@@ -138,7 +138,8 @@ export function publishPackage(
   req: express.Request, res: express.Response): express.Response | void {
     let authObj = getAuth();
     auth.publishPackage(
-      req.body.pkgName, req.body.username, req.body.organization, req.body.version, authObj)
+      req.body.pkgName, req.body.username, req.body.organization,
+      req.body.teams, req.body.version, authObj)
       .then(auth => writeJsonFile(getAuthPath(), auth)
       .then(() => res.status(200).json({ data: true })))
       .catch(err => res.status(200).json({ message: err }));

@@ -4,24 +4,25 @@ import * as auth from '../../src/api/auth';
 import { resolve } from 'path';
 
 let testPath = resolve(__dirname, 'test.json');
-let testAuth = {
-  organizations: [
-    {
-      name: 'bleenco',
-      teams: [ { name: 'developers', members: [ 'admin' ] } ],
-      members: [ { name: 'admin', role: 'owner' } ],
-      packages: []
-    }
-  ],
-  users: [
-    { name: 'admin', password: 12345, fullName: '' }
-  ],
-  packages: []
-};
+let testAuth: any;
 
 describe('Publishing packages specific tests', () => {
 
   beforeEach(() => {
+    testAuth = {
+      organizations: [
+        {
+          name: 'bleenco',
+          teams: [ { name: 'developers', members: [ 'admin' ] } ],
+          members: [ { name: 'admin', role: 'owner' } ],
+          packages: []
+        }
+      ],
+      users: [
+        { name: 'admin', password: 12345, fullName: '' }
+      ],
+      packages: []
+    };
     return fs.writeJsonFile(testPath, testAuth);
   });
 
@@ -34,17 +35,20 @@ describe('Publishing packages specific tests', () => {
     let username = 'admin';
     let organization = 'bleenco';
     let version = '0.1.2';
+    let teamPermissions: auth.TeamPermissionData[]
+      = [{ team: 'testTeam', permission: 'readwrite' }];
 
-    return auth.publishPackage(pkgName, username, organization, version, testAuth)
+    return auth.publishPackage(pkgName, username, organization, teamPermissions, version, testAuth)
       .then(authentication => fs.writeJsonFile(testPath, authentication))
       .then(() => fs.readJsonFile(testPath))
       .then(content => {
-        expect(content.organizations[0].packages).to.deep.include({
+        expect(content.packages).to.deep.include({
           name: pkgName,
-          version: version,
-          teamPermissions: [],
-          memberPermissions: [{ name: username, role: 'owner' }],
-          owner: username
+          versions: [ version ],
+          owners: [ username ],
+          organization: organization,
+          teamPermissions: teamPermissions,
+          memberPermissions: [{ name: username, role: 'owner' }]
         });
       });
   });
@@ -54,13 +58,19 @@ describe('Publishing packages specific tests', () => {
     let username = 'admin';
     let organization = null;
     let version = '0.1.2';
+    let teamPermissions = null;
 
-    return auth.publishPackage(pkgName, username, organization, version, testAuth)
+    return auth.publishPackage(pkgName, username, organization, teamPermissions, version, testAuth)
       .then(authentication => fs.writeJsonFile(testPath, authentication))
       .then(() => fs.readJsonFile(testPath))
       .then(content => {
         expect(content.packages).to.deep.include({
-          name: pkgName, version: version, owner: username
+          name: pkgName,
+          versions: [ version ],
+          owners: [ username ],
+          organization: '',
+          teamPermissions: [],
+          memberPermissions: [{ name: username, role: 'owner' }]
         });
       });
   });

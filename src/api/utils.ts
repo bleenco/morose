@@ -53,8 +53,7 @@ export function writeAuth(secret: string): Promise<null> {
       {
         name: 'bleenco',
         teams: [ { name: 'developers', members: [ 'admin' ] } ],
-        members: [ { name: 'admin', role: 'owner' } ],
-        packages: []
+        members: [ { name: 'admin', role: 'owner' } ]
       }
     ],
     users: [

@@ -39,7 +39,8 @@ describe('User roles, affiliation and permission specific tests', () => {
       name: 'John',
       fullName: 'John White',
       email: 'john.white@gmail.com',
-      password: 'johnwhitewhitejohn911'
+      password: 'johnwhitewhitejohn911',
+      tokens: []
     };
 
     return auth.newUser(userData, testAuth, testConfig)

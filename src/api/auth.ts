@@ -6,7 +6,8 @@ import { writeJsonFile } from './fs';
 export interface AuthRequest extends express.Request {
   remote_user: any;
   headers: {
-    authorization: any
+    authorization: any,
+    referer: string
   };
 }
 
@@ -34,6 +35,11 @@ export interface OrganizationTeamData {
   username: string;
   organization: string;
   team: string;
+}
+
+export interface TeamPermissionData {
+  team: string;
+  permission: string;
 }
 
 export function middleware(req: AuthRequest, res: express.Response,
@@ -69,8 +75,15 @@ export function middleware(req: AuthRequest, res: express.Response,
 }
 
 export function hasAccess(req: AuthRequest, res: express.Response,
-  next: express.NextFunction): void {
-  next();
+  next: express.NextFunction): void | express.Response {
+    let auth = getAuth();
+    let user = auth.users
+      .find(u => u.tokens.findIndex(t => t === res.locals.remote_user.token) !== -1);
+    if (user) {
+      next();
+    } else {
+      return res.status(401).json({ error: 'Not authorized!' });
+    }
 }
 
 export function login(user: IUserBasic): Promise<number> {
@@ -148,7 +161,7 @@ function authenticatedUser(name: string, groups: string[] = []): any {
   return { name: name, groups: groups.concat(['&all', '$anonymous']), real_groups: groups };
 }
 
-export function newUser(data: UserData, auth: any, config: any): Promise<string> {
+export function newUser(data: UserData, auth: any, config: any): Promise<any> {
   return new Promise((resolve, reject) => {
     let { name, fullName, email, password } = data;
     let hash = generateHash(password, config.secret);
@@ -156,7 +169,8 @@ export function newUser(data: UserData, auth: any, config: any): Promise<string>
       name: name,
       password: hash,
       fullName: fullName,
-      email: email
+      email: email,
+      tokens: []
     };
     let index = auth.users.findIndex(u => u.name === name);
     if (index === -1) {
@@ -169,7 +183,7 @@ export function newUser(data: UserData, auth: any, config: any): Promise<string>
 }
 
 export function newOrganization(
-  organization: string, username: string, auth: any): Promise<string> {
+  organization: string, username: string, auth: any): Promise<any> {
     return new Promise((resolve, reject) => {
       let org = {
         name: organization,
@@ -187,7 +201,7 @@ export function newOrganization(
     });
 }
 
-export function newTeam(data: OrganizationTeamData, auth: any): Promise<string> {
+export function newTeam(data: OrganizationTeamData, auth: any): Promise<any> {
   return new Promise((resolve, reject) => {
     let { username, team, organization } = data;
     let teamObject = {
@@ -210,7 +224,7 @@ export function newTeam(data: OrganizationTeamData, auth: any): Promise<string> 
 }
 
 export function addUserToOrganization(
-  username: string, organization: string, role: string, auth: any): Promise<string> {
+  username: string, organization: string, role: string, auth: any): Promise<any> {
     return new Promise((resolve, reject) => {
       let member = {
         name: username,
@@ -238,7 +252,7 @@ export function addUserToOrganization(
     });
 }
 
-export function addUserToTeam(data: OrganizationTeamData, auth: any): Promise<string> {
+export function addUserToTeam(data: OrganizationTeamData, auth: any): Promise<any> {
   return new Promise((resolve, reject) => {
     let { username, team, organization } = data;
     let orgIndex = auth.organizations.findIndex(org => org.name === organization);
@@ -262,7 +276,7 @@ export function addUserToTeam(data: OrganizationTeamData, auth: any): Promise<st
   });
 }
 
-export function deleteTeam(team: string, organization: string, auth: any): Promise<string> {
+export function deleteTeam(team: string, organization: string, auth: any): Promise<any> {
   return new Promise((resolve, reject) => {
     let orgIndex = auth.organizations.findIndex(org => org.name === organization);
     if (orgIndex !== -1) {
@@ -275,7 +289,7 @@ export function deleteTeam(team: string, organization: string, auth: any): Promi
   });
 }
 
-export function deleteUserFromTeam(data: OrganizationTeamData, auth: any): Promise<string> {
+export function deleteUserFromTeam(data: OrganizationTeamData, auth: any): Promise<any> {
   return new Promise((resolve, reject) => {
     let { username, team, organization } = data;
     let orgIndex = auth.organizations.findIndex(org => org.name === organization);
@@ -300,7 +314,7 @@ export function deleteUserFromTeam(data: OrganizationTeamData, auth: any): Promi
 }
 
 export function deleteUserFromOrganization(
-  username: string, organization: string, auth: any): Promise<string> {
+  username: string, organization: string, auth: any): Promise<any> {
     return new Promise((resolve, reject) => {
       let orgIndex = auth.organizations.findIndex(org => org.name === organization);
       if (orgIndex !== -1) {
@@ -317,7 +331,7 @@ export function deleteUserFromOrganization(
     });
 }
 
-export function deleteOrganization(organization: string, auth: any): Promise<string> {
+export function deleteOrganization(organization: string, auth: any): Promise<any> {
   return new Promise((resolve, reject) => {
     let index = auth.organizations.findIndex(org => org.name === organization);
     auth.organizations.splice(index, 1);
@@ -326,7 +340,7 @@ export function deleteOrganization(organization: string, auth: any): Promise<str
 }
 
 export function changeUserRole(
-  username: string, organization: string, role: string, auth: any): Promise<string> {
+  username: string, organization: string, role: string, auth: any): Promise<any> {
     return new Promise((resolve, reject) => {
       let orgIndex = auth.organizations.findIndex(org => org.name === organization);
 
@@ -346,43 +360,60 @@ export function changeUserRole(
 
 export function publishPackage(
   pkgName: string, username: string, organization: string,
-  version: string, auth: any): Promise<string> {
+  teamPermissions: TeamPermissionData[], version: string, auth: any): Promise<any> {
     return new Promise((resolve, reject) => {
-      if (!organization) {
-        let pkg = {
-          name: pkgName,
-          version: version,
-          owner: username
-        };
-        let pkgIndex = auth.packages.findIndex(p => p.name === pkgName && p.version === version);
-        if (pkgIndex === -1) {
-          auth.packages.push(pkg);
-          resolve(auth);
-        } else {
-          reject();
-        }
-      } else {
-        let pkg = {
-          name: pkgName,
-          version: version,
-          teamPermissions: [],
-          memberPermissions: [{ name: username, role: 'owner' }],
-          owner: username
-        };
-        let orgIndex = auth.organizations.findIndex(org => org.name === organization);
-        if (orgIndex !== -1) {
-          let pkgIndex = auth.organizations[orgIndex].packages
-            .findIndex(p => p.name === pkgName && p.version === version);
-
-          if (pkgIndex === -1) {
-            auth.organizations[orgIndex].packages.push(pkg);
+      getPackage(pkgName, auth).then(pkgObject => {
+        if (pkgObject) {
+          if (isOwner(username, pkgName, auth)) {
+            pkgObject.versions.push(version);
             resolve(auth);
           } else {
             reject();
           }
         } else {
-          reject();
+          let permissions = [];
+          if (teamPermissions) {
+            permissions = teamPermissions.map(
+              tp => ({ team: tp.team, permission: tp.permission}));
+          }
+          let pkg = {
+            name: pkgName,
+            versions: [ version ],
+            owners: [ username ],
+            organization: organization ? organization : '',
+            teamPermissions: permissions,
+            memberPermissions: [{ name: username, role: 'owner' }]
+          };
+          let pkgIndex = auth.packages.findIndex(p => p.name === pkgName && p.version === version);
+          if (pkgIndex === -1) {
+            auth.packages.push(pkg);
+            resolve(auth);
+          } else {
+            reject();
+          }
         }
-      }
+      });
     });
+}
+
+export function isOwner(username: string, pkg: string, auth: any): Promise<boolean> {
+  return new Promise((resolve, reject) => {
+    let pkgObject = auth.packages.find(p => p.name === pkg);
+    if (pkgObject) {
+      pkgObject.owners.find(u => u === username) ? resolve(true) : resolve(false);
+    } else {
+      reject();
+    }
+  });
+}
+
+export function getPackage(pkg: string, auth: any): Promise<any> {
+  return new Promise((resolve, reject) => {
+    let pkgObject = auth.packages.find(p => p.name === pkg);
+    if (pkgObject) {
+      resolve(pkgObject);
+    } else {
+      resolve();
+    }
+  });
 }
