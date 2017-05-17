@@ -1,6 +1,6 @@
-import { npm } from '../utils/process';
+import { execute } from '../utils/process';
 
 export default function() {
   return Promise.resolve()
-    .then(() => npm('set',  'registry', 'http://localhost:10000'));
+    .then(() => execute('npm set registry http://localhost:10000'));
 }

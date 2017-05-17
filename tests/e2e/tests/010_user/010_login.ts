@@ -1,4 +1,4 @@
-import { silentExec, execute } from '../../utils/process';
+import { execute } from '../../utils/process';
 import * as fs from '../../utils/fs';
 import { generateHash } from '../../../../src/api/auth';
 
@@ -7,6 +7,15 @@ export default function() {
   let configPath = 'morose/config.json';
 
   return Promise.resolve()
+    .then(() => {
+      execute('npm whoami').then(loggedIn => {
+        if (loggedIn === 0) {
+          return execute('npm logout');
+        } else {
+          return Promise.resolve();
+        }
+      });
+    })
     .then(() => fs.readFile(configPath))
     .then(contents => {
       const config = JSON.parse(contents);
