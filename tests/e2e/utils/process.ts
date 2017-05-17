@@ -165,6 +165,16 @@ export function killProcess(pid: number): Promise<null> {
   });
 }
 
+export function execute(cmd: string): Promise<null> {
+  return new Promise((resolve, reject) => {
+    child_process.exec(cmd, (err, stdout, stderr) => {
+      if (err) {
+        reject();
+      }
+    }).on('exit', code => resolve(code));
+  });
+}
+
 export function exec(cmd: string, ...args: string[]) {
   return _exec({}, cmd, args);
 }
