@@ -5,6 +5,9 @@
 
 # morose
 
+[![CircleCI](https://circleci.com/gh/bleenco/morose.svg?style=svg)](https://circleci.com/gh/bleenco/morose)
+[![Build status](https://ci.appveyor.com/api/projects/status/kg4h0mn3t8q8h96b/branch/master?svg=true)](https://ci.appveyor.com/project/jkuri/morose/branch/master)
+
 Run npm registry & proxy on your own servers.
 
 ## Installation
