@@ -5,8 +5,14 @@ import * as fs from 'fs';
 import * as logger from './logger';
 import { generateHash } from './auth';
 
+let home = homedir();
+
+export function setHomeDir(path: string) {
+  home = path;
+}
+
 export function getRootDir(): string {
-  return join(homedir(), '.morose');
+  return home;
 }
 
 export function getConfigPath(): string {

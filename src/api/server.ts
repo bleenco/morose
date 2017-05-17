@@ -7,8 +7,9 @@ import * as utils from './utils';
 import { initializeStorage } from './storage';
 import { Observable } from 'rxjs';
 
-export function start(): void {
+export function start(dir: string, test: boolean): void {
   let app: express.Application = express();
+  utils.setHomeDir(dir);
 
   initMorose()
     .then(() => utils.getConfig())

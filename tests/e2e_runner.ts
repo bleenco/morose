@@ -2,6 +2,7 @@ import { blue, bold, green, red, yellow, white } from 'chalk';
 import * as glob from 'glob';
 import * as path from 'path';
 import * as minimist from 'minimist';
+import { morose, killAllProcesses } from './e2e/utils/process';
 
 Error.stackTraceLimit = Infinity;
 
@@ -44,9 +45,11 @@ allTests.reduce((previous, relativeName) => {
     let previousDir = null;
     return Promise.resolve()
       .then(() => printHeader(currentFileName))
+      .then(() => morose())
       .then(() => previousDir = process.cwd())
       .then(() => fn(() => clean = false))
       .then(() => console.log('----'))
+      .then(() => killAllProcesses())
       .then(() => printFooter(currentFileName, start), err => {
         printFooter(currentFileName, start);
         console.error(err);
