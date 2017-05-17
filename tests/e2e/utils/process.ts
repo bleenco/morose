@@ -161,7 +161,7 @@ export function killProcess(pid): Promise<void> {
       } else {
         resolve();
       }
-    })
+    });
   });
 }
 

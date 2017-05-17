@@ -18,14 +18,37 @@ let currentFileName = null;
 let index = 0;
 
 const e2eRoot = path.join(__dirname, 'e2e');
-
+const allSetups = glob.sync(path.join(e2eRoot, 'setup/**/*.ts'), { nodir: true })
+  .map(name => path.relative(e2eRoot, name))
+  .sort();
 const allTests = glob.sync(path.join(e2eRoot, testGlob), { nodir: true, ignore: argv.ignore })
   .map(name => path.relative(e2eRoot, name))
   .sort();
 
-console.log(`Running ${allTests.length} tests`);
+const testsToRun = allSetups
+  .concat(allTests
+    .filter(name => {
+      // Check for naming tests on command line.
+      if (argv._.length == 0) {
+        return true;
+      }
 
-allTests.reduce((previous, relativeName) => {
+      return argv._.some(argName => {
+        return path.join(process.cwd(), argName) == path.join(__dirname, 'e2e', name)
+          || argName == name
+          || argName == name.replace(/\.ts$/, '');
+      });
+    }));
+
+if (testsToRun.length == allTests.length) {
+  console.log(`Running ${testsToRun.length} tests`);
+} else {
+  console.log(`Running ${testsToRun.length} tests (${allTests.length + allSetups.length} total)`);
+}
+
+
+
+testsToRun.reduce((previous, relativeName) => {
   let absoluteName = path.join(e2eRoot, relativeName);
   if (/^win/.test(process.platform)) {
     absoluteName = absoluteName.replace(/\\/g, path.posix.sep);
@@ -45,11 +68,19 @@ allTests.reduce((previous, relativeName) => {
     let previousDir = null;
     return Promise.resolve()
       .then(() => printHeader(currentFileName))
-      .then(() => morose())
+      .then(() => {
+        if (allSetups.indexOf(relativeName) === -1) {
+          return morose();
+        }
+      })
       .then(() => previousDir = process.cwd())
       .then(() => fn(() => clean = false))
       .then(() => console.log('----'))
-      .then(() => killAllProcesses())
+      .then(() => {
+        if (allSetups.indexOf(relativeName) === -1) {
+          return killAllProcesses();
+        }
+      })
       .then(() => printFooter(currentFileName, start), err => {
         printFooter(currentFileName, start);
         console.error(err);
@@ -83,7 +114,7 @@ function encode(str) {
 }
 
 function printHeader(testName) {
-  const text = `${++index} of ${allTests.length}`;
+  const text = `${++index} of ${testsToRun.length}`;
   console.log(green(`Running "${bold(blue(testName))}" (${bold(white(text))})...`));
 }
 
