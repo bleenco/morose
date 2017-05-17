@@ -11,7 +11,7 @@ const argv = minimist(process.argv.slice(2), {
 
 import * as server from './server';
 
-const dir = resolve(process.cwd(), argv.dir) || `${homedir()}/.morose`;
+const dir = argv.dir ? resolve(process.cwd(), argv.dir) : `${homedir()}/.morose`;
 const test = argv.test || false;
 
 server.start(dir, test);
