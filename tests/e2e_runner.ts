@@ -75,7 +75,6 @@ allTests.reduce((previous, relativeName) => {
     process.exit(1);
   });
 
-
 function encode(str) {
   return str.replace(/[^A-Za-z\d\/]+/g, '-').replace(/\//g, '.').replace(/[\/-]$/, '');
 }
