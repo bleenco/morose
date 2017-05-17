@@ -150,10 +150,10 @@ function _exec(options: ExecOptions, cmd: string, args: string[]): Promise<Proce
 
 export function killAllProcesses(signal = 'SIGTERM'): Promise<void> {
   return Promise.all(_processes.map(process => killProcess(process.pid)))
-    .then(() => _processes = []);
+    .then(() => { _processes = []; });
 }
 
-export function killProcess(pid): Promise<void> {
+export function killProcess(pid: number): Promise<null> {
   return new Promise((resolve, reject) => {
     treeKill(pid, 'SIGTERM', err => {
       if (err) {
