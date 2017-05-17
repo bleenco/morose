@@ -1,6 +1,7 @@
-import { execute } from '../../utils/process';
+import { executeSilent, npmLogin } from '../../utils/process';
 
 export default function() {
   return Promise.resolve()
-    .then(() => execute('npm logout'));
+    .then(() => npmLogin('admin', 'blabla', 'foo@bar.com'))
+    .then(() => executeSilent('npm logout'));
 }

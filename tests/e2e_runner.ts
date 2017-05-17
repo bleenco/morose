@@ -94,8 +94,6 @@ testsToRun.reduce((previous, relativeName) => {
   }, err => {
     console.log('\n');
     console.error(red(`Test "${currentFileName}" failed...`));
-    console.error(red(err.message));
-    console.error(red(err.stack));
 
     if (argv.debug) {
       console.log(`Current directory: ${process.cwd()}`);
