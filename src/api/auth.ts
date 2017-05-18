@@ -74,12 +74,36 @@ export function middleware(req: AuthRequest, res: express.Response,
   return next();
 }
 
+export function getUserByToken(token: string, auth: any): any {
+  let user = auth.users.find(u => u.tokens.findIndex(t => t === token) !== -1);
+  if (user) {
+    return user;
+  } else {
+    return false;
+  }
+}
+
+export function getUserByUsername(username: string, auth: any): any {
+  let user = auth.users.find(u => u.name === username);
+  if (user) {
+    return user;
+  } else {
+    return false;
+  }
+}
+
+export function getUserOrganizations(username: string, auth: any): any {
+  return auth.organizations.filter(o => o.members.findIndex(m => m.name === username) !== -1);
+}
+
+export function getUserTeams(username: string, organization: string, auth: any): any {
+  return auth.organizations.find(o => o.name = organization).teams
+    .filter(t => t.members.findIndex(m => m === username) !== -1);
+}
+
 export function hasAccess(req: AuthRequest, res: express.Response,
   next: express.NextFunction): void | express.Response {
-    let auth = getAuth();
-    let user = auth.users
-      .find(u => u.tokens.findIndex(t => t === res.locals.remote_user.token) !== -1);
-    if (user) {
+    if (getUserByToken(res.locals.remote_user.token, getAuth())) {
       next();
     } else {
       return res.status(401).json({ error: 'Not authorized!' });
@@ -172,8 +196,7 @@ export function newUser(data: UserData, auth: any, config: any): Promise<any> {
       email: email,
       tokens: []
     };
-    let index = auth.users.findIndex(u => u.name === name);
-    if (index === -1) {
+    if (!getUserByUsername(name, auth)) {
       auth.users.push(user);
       resolve(auth);
     } else {
@@ -361,50 +384,45 @@ export function changeUserRole(
 export function publishPackage(
   pkgName: string, username: string, organization: string,
   teamPermissions: TeamPermissionData[], version: string, auth: any): Promise<any> {
-    return new Promise((resolve, reject) => {
-      getPackage(pkgName, auth).then(pkgObject => {
-        if (pkgObject) {
-          if (isOwner(username, pkgName, auth)) {
-            pkgObject.versions.push(version);
-            resolve(auth);
-          } else {
-            reject();
-          }
+    return userHasWritePermissions(username, pkgName, auth).then(hasPermission => {
+      return new Promise((resolve, reject) => {
+        if (hasPermission) {
+          getPackage(pkgName, auth).then(pkgObject => {
+            if (pkgObject) {
+              if (pkgObject.versions.indexOf(version) === -1) {
+                pkgObject.versions.push(version);
+                resolve(auth);
+              } else {
+                reject();
+              }
+            } else {
+              let permissions = [];
+              if (teamPermissions) {
+                permissions = teamPermissions.map(
+                  tp => ({ team: tp.team, permission: tp.permission}));
+              }
+              let pkg = {
+                name: pkgName,
+                versions: [ version ],
+                owners: [ username ],
+                organization: organization ? organization : '',
+                teamPermissions: permissions,
+                memberPermissions: [{ name: username, permission: 'read-write' }]
+              };
+              if (auth.packages
+              .findIndex(p => p.name === pkgName && p.version === version) === -1) {
+                auth.packages.push(pkg);
+                resolve(auth);
+              } else {
+                reject();
+              }
+            }
+          });
         } else {
-          let permissions = [];
-          if (teamPermissions) {
-            permissions = teamPermissions.map(
-              tp => ({ team: tp.team, permission: tp.permission}));
-          }
-          let pkg = {
-            name: pkgName,
-            versions: [ version ],
-            owners: [ username ],
-            organization: organization ? organization : '',
-            teamPermissions: permissions,
-            memberPermissions: [{ name: username, role: 'owner' }]
-          };
-          let pkgIndex = auth.packages.findIndex(p => p.name === pkgName && p.version === version);
-          if (pkgIndex === -1) {
-            auth.packages.push(pkg);
-            resolve(auth);
-          } else {
-            reject();
-          }
+          resolve(false);
         }
       });
     });
-}
-
-export function isOwner(username: string, pkg: string, auth: any): Promise<boolean> {
-  return new Promise((resolve, reject) => {
-    let pkgObject = auth.packages.find(p => p.name === pkg);
-    if (pkgObject) {
-      pkgObject.owners.find(u => u === username) ? resolve(true) : resolve(false);
-    } else {
-      reject();
-    }
-  });
 }
 
 export function getPackage(pkg: string, auth: any): Promise<any> {
@@ -413,7 +431,70 @@ export function getPackage(pkg: string, auth: any): Promise<any> {
     if (pkgObject) {
       resolve(pkgObject);
     } else {
-      resolve();
+      resolve(false);
     }
   });
+}
+
+export function userHasReadPermissions(username: string, pkg: string, auth: any): Promise<boolean> {
+  return getPackage(pkg, auth).then(pkgObject => {
+    if (pkgObject && pkgObject.name[0] === '@') {
+      if (pkgObject.owners.findIndex(o => o === username) !== -1) {
+        return true;
+      } else {
+        if (pkgObject.memberPermissions.findIndex(mp => mp.name === username) !== -1) {
+          return true;
+        } else {
+          let teams = getUserTeams(username, pkgObject.name, auth);
+          teams.forEach(t => {
+            if (pkgObject.teamPermissions.findIndex(tp => tp.team === t.name) !== -1) {
+              return true;
+            }
+          });
+          return false;
+        }
+      }
+    }
+    return true;
+  });
+}
+
+export function userHasWritePermissions(
+  username: string, pkg: string, auth: any): Promise<boolean> {
+    return getPackage(pkg, auth).then(pkgObject => {
+      if (pkg[0] === '@') {
+        if (pkgObject) {
+          if (pkgObject.owners.findIndex(o => o === username) !== -1) {
+            return true;
+          } else {
+            if (pkgObject.memberPermissions.findIndex(
+              mp => mp.name === username && mp.permission === 'read-write') !== -1) {
+              return true;
+            } else {
+              let teams = getUserTeams(username, pkgObject.name, auth);
+              return teams.some(t => {
+                if (pkgObject.teamPermissions.findIndex(
+                  tp => tp.team === t.name && tp.permission === 'read-write') !== -1) {
+                  return true;
+                }
+              });
+            }
+          }
+        } else {
+          let splitName = pkg.split('/')[0].slice(1);
+          if (splitName === username) {
+            return true;
+          } else {
+            let organizations = getUserOrganizations(username, auth);
+            if (organizations.indexOf(o => o.name === splitName) !== -1) {
+              return true;
+            } else {
+              return false;
+            }
+          }
+        }
+      } else {
+        return true;
+      }
+    });
 }
