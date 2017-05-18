@@ -63,7 +63,7 @@ export function writeAuth(secret: string): Promise<null> {
       }
     ],
     users: [
-      { name: 'admin', password: generateHash(password, secret), fullName: '' }
+      { name: 'admin', password: generateHash(password, secret), fullName: '', tokens: [] }
     ],
     packages: []
   };

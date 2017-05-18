@@ -36,7 +36,7 @@ describe('Publishing packages specific tests', () => {
     let organization = 'bleenco';
     let version = '0.1.2';
     let teamPermissions: auth.TeamPermissionData[]
-      = [{ team: 'testTeam', permission: 'readwrite' }];
+      = [{ team: 'testTeam', permission: 'read-write' }];
 
     return auth.publishPackage(pkgName, username, organization, teamPermissions, version, testAuth)
       .then(authentication => fs.writeJsonFile(testPath, authentication))
@@ -48,7 +48,7 @@ describe('Publishing packages specific tests', () => {
           owners: [ username ],
           organization: organization,
           teamPermissions: teamPermissions,
-          memberPermissions: [{ name: username, role: 'owner' }]
+          memberPermissions: [{ name: username, permission: 'read-write' }]
         });
       });
   });
@@ -70,7 +70,7 @@ describe('Publishing packages specific tests', () => {
           owners: [ username ],
           organization: '',
           teamPermissions: [],
-          memberPermissions: [{ name: username, role: 'owner' }]
+          memberPermissions: [{ name: username, permission: 'read-write' }]
         });
       });
   });

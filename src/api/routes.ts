@@ -95,32 +95,41 @@ export function getPackage(req: auth.AuthRequest, res: express.Response): void |
     let baseUrl = req.protocol + '://' + req.get('host');
     let pkgName: string = req.params.package;
     let config = getConfig();
-
-    let pkgJsonPath = getFilePath(`packages/${pkgName}/package.json`);
-    if (pkgName.indexOf('@') !== -1) {
-      pkgName = pkgName.replace(/^(@.*)(\/)(.*)$/, '$1%2F$3');
-    }
-
-    exists(pkgJsonPath).then(e => {
-      if (e) {
-        readJsonFile(pkgJsonPath).then((jsonData: IPackage) => res.status(200).json(jsonData));
-      } else {
-        if (config.useUpstream) {
-          proxy.fetchUpstreamData(config.upstream, pkgName, baseUrl).then((body: IPackage) => {
-            if (body.versions) {
-              body = proxy.changeUpstreamDistUrls(config.upstream, baseUrl, body);
-              ensureDirectory(dirname(pkgJsonPath)).then(() => {
-                writeJsonFile(pkgJsonPath, body).then(() => res.status(200).json(body));
+    let authFile = getAuth();
+    let user = auth.getUserByToken(res.locals.remote_user.token, authFile);
+    auth.userHasReadPermissions(user.name, pkgName, authFile).then(hasPermissions => {
+      if (hasPermissions) {
+        let pkgJsonPath = getFilePath(`packages/${pkgName}/package.json`);
+        if (pkgName.indexOf('@') !== -1) {
+          pkgName = pkgName.replace(/^(@.*)(\/)(.*)$/, '$1%2F$3');
+        }
+        exists(pkgJsonPath).then(e => {
+          if (e) {
+            readJsonFile(pkgJsonPath)
+            .then((jsonData: IPackage) => res.status(200).json(jsonData));
+          } else {
+            if (config.useUpstream) {
+              proxy.fetchUpstreamData(config.upstream, pkgName, baseUrl)
+              .then((body: IPackage) => {
+                if (body.versions) {
+                  body = proxy.changeUpstreamDistUrls(config.upstream, baseUrl, body);
+                  ensureDirectory(dirname(pkgJsonPath)).then(() => {
+                    writeJsonFile(pkgJsonPath, body).then(() => res.status(200).json(body));
+                  });
+                } else {
+                  return res.status(404).json('');
+                }
               });
             } else {
               return res.status(404).json('');
             }
-          });
-        } else {
-          return res.status(404).json('');
-        }
+          }
+        }).catch(() => res.status(404).json(''));
+      } else {
+        return res.status(401).json({ error: `you do not have permission for `
+              + `"${pkgName}". Are you logged in as the correct user?` });
       }
-    });
+    }).catch(() => res.status(404).json(''));
   }
 }
 
@@ -132,11 +141,9 @@ export function updatePackage(
         let pkgName: string = request[3];
         let username: string = request[2];
         let authFile = getAuth();
-        let user = authFile.users
-          .find(u => u.tokens.findIndex(t => t === res.locals.remote_user.token) != -1);
-        auth.isOwner(user.name, pkgName, authFile)
-        .then(owner => {
-          if (owner) {
+        let user = auth.getUserByToken(res.locals.remote_user.token, authFile);
+        auth.userHasWritePermissions(user.name, pkgName, authFile).then(hasPermissions => {
+          if (hasPermissions) {
             let pkg = authFile.packages.find(p => p.name === pkgName);
             let userIndex = pkg.owners.findIndex(o => o === username);
             if (userIndex < 0 && pkg) {
@@ -158,9 +165,8 @@ export function updatePackage(
         let authFile = getAuth();
         let user = authFile.users
           .find(u => u.tokens.findIndex(t => t === res.locals.remote_user.token) != -1);
-        auth.isOwner(user.name, pkgName, authFile)
-        .then(owner => {
-          if (owner) {
+        auth.userHasWritePermissions(user.name, pkgName, authFile).then(hasPermissions => {
+          if (hasPermissions) {
             let pkg = authFile.packages.find(p => p.name === pkgName);
             if (pkg) {
               let index = pkg.owners.findIndex(u => u === username);
@@ -218,18 +224,43 @@ export function getTarball(req: auth.AuthRequest, res: express.Response) {
 }
 
 export function publishPackage(req: auth.AuthRequest, res: express.Response): void {
+  let jsonErrorResponse: any = { message: 'error saving package version' };
   let name: string = req.params.package;
+  let authFile = getAuth();
+  let user: any = auth.getUserByToken(res.locals.remote_user.token, authFile);
+  let organization: string = null;
+  let teams: any = null;
+  if (name[0] === '@') {
+    let splitName = name.split('/')[0].slice(1);
+    if (splitName !== user.name) {
+      organization = splitName;
+      teams = auth.getUserTeams(user.name, organization, authFile).map(t => {
+        return { team: t.name, permission: 'read-write' };
+      });
+    }
+  }
   let data: IPackage = req.body;
+  let version: string = data.versions[Object.keys(data.versions)[0]].version;
 
-  let pkg = new Package(data);
-  pkg.saveTarballFromData()
-    .then(() => pkg.initPkgJsonFromData())
-    .then(() => {
-      return res.status(200).json({ message: 'package published' });
-    })
-    .catch(err => {
-      return res.status(500).json({ message: 'error saving package version' });
-    });
+  auth.publishPackage(
+    name, user.name, organization, teams, version, authFile).then((newAuthFile) => {
+      if (!newAuthFile) {
+        return res.status(403).json({ error: `you do not have permission to publish `
+            + `"${name}". Are you logged in as the correct user?` });
+      } else {
+        writeJsonFile(getAuthPath(), newAuthFile).then(() => {
+          let pkg = new Package(data);
+          pkg.saveTarballFromData()
+            .then(() => pkg.initPkgJsonFromData())
+            .then(() => {
+              return res.status(200).json({ message: 'package published' });
+            })
+            .catch(err => {
+              return res.status(500).json(jsonErrorResponse);
+            });
+        });
+      }
+  }).catch(() => res.status(412).json(jsonErrorResponse) );
 }
 
 export function whoami(req: auth.AuthRequest, res: express.Response): express.Response {
