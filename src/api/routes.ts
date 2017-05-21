@@ -133,7 +133,7 @@ export function getPackage(req: auth.AuthRequest, res: express.Response): void |
   }
 }
 
-export function updatePackage(
+export function updatePackageOwner(
   req: auth.AuthRequest, res: express.Response): void | express.Response {
     let request = req.headers.referer.split(' ');
     if (request[0] === 'owner') {
@@ -223,44 +223,72 @@ export function getTarball(req: auth.AuthRequest, res: express.Response) {
   });
 }
 
-export function publishPackage(req: auth.AuthRequest, res: express.Response): void {
-  let jsonErrorResponse: any = { message: 'error saving package version' };
+export function updatePackage(req: auth.AuthRequest, res: express.Response): void {
   let name: string = req.params.package;
   let authFile = getAuth();
   let user: any = auth.getUserByToken(res.locals.remote_user.token, authFile);
-  let organization: string = null;
-  let teams: any = null;
-  if (name[0] === '@') {
-    let splitName = name.split('/')[0].slice(1);
-    if (splitName !== user.name) {
-      organization = splitName;
-      teams = auth.getUserTeams(user.name, organization, authFile).map(t => {
-        return { team: t.name, permission: 'read-write' };
+  let request = req.headers.referer.split(' ');
+  if (request[0] === 'star') {
+    let username = user.name;
+    if (username in req.body.users) {
+      auth.starPackage(user.name, name, authFile).then((newAuthFile) => {
+        if (!newAuthFile) {
+            return res.status(403).json({ error: `you do not have permission to star `
+                + `"${name}". Are you logged in as the correct user?` });
+          } else {
+            writeJsonFile(getAuthPath(), newAuthFile).then(() => {
+              return res.status(200).json({ message: 'Package starred.' });
+            });
+          }
+      });
+    } else {
+      auth.unStarPackage(user.name, name, authFile).then((newAuthFile) => {
+        if (!newAuthFile) {
+            return res.status(403).json({ error: `you do not have permission to star `
+                + `"${name}". Are you logged in as the correct user?` });
+          } else {
+            writeJsonFile(getAuthPath(), newAuthFile).then(() => {
+              return res.status(200).json({ message: 'Package unstarred.' });
+            });
+          }
       });
     }
-  }
-  let data: IPackage = req.body;
-  let version: string = data.versions[Object.keys(data.versions)[0]].version;
-
-  auth.publishPackage(
-    name, user.name, organization, teams, version, authFile).then((newAuthFile) => {
-      if (!newAuthFile) {
-        return res.status(403).json({ error: `you do not have permission to publish `
-            + `"${name}". Are you logged in as the correct user?` });
-      } else {
-        writeJsonFile(getAuthPath(), newAuthFile).then(() => {
-          let pkg = new Package(data);
-          pkg.saveTarballFromData()
-            .then(() => pkg.initPkgJsonFromData())
-            .then(() => {
-              return res.status(200).json({ message: 'package published' });
-            })
-            .catch(err => {
-              return res.status(500).json(jsonErrorResponse);
-            });
+  } else {
+    let jsonErrorResponse: any = { message: 'error saving package version' };
+    let organization: string = null;
+    let teams: any = null;
+    if (name[0] === '@') {
+      let splitName = name.split('/')[0].slice(1);
+      if (splitName !== user.name) {
+        organization = splitName;
+        teams = auth.getUserTeams(user.name, organization, authFile).map(t => {
+          return { team: t.name, read: true, write: true };
         });
       }
-  }).catch(() => res.status(412).json(jsonErrorResponse) );
+    }
+    let data: IPackage = req.body;
+    let version: string = data.versions[Object.keys(data.versions)[0]].version;
+
+    auth.publishPackage(
+      name, user.name, organization, teams, version, authFile).then((newAuthFile) => {
+        if (!newAuthFile) {
+          return res.status(403).json({ error: `you do not have permission to publish `
+              + `"${name}". Are you logged in as the correct user?` });
+        } else {
+          writeJsonFile(getAuthPath(), newAuthFile).then(() => {
+            let pkg = new Package(data);
+            pkg.saveTarballFromData()
+              .then(() => pkg.initPkgJsonFromData())
+              .then(() => {
+                return res.status(200).json({ message: 'package published' });
+              })
+              .catch(err => {
+                return res.status(500).json(jsonErrorResponse);
+              });
+          });
+        }
+    }).catch(() => res.status(412).json(jsonErrorResponse) );
+  }
 }
 
 export function whoami(req: auth.AuthRequest, res: express.Response): express.Response {

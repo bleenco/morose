@@ -39,7 +39,8 @@ export interface OrganizationTeamData {
 
 export interface TeamPermissionData {
   team: string;
-  permission: string;
+  read: boolean;
+  write: boolean;
 }
 
 export function middleware(req: AuthRequest, res: express.Response,
@@ -399,7 +400,7 @@ export function publishPackage(
               let permissions = [];
               if (teamPermissions) {
                 permissions = teamPermissions.map(
-                  tp => ({ team: tp.team, permission: tp.permission}));
+                  tp => ({ team: tp.team, read: tp.read, write: tp.write}));
               }
               let pkg = {
                 name: pkgName,
@@ -407,7 +408,8 @@ export function publishPackage(
                 owners: [ username ],
                 organization: organization ? organization : '',
                 teamPermissions: permissions,
-                memberPermissions: [{ name: username, permission: 'read-write' }]
+                memberPermissions: [{ name: username, read: true, write: true }],
+                stars: []
               };
               if (auth.packages
               .findIndex(p => p.name === pkgName && p.version === version) === -1) {
@@ -423,6 +425,47 @@ export function publishPackage(
         }
       });
     });
+}
+
+export function starPackage(username: string, pkg: string, auth: any): Promise<any> {
+  return userHasReadPermissions(username, pkg, auth).then(hasPermission => {
+    return new Promise((resolve, reject) => {
+      if (hasPermission) {
+        getPackage(pkg, auth).then(pkgObject => {
+          if (pkgObject) {
+            if (pkgObject.stars.indexOf(username) === -1) {
+              pkgObject.stars.push(username);
+              resolve(auth);
+            } else {
+              resolve(auth);
+            }
+          } else {
+            reject();
+          }
+        });
+      } else {
+        resolve(false);
+      }
+    });
+  });
+}
+
+export function unStarPackage(username: string, pkg: string, auth: any): Promise<any> {
+  return new Promise((resolve, reject) => {
+    getPackage(pkg, auth).then(pkgObject => {
+      if (pkgObject) {
+        let starIndex = pkgObject.stars.indexOf(username);
+        if (starIndex !== -1) {
+          pkgObject.stars.splice(starIndex, 1);
+          resolve(auth);
+        } else {
+          resolve(auth);
+        }
+      } else {
+        reject();
+      }
+    });
+  });
 }
 
 export function getPackage(pkg: string, auth: any): Promise<any> {
@@ -442,12 +485,12 @@ export function userHasReadPermissions(username: string, pkg: string, auth: any)
       if (pkgObject.owners.findIndex(o => o === username) !== -1) {
         return true;
       } else {
-        if (pkgObject.memberPermissions.findIndex(mp => mp.name === username) !== -1) {
+        if (pkgObject.memberPermissions.findIndex(mp => mp.name === username && mp.read) !== -1) {
           return true;
         } else {
           let teams = getUserTeams(username, pkgObject.name, auth);
           teams.forEach(t => {
-            if (pkgObject.teamPermissions.findIndex(tp => tp.team === t.name) !== -1) {
+            if (pkgObject.teamPermissions.findIndex(tp => tp.team === t.name && tp.read) !== -1) {
               return true;
             }
           });
@@ -468,13 +511,13 @@ export function userHasWritePermissions(
             return true;
           } else {
             if (pkgObject.memberPermissions.findIndex(
-              mp => mp.name === username && mp.permission === 'read-write') !== -1) {
+              mp => mp.name === username && mp.write) !== -1) {
               return true;
             } else {
               let teams = getUserTeams(username, pkgObject.name, auth);
               return teams.some(t => {
                 if (pkgObject.teamPermissions.findIndex(
-                  tp => tp.team === t.name && tp.permission === 'read-write') !== -1) {
+                  tp => tp.team === t.name && tp.write) !== -1) {
                   return true;
                 }
               });
