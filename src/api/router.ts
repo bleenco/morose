@@ -49,7 +49,7 @@ router.get('/-/ping', routes.ping);
 router.get('/:package/:version?', routes.getPackage);
 router.get('/:package(*)/-/:tarball', auth.hasAccess, routes.getTarball);
 router.get('/-/v1/search', auth.hasAccess, routes.search);
-router.put('/:package/:_rev/:revision?', auth.hasAccess, routes.updatePackage);
-router.put('/:package/:revision?', auth.hasAccess, routes.publishPackage);
+router.put('/:package/:_rev/:revision?', auth.hasAccess, routes.updatePackageOwner);
+router.put('/:package/:revision?', auth.hasAccess, routes.updatePackage);
 
 router.all('/*', index);
