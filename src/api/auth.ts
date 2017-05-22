@@ -479,6 +479,17 @@ export function getPackage(pkg: string, auth: any): Promise<any> {
   });
 }
 
+export function getStaredPackages(username: string, auth: any): Promise<any> {
+  return new Promise((resolve, reject) => {
+    let starredPackages: any = auth.packages.filter(p => p.stars.indexOf(username) !== -1);
+    if (starredPackages) {
+      resolve(starredPackages.map(p => p.name));
+    } else {
+      reject();
+    }
+  });
+ }
+
 export function userHasReadPermissions(username: string, pkg: string, auth: any): Promise<boolean> {
   return getPackage(pkg, auth).then(pkgObject => {
     if (pkgObject && pkgObject.name[0] === '@') {

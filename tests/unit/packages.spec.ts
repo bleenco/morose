@@ -150,4 +150,12 @@ describe('Publishing packages specific tests', () => {
       });
     });
   });
+
+  it('should list all packages user has a star on it', () => {
+    let username = 'developer';
+
+    return auth.getStaredPackages(username, testAuth).then(starredPackages => {
+      expect(starredPackages).to.deep.include('morose');
+    });
+  });
 });
