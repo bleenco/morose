@@ -299,6 +299,23 @@ export function ping(req: auth.AuthRequest, res: express.Response): express.Resp
   return res.status(200).json({ success: true });
 }
 
+export function starredByUser(req: auth.AuthRequest, res: express.Response): express.Response {
+  let request = req.headers.referer.split(' ');
+  let authFile = getAuth();
+  let username: string;
+  if (request.length > 1) {
+    username = request[1];
+  } else {
+    let user = auth.getUserByToken(res.locals.remote_user.token, authFile);
+    username = user.name;
+  }
+  auth.getStaredPackages(username, authFile).then(starredPackages => {
+    return res.status(200).json({ rows: starredPackages.map(sp => { return {value: sp}; })});
+  });
+
+  return res.status(200);
+ }
+
 export function search(req: auth.AuthRequest, res: express.Response): void {
   let text = req.query.text;
   let size = req.query.size || 20;
