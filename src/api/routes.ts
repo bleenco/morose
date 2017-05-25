@@ -71,8 +71,7 @@ export function getUser(req: auth.AuthRequest, res: express.Response): void | ex
 }
 
 export function getPackage(req: auth.AuthRequest, res: express.Response): void | express.Response {
-  let request = req.headers.referer.split(' ');
-  if (request[0] === 'owner') {
+  if (req.headers.referer && req.headers.referer.split(' ')[0] === 'owner') {
     let pkgName: string = req.params.package;
     let auth = getAuth();
     let pkg = auth.packages.find(p => p.name === pkgName);
@@ -315,6 +314,121 @@ export function starredByUser(req: auth.AuthRequest, res: express.Response): exp
 
   return res.status(200);
  }
+
+export function organizationAccess(req: auth.AuthRequest, res: express.Response): express.Response {
+  let request = req.headers.referer.split(' ');
+  let authFile = getAuth();
+  let searchPattern: any;
+  if (request.length > 1) {
+    if (request[1] === 'ls-packages') {
+      if (request.length > 2) {
+        searchPattern = request[2];
+      } else {
+        searchPattern = res.locals.remote_user.name;
+      }
+
+      auth.lsPackages(searchPattern, authFile).then(packages => {
+        return res.status(200).json(packages);
+      }).catch(error => res.status(error.errorCode).json({ message: error.errorMessage}));
+    }
+  }
+
+  return res.status(200);
+}
+
+export function setOrganizationAccess(req: auth.AuthRequest, res: express.Response): void {
+  let request = req.headers.referer.split(' ');
+  let authFile = getAuth();
+  if (request.length > 2) {
+    if (request[1] === 'grant') {
+      if (request.length > 4) {
+        let permission = request[2];
+        let team = request[3];
+        let pkg = request[4];
+        if (request[4] === '[REDACTED]') {
+          pkg = req.body.package;
+        }
+        auth.grantAccess(pkg, team, permission, res.locals.remote_user.name, authFile)
+        .then(newAuthFile => {
+          if (!newAuthFile) {
+            writeJsonFile(getAuthPath(), newAuthFile).then(() => {
+              res.status(200).json({ message: 'Permission granted.' });
+            });
+          }
+        }).catch(error => res.status(error.errorCode).json({ message: error.errorMessage}));
+      }
+    } else if (request[1] === 'revoke') {
+      if (request.length > 3) {
+        let team = request[2];
+        let pkg = request[3];
+        if (request[3] === '[REDACTED]') {
+          pkg = req.body.package;
+        }
+        auth.revokeAccess(pkg, team, res.locals.remote_user.name, authFile)
+        .then(newAuthFile => {
+          if (newAuthFile) {
+            writeJsonFile(getAuthPath(), newAuthFile).then(() => {
+              res.status(200).json({ message: 'Permission revoked.' });
+            });
+          }
+        }).catch(error => res.status(error.errorCode).json({ message: error.errorMessage}));
+      }
+    }
+  }
+}
+
+export function getCollaborators(req: auth.AuthRequest, res: express.Response): express.Response {
+  let request = req.headers.referer.split(' ');
+  let authFile = getAuth();
+  let searchPattern = '';
+  if (request.length > 2) {
+    if (request[1] === 'ls-collaborators') {
+      let pkgName = request[2];
+      if (request[2] === '[REDACTED]') {
+        pkgName = req.params[0].split('/');
+        pkgName = `${pkgName[2]}/${pkgName[3]}`;
+      }
+      if (request.length > 3) {
+        searchPattern = request[3];
+      }
+
+      auth.lsCollaborators(pkgName, searchPattern, authFile).then(collaborators => {
+        return res.status(200).json(collaborators);
+      }).catch(error => res.status(500));
+    }
+  }
+
+  return res.status(200);
+}
+
+export function setPackageAccess(req: auth.AuthRequest, res: express.Response): void {
+  let request = req.headers.referer.split(' ');
+  let authFile = getAuth();
+  let pkg = req.params[0];
+  if (request.length > 1) {
+    if (request[0] === 'access') {
+      if (request[1] === 'public') {
+        auth.packagePublicAccess(pkg, res.locals.remote_user.name, authFile)
+        .then(newAuthFile => {
+          if (newAuthFile) {
+            writeJsonFile(getAuthPath(), newAuthFile).then(() => {
+              res.status(200).json({ message: 'Package access set to public!' });
+            });
+          }
+        }).catch(error => res.status(error.errorCode).json({ message: error.errorMessage}));
+      } else if (request[1] === 'restricted') {
+        auth.packageRestrictedAccess(pkg, res.locals.remote_user.name, authFile)
+        .then(newAuthFile => {
+          if (newAuthFile) {
+            writeJsonFile(getAuthPath(), newAuthFile).then(() => {
+              res.status(200).json({ message: 'Package access set to restricted!' });
+            });
+          }
+        }).catch(error => res.status(error.errorCode).json({ message: error.errorMessage}));
+      }
+    }
+  }
+}
 
 export function search(req: auth.AuthRequest, res: express.Response): void {
   let text = req.query.text;
