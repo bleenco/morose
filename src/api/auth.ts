@@ -418,7 +418,7 @@ export function publishPackage(
                 permissions = teamPermissions.map(
                   tp => ({ team: tp.team, read: tp.read, write: tp.write}));
               }
-              let pkg = {
+              let pkg: any = {
                 name: pkgName,
                 versions: [ version ],
                 owners: [ username ],
@@ -427,6 +427,9 @@ export function publishPackage(
                 memberPermissions: [{ name: username, read: true, write: true }],
                 stars: []
               };
+              if (organization) {
+                pkg.access = 'restricted';
+              }
               if (auth.packages
               .findIndex(p => p.name === pkgName && p.version === version) === -1) {
                 auth.packages.push(pkg);
@@ -509,19 +512,21 @@ export function getStaredPackages(username: string, auth: any): Promise<any> {
 export function userHasReadPermissions(username: string, pkg: string, auth: any): Promise<boolean> {
   return getPackage(pkg, auth).then(pkgObject => {
     if (pkgObject && pkgObject.name[0] === '@') {
-      if (pkgObject.owners.findIndex(o => o === username) !== -1) {
-        return true;
-      } else {
-        if (pkgObject.memberPermissions.findIndex(mp => mp.name === username && mp.read) !== -1) {
+      if (pkgObject.access === 'restricted') {
+        if (pkgObject.owners.findIndex(o => o === username) !== -1) {
           return true;
         } else {
-          let teams = getUserTeams(username, pkgObject.name, auth);
-          teams.forEach(t => {
-            if (pkgObject.teamPermissions.findIndex(tp => tp.team === t.name && tp.read) !== -1) {
-              return true;
-            }
-          });
-          return false;
+          if (pkgObject.memberPermissions.findIndex(mp => mp.name === username && mp.read) !== -1) {
+            return true;
+          } else {
+            let teams = getUserTeams(username, pkgObject.name, auth);
+            teams.forEach(t => {
+              if (pkgObject.teamPermissions.findIndex(tp => tp.team === t.name && tp.read) !== -1) {
+                return true;
+              }
+            });
+            return false;
+          }
         }
       }
     }
@@ -576,7 +581,7 @@ export function lsPackages(pattern: string, auth: any): Promise<any> {
     if (user) {
       // user is owner
       let packages = auth.packages.filter(p => p.owners.findIndex(o => o === user.name) !== -1)
-      .map(p => p.name);
+        .map(p => p.name);
       if (packages) {
         packages.forEach(pkg => result[pkg] = 'write');
       }
@@ -636,8 +641,7 @@ export function lsPackages(pattern: string, auth: any): Promise<any> {
       } else {
         // organization is owner
         if (auth.organizations.findIndex(o => o.name === pattern) !== -1) {
-          let packages = auth.packages.filter(p => p.organization === pattern)
-          .map(p => p.name);
+          let packages = auth.packages.filter(p => p.organization === pattern).map(p => p.name);
           if (packages) {
             packages.forEach(pkg => result[pkg] = 'write');
           }
@@ -730,7 +734,7 @@ export function grantAccess(
   pkg: string, team: string, permission: string, user: string, auth: any): Promise<any> {
     return new Promise((resolve, reject) => {
       if (userHasWritePermissions(user, pkg, auth)) {
-        if (permission in ['read-only', 'read-write']) {
+        if (['read-only', 'read-write'].indexOf(permission) !== -1) {
           let pkgObject = auth.packages.find(p => p.name === pkg);
           if (pkgObject) {
             let teamPermissionIndex = pkgObject.teamPermissions.findIndex(tp => tp.team === team);
@@ -773,7 +777,7 @@ export function packagePublicAccess(pkg: string, user: string, auth: any): Promi
     if (userHasWritePermissions(user, pkg, auth)) {
       let pkgObject = auth.packages.find(p => p.name === pkg);
       if (pkgObject) {
-        pkgObject.access = 'restricted';
+        pkgObject.access = 'public';
         resolve(auth);
       } else {
         reject({ errorCode: 412, errorMessage: `Package "${pkg}" doesn't exists!` });
