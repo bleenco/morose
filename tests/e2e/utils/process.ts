@@ -217,7 +217,7 @@ export function wait(msecs: number) {
 
 export function npmLogin(uname: string, passwd: string, email: string): Promise<any> {
   return new Promise((resolve, reject) => {
-    suppose('npm', ['login'])
+    suppose('npm', ['-s', 'login'])
       .when(/Username/ig).respond(uname + '\n')
       .when(/Password/ig).respond(passwd + '\n')
       .when(/Email/ig).respond(email + '\n')
