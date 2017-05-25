@@ -60,7 +60,8 @@ describe('Publishing packages specific tests', () => {
           organization: organization,
           teamPermissions: teamPermissions,
           memberPermissions: [{ name: username, read: true, write: true }],
-          stars: []
+          stars: [],
+          access: 'restricted'
         });
       });
   });
@@ -153,9 +154,115 @@ describe('Publishing packages specific tests', () => {
 
   it('should list all packages user has a star on it', () => {
     let username = 'developer';
-
     return auth.getStaredPackages(username, testAuth).then(starredPackages => {
       expect(starredPackages).to.deep.include('morose');
     });
+  });
+
+  it('should list all packages user is able to access (npm access ls-packages).', () => {
+    let username = 'admin';
+    return auth.lsPackages(username, testAuth).then(packages => {
+      expect(packages.morose).equal('write');
+    });
+  });
+
+  it('should list all packages users team is able to access (npm access ls-packages).', () => {
+    let team = 'bleenco:developers';
+    return auth.lsPackages(team, testAuth).then(packages => {
+      expect(packages).eql({});
+    });
+  });
+
+  it('should list all access privileges for a package (npm access ls-collaborators).', () => {
+    let pkg = 'morose';
+    let username = 'admin';
+    return auth.lsCollaborators(pkg, username, testAuth).then(collaborators => {
+      expect(collaborators.admin).equal('write');
+    });
+  });
+
+  it('should grant access for a package (npm access grant).', () => {
+    let pkg = 'morose';
+    let team = 'developers';
+    let permission = 'read-write';
+    let username = 'admin';
+    return auth.grantAccess(pkg, team, permission, username, testAuth)
+      .then(newAuth => fs.writeJsonFile(testPath, newAuth))
+      .then(() => fs.readJsonFile(testPath))
+      .then(content => {
+        expect(content.packages).to.deep.include({
+          name: pkg,
+          versions: [ '0.8.1', '0.8.2' ],
+          owners: [ 'admin' ],
+          organization: '',
+          teamPermissions: [{ team: 'developers', read: true, write: true }],
+          memberPermissions: [{ name: 'admin', read: true, write: true }],
+          stars: [ 'developer' ]
+        });
+      });
+  });
+
+  it('should revoke access for a package (npm access revoke).', () => {
+    let pkg = 'morose';
+    let team = 'bleenco:developers';
+    let username = 'developer';
+
+    return auth.grantAccess(pkg, team, 'read-write', username, testAuth).then(grantAuth => {
+      return auth.revokeAccess(pkg, team, username, grantAuth).then(newAuth => {
+        return fs.writeJsonFile(testPath, newAuth).then(() => {
+          return fs.readJsonFile(testPath).then(content => {
+            expect(content.packages).to.deep.include({
+              name: pkg,
+              versions: [ '0.8.1', '0.8.2' ],
+              owners: [ 'admin' ],
+              organization: '',
+              teamPermissions: [],
+              memberPermissions: [{ name: 'admin', read: true, write: true }],
+              stars: [ 'developer' ]
+            });
+          });
+        });
+      });
+    });
+  });
+
+  it('should set package access to public (npm access public).', () => {
+    let pkg = 'morose';
+    let username = 'developer';
+    return auth.packagePublicAccess(pkg, username, testAuth)
+      .then(newAuth => fs.writeJsonFile(testPath, newAuth))
+      .then(() => fs.readJsonFile(testPath))
+      .then(content => {
+        expect(content.packages).to.deep.include({
+          name: pkg,
+          versions: [ '0.8.1', '0.8.2' ],
+          owners: [ 'admin' ],
+          organization: '',
+          teamPermissions: [],
+          memberPermissions: [{ name: 'admin', read: true, write: true }],
+          stars: [ 'developer' ],
+          access: 'public'
+        });
+      });
+  });
+
+  it('should set package access to protected (npm access protected).', () => {
+    let pkg = 'morose';
+    let username = 'developer';
+    return auth.packageRestrictedAccess(pkg, username, testAuth)
+      .then(newAuth => fs.writeJsonFile(testPath, newAuth))
+      .then(() => fs.readJsonFile(testPath))
+      .then(content => {
+        expect(content.packages).to.deep.include({
+          name: pkg,
+          versions: [ '0.8.1', '0.8.2' ],
+          owners: [ 'admin' ],
+          organization: '',
+          teamPermissions: [],
+          memberPermissions: [{ name: 'admin', read: true, write: true }],
+          stars: [ 'developer' ],
+          access: 'restricted'
+        });
+      });
   });
 });
