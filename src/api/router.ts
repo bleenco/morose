@@ -40,6 +40,7 @@ router.post('/org/user/delete', web.deleteUserFromOrganization);
 router.post('/org/delete', web.deleteOrganization);
 router.post('/org/user/role', web.changeUserRole);
 router.post('/pkg/publish', web.publishPackage);
+router.post('/:/-/package/*/access', routes.setPackageAccess);
 
 router.put(/\/\-\/user\/org\.couchdb\.user\:(.*)/, routes.doAuth);
 router.get(/\/\-\/user\/org\.couchdb\.user\:(.*)/, routes.getUser);
@@ -48,8 +49,13 @@ router.get('/-/whoami', routes.whoami);
 router.get('/-/ping', routes.ping);
 router.get('/:package/:version?', routes.getPackage);
 router.get('/:package(*)/-/:tarball', auth.hasAccess, routes.getTarball);
+router.get('/-/package/(*)/collaborators?', auth.hasAccess, routes.getCollaborators);
+router.get('/-/org/*/package*', auth.hasAccess, routes.organizationAccess);
+router.get('/-/team/*/package*', auth.hasAccess, routes.organizationAccess);
 router.get('/-/v1/search', auth.hasAccess, routes.search);
 router.get('/-/_view/starredByUser?', auth.hasAccess, routes.starredByUser);
+router.delete('/-/team/*/package*', auth.hasAccess, routes.setOrganizationAccess);
+router.put('/-/team/*/package*', auth.hasAccess, routes.setOrganizationAccess);
 router.put('/:package/:_rev/:revision?', auth.hasAccess, routes.updatePackageOwner);
 router.put('/:package/:revision?', auth.hasAccess, routes.updatePackage);
 

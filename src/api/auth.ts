@@ -98,8 +98,24 @@ export function getUserOrganizations(username: string, auth: any): any {
 }
 
 export function getUserTeams(username: string, organization: string, auth: any): any {
-  return auth.organizations.find(o => o.name = organization).teams
-    .filter(t => t.members.findIndex(m => m === username) !== -1);
+  let org = auth.organizations.find(o => o.name === organization);
+  if (org) {
+    return org.teams.filter(t => t.members.findIndex(m => m === username) !== -1).map(t => t.name);
+  }
+  return [];
+}
+
+export function getTeamUsers(team: string, organization: string, auth: any): any {
+  let users = [];
+  let org = auth.organizations.find(o => o.name === organization);
+  if (org) {
+    org.teams.filter(t => t.team === team).members.forEach(m => {
+      if (!users[m]) {
+        users.push(m);
+      }
+    });
+  }
+  return users;
 }
 
 export function hasAccess(req: AuthRequest, res: express.Response,
@@ -551,4 +567,235 @@ export function userHasWritePermissions(
         return true;
       }
     });
+}
+
+export function lsPackages(pattern: string, auth: any): Promise<any> {
+  return new Promise((resolve, reject) => {
+    let user = auth.users.find(u => u.name === pattern);
+    let result = {};
+    if (user) {
+      // user is owner
+      let packages = auth.packages.filter(p => p.owners.findIndex(o => o === user.name) !== -1)
+      .map(p => p.name);
+      if (packages) {
+        packages.forEach(pkg => result[pkg] = 'write');
+      }
+
+      // user has member permissions
+      auth.packages.forEach(p => {
+        let memberPermission = p.memberPermissions.find(mp => mp.name === pattern);
+        if (memberPermission) {
+          if (memberPermission.write) {
+            result[p.name] = 'write';
+          } else if (!result[p.name] && memberPermission.read) {
+            result[p.name] = 'read';
+          }
+        }
+      });
+
+      // user is in the team that has permissions
+      let organizations = getUserOrganizations(pattern, auth);
+      organizations.forEach(o => {
+        let teams = getUserTeams(pattern, o, auth);
+        let packages = auth.packages.filter(p => p.organization === o.name);
+        packages.forEach(p => {
+          let teamPermissions = p.teamPermissions.filter(tp => tp.team in teams);
+          teamPermissions.forEach(tp => {
+            if (tp.write) {
+              result[p.name] = 'write';
+            } else if (!result[p.name] && tp.read) {
+              result[p.name] = 'read';
+            }
+          });
+        });
+      });
+      resolve(result);
+    } else {
+      let splitPattern = pattern.split(':');
+      if (splitPattern.length > 1) {
+        if (auth.organizations.findIndex(o => o.name === splitPattern[0]) !== -1) {
+          let packages = auth.packages.filter(p => p.organization === splitPattern[0]);
+          if (packages) {
+            packages.forEach(pkg => {
+              let teamPermission = pkg.teamPermissions.find(tp => tp.team === splitPattern[1]);
+              if (teamPermission) {
+                // team has permissions
+                if (teamPermission.write) {
+                  result[pkg.name] = 'write';
+                } else if (teamPermission.read) {
+                  result[pkg.name] = 'read';
+                }
+              }
+            });
+          }
+          resolve(result);
+        } else {
+          reject({ errorCode: 412,
+            errorMessage: `Error: Organization ${splitPattern[0]} does not exists` });
+        }
+      } else {
+        // organization is owner
+        if (auth.organizations.findIndex(o => o.name === pattern) !== -1) {
+          let packages = auth.packages.filter(p => p.organization === pattern)
+          .map(p => p.name);
+          if (packages) {
+            packages.forEach(pkg => result[pkg] = 'write');
+          }
+          resolve(result);
+        } else {
+          reject({ errorCode: 412,
+            errorMessage: `Error: Organization ${splitPattern[0]} does not exists` });
+        }
+      }
+    }
+  });
+}
+
+export function lsCollaborators(pkg: string, username: string, auth: any): Promise<any> {
+  return new Promise((resolve) => {
+    let result = {};
+    getPackage(pkg, auth).then(p => {
+      if (p) {
+        let teams = [];
+        if (username) {
+          teams = getUserTeams(username, p.organization, auth);
+          p.owners.forEach(o => {
+            let ownerTeams = getUserTeams(o, p.organization, auth);
+            ownerTeams.some(ot => {
+              if (teams.findIndex(t => t === ot) !== -1) {
+                result[o] = 'write';
+              }
+            });
+            result[o] = 'write';
+          });
+          p.teamPermissions.forEach(tp => {
+            if (teams.findIndex(t => t === tp.team) !== -1) {
+              let users = getTeamUsers(tp.team, p.organization, auth);
+              if (tp.write) {
+                users.forEach(u => result[u] = 'write');
+              } else if (tp.read) {
+                users.forEach(u => {
+                  if (!result[u]) {
+                    result[tp.team] = 'read';
+                  }
+                });
+              }
+            }
+          });
+          p.memberPermissions.forEach(mp => {
+            if (!result[mp.name]) {
+              let memberTeams = getUserTeams(mp.name, p.organization, auth);
+              memberTeams.some(mt => {
+                if (teams.findIndex(t => t === mt) !== -1) {
+                  if (mp.write) {
+                    result[mp.name] = 'write';
+                  } else if (mp.read) {
+                    result[mp.name] = 'read';
+                  }
+                }
+              });
+            }
+          });
+        } else {
+          p.owners.forEach(o => result[o] = 'write');
+          p.teamPermissions.forEach(tp => {
+            let users = getTeamUsers(tp.team, p.organization, auth);
+            if (tp.write) {
+              users.forEach(u => result[u] = 'write');
+            } else if (tp.read) {
+              users.forEach(u => {
+                if (!result[u]) {
+                  result[tp.team] = 'read';
+                }
+              });
+            }
+          });
+          p.memberPermissions.forEach(mp => {
+            if (!result[mp.name]) {
+              if (mp.write) {
+                result[mp.name] = 'write';
+              } else if (mp.read) {
+                result[mp.name] = 'read';
+              }
+            }
+          });
+        }
+      }
+      resolve(result);
+    });
+  });
+}
+
+export function grantAccess(
+  pkg: string, team: string, permission: string, user: string, auth: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+      if (userHasWritePermissions(user, pkg, auth)) {
+        if (permission in ['read-only', 'read-write']) {
+          let pkgObject = auth.packages.find(p => p.name === pkg);
+          if (pkgObject) {
+            let teamPermissionIndex = pkgObject.teamPermissions.findIndex(tp => tp.team === team);
+            if (teamPermissionIndex !== -1) {
+              pkgObject.teamPermissions.splice(teamPermissionIndex, 1);
+            }
+            pkgObject.teamPermissions.push(
+              { team: team, read: true, write: permission === 'read-write' ? true : false });
+          }
+          resolve(auth);
+        } else {
+          reject({ errorCode: 412,
+            errorMessage: `Error: permission has to be either read-only or read-write.` });
+        }
+      }
+      reject({ errorCode: 403, errorMessage: `You do not have permission to grant permissions `
+      + `for "${pkg}". Are you logged in as the correct user?` });
+    });
+}
+
+export function revokeAccess(pkg: string, team: string, user: string, auth: any): Promise<any> {
+  return new Promise((resolve, reject) => {
+    if (userHasWritePermissions(user, pkg, auth)) {
+      let pkgObject = auth.packages.find(p => p.name === pkg);
+      if (pkgObject) {
+        let teamPermissionIndex = pkgObject.teamPermissions.findIndex(tp => tp.team === team);
+        if (teamPermissionIndex !== -1) {
+          pkgObject.teamPermissions.splice(teamPermissionIndex, 1);
+        }
+      }
+      resolve(auth);
+    }
+    reject({ errorCode: 403, errorMessage: `You do not have permission to revoke permissions `
+      + `for "${pkg}". Are you logged in as the correct user?` });
+  });
+}
+
+export function packagePublicAccess(pkg: string, user: string, auth: any): Promise<any> {
+  return new Promise((resolve, reject) => {
+    if (userHasWritePermissions(user, pkg, auth)) {
+      let pkgObject = auth.packages.find(p => p.name === pkg);
+      if (pkgObject) {
+        pkgObject.access = 'restricted';
+        resolve(auth);
+      } else {
+        reject({ errorCode: 412, errorMessage: `Package "${pkg}" doesn't exists!` });
+      }
+    }
+    reject({ errorCode: 403, errorMessage: `You do not have permission to change access `
+      + `for "${pkg}". Are you logged in as the correct user?` });
+  });
+}
+
+export function packageRestrictedAccess(pkg: string, user: string, auth: any): Promise<any> {
+  return new Promise((resolve, reject) => {
+    if (userHasWritePermissions(user, pkg, auth)) {
+      let pkgObject = auth.packages.find(p => p.name === pkg);
+      if (pkgObject) {
+        pkgObject.access = 'restricted';
+        resolve(auth);
+      } else {
+        reject({ errorCode: 412, errorMessage: `Package "${pkg}" doesn't exists!` });
+      }
+    }
+    reject({ errorCode: 403, errorMessage: `You do not have permission to change access `
+      + `for "${pkg}". Are you logged in as the correct user?` });
+  });
 }
