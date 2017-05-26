@@ -26,8 +26,6 @@ let allTests = glob.sync(path.join(e2eRoot, testGlob), { nodir: true, ignore: ar
   .map(name => path.relative(e2eRoot, name))
   .sort();
 
-console.log(argv);
-
 if (argv['nolink']) {
   allSetups = allSetups.filter(name => !name.includes('npm-link.ts'));
 }
