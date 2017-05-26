@@ -1,4 +1,4 @@
-import { executeSilent, npmLogin } from '../../utils/process';
+import { npmLogin } from '../../utils/process';
 import * as fs from '../../utils/fs';
 import { generateHash } from '../../../../src/api/auth';
 import { EOL } from 'os';
@@ -17,5 +17,5 @@ export default function() {
       return fs.replaceInFile(authPath, find, replace);
     })
     .then(() => npmLogin('admin', 'blabla', 'foo@bar.com'))
-    .then(() => executeSilent('npm logout'));
+    .then(code => code === 0 ? Promise.resolve() : Promise.reject(code));
 }
