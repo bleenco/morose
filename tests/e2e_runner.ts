@@ -7,7 +7,7 @@ import { morose, killAllProcesses } from './e2e/utils/process';
 Error.stackTraceLimit = Infinity;
 
 const argv = minimist(process.argv.slice(2), {
-  boolean: ['debug', 'verbose'],
+  boolean: ['debug', 'verbose', 'nolink', 'nobuild'],
   string: ['glob', 'ignore']
 });
 
@@ -18,12 +18,23 @@ let currentFileName = null;
 let index = 0;
 
 const e2eRoot = path.join(__dirname, 'e2e');
-const allSetups = glob.sync(path.join(e2eRoot, 'setup/**/*.ts'), { nodir: true })
+let allSetups = glob.sync(path.join(e2eRoot, 'setup/**/*.ts'), { nodir: true })
   .map(name => path.relative(e2eRoot, name))
   .sort();
-const allTests = glob.sync(path.join(e2eRoot, testGlob), { nodir: true, ignore: argv.ignore })
+
+let allTests = glob.sync(path.join(e2eRoot, testGlob), { nodir: true, ignore: argv.ignore })
   .map(name => path.relative(e2eRoot, name))
   .sort();
+
+console.log(argv);
+
+if (argv['nolink']) {
+  allSetups = allSetups.filter(name => !name.includes('npm-link.ts'));
+}
+
+if (argv['nobuild']) {
+  allSetups = allSetups.filter(name => !name.includes('build.ts'));
+}
 
 const testsToRun = allSetups
   .concat(allTests

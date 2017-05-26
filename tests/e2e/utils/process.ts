@@ -140,12 +140,7 @@ function _exec(options: ExecOptions, cmd: string, args: string[]): Promise<Proce
     });
 
     childProcess.on('close', (code: number) => {
-      if (code === 0) {
-        resolve({ stdout, stderr, code });
-      } else {
-        const err = new Error(`Running "${cmd} ${args.join(' ')}" returned error code `);
-        reject(err);
-      }
+      resolve({ stdout, stderr, code });
     });
   });
 }
@@ -197,7 +192,6 @@ export function execute(options: ExecOptions, cmd: string): Promise<any> {
 }
 
 export function exec(cmd, args) {
-  console.log(cmd, args.join(' '));
   return _exec({ silent: false }, cmd, args);
 }
 
@@ -222,6 +216,6 @@ export function npmLogin(uname: string, passwd: string, email: string): Promise<
       .when(/Password/ig).respond(passwd + '\n')
       .when(/Email/ig).respond(email + '\n')
       .on('error', err => reject(err))
-      .end(code => code === 0 ? resolve(code) : reject());
+      .end(code => resolve(code));
   });
 }
