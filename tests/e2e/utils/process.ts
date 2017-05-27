@@ -219,3 +219,11 @@ export function npmLogin(uname: string, passwd: string, email: string): Promise<
       .end(code => resolve(code));
   });
 }
+
+export function npmPublish(): Promise<any> {
+  return new Promise((resolve, reject) => {
+    exec('npm', ['-q', 'publish'])
+      .then(res => resolve(res))
+      .catch(() => reject());
+  });
+}
