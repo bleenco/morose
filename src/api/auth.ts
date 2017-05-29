@@ -118,6 +118,12 @@ export function getTeamUsers(team: string, organization: string, auth: any): any
   return users;
 }
 
+export function checkPackageName(pkgName: string): boolean {
+  let regexStart = /^[a-z0-9()'!*@,;+-]{1}/g;
+  let regexWord = /^[a-z0-9._()'!*@,;+-]{1,213}$/g;
+  return regexStart.test(pkgName) && regexWord.test(pkgName);
+}
+
 export function hasAccess(req: AuthRequest, res: express.Response,
   next: express.NextFunction): void | express.Response {
     if (getUserByToken(res.locals.remote_user.token, getAuth())) {
@@ -401,49 +407,58 @@ export function changeUserRole(
 export function publishPackage(
   pkgName: string, username: string, organization: string,
   teamPermissions: TeamPermissionData[], version: string, auth: any): Promise<any> {
-    return userHasWritePermissions(username, pkgName, auth).then(hasPermission => {
-      return new Promise((resolve, reject) => {
-        if (hasPermission) {
-          getPackage(pkgName, auth).then(pkgObject => {
-            if (pkgObject) {
-              if (pkgObject.versions.indexOf(version) === -1) {
-                pkgObject.versions.push(version);
-                resolve(auth);
+    if (checkPackageName(pkgName)) {
+      return userHasWritePermissions(username, pkgName, auth).then(hasPermission => {
+        return new Promise((resolve, reject) => {
+          if (hasPermission) {
+            getPackage(pkgName, auth).then(pkgObject => {
+              if (pkgObject) {
+                if (pkgObject.versions.indexOf(version) === -1) {
+                  pkgObject.versions.push(version);
+                  resolve(auth);
+                } else {
+                  reject({ errorCode: 412,
+                    errorMessage: `Error: Specified version of this package was already published!`
+                  });
+                }
               } else {
-                reject();
+                let permissions = [];
+                if (teamPermissions) {
+                  permissions = teamPermissions.map(
+                    tp => ({ team: tp.team, read: tp.read, write: tp.write}));
+                }
+                let pkg: any = {
+                  name: pkgName,
+                  versions: [ version ],
+                  owners: [ username ],
+                  organization: organization ? organization : '',
+                  teamPermissions: permissions,
+                  memberPermissions: [{ name: username, read: true, write: true }],
+                  stars: []
+                };
+                if (organization) {
+                  pkg.access = 'restricted';
+                }
+                if (auth.packages
+                .findIndex(p => p.name === pkgName && p.version === version) === -1) {
+                  auth.packages.push(pkg);
+                  resolve(auth);
+                } else {
+                  reject({ errorCode: 412,
+                    errorMessage: `Error: Specified version of this package was already published!`
+                  });
+                }
               }
-            } else {
-              let permissions = [];
-              if (teamPermissions) {
-                permissions = teamPermissions.map(
-                  tp => ({ team: tp.team, read: tp.read, write: tp.write}));
-              }
-              let pkg: any = {
-                name: pkgName,
-                versions: [ version ],
-                owners: [ username ],
-                organization: organization ? organization : '',
-                teamPermissions: permissions,
-                memberPermissions: [{ name: username, read: true, write: true }],
-                stars: []
-              };
-              if (organization) {
-                pkg.access = 'restricted';
-              }
-              if (auth.packages
-              .findIndex(p => p.name === pkgName && p.version === version) === -1) {
-                auth.packages.push(pkg);
-                resolve(auth);
-              } else {
-                reject();
-              }
-            }
-          });
-        } else {
-          resolve(false);
-        }
+            });
+          } else {
+            resolve(false);
+          }
+        });
       });
-    });
+    } else {
+      Promise.reject({ errorCode: 412,
+            errorMessage: `Error: Package name is not in a correct format!` });
+    }
 }
 
 export function starPackage(username: string, pkg: string, auth: any): Promise<any> {
