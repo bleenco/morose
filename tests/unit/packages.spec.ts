@@ -42,7 +42,7 @@ describe('Publishing packages specific tests', () => {
   });
 
   it('should publish a new private package with correct data', () => {
-    let pkgName = 'testPackage';
+    let pkgName = 'testpackage';
     let username = 'admin';
     let organization = 'bleenco';
     let version = '0.1.2';
@@ -67,7 +67,7 @@ describe('Publishing packages specific tests', () => {
   });
 
   it('should publish a new public package with correct data', () => {
-    let pkgName = 'testPackage';
+    let pkgName = 'testpackage';
     let username = 'admin';
     let organization = null;
     let version = '0.1.2';
@@ -87,6 +87,28 @@ describe('Publishing packages specific tests', () => {
           stars: []
         });
       });
+  });
+
+  it('should reject publish a new package with unvalid name', () => {
+    let pkgName1 = 'testPackage';
+    let pkgName2 = '.testpackage';
+    let pkgName3 = '_testpackage';
+    let pkgName4 = '';
+    let pkgName5 = 'te`stpackage';
+    let pkgName6 = 'testpackageaW';
+    let pkgName7 = 'testpackagea:';
+    let pkgName8 = 'test?packagea';
+    let pkgName9 = 'test~packagea';
+
+    return expect(auth.checkPackageName(pkgName1)
+      || auth.checkPackageName(pkgName2)
+      || auth.checkPackageName(pkgName3)
+      || auth.checkPackageName(pkgName4)
+      || auth.checkPackageName(pkgName5)
+      || auth.checkPackageName(pkgName6)
+      || auth.checkPackageName(pkgName7)
+      || auth.checkPackageName(pkgName8)
+      || auth.checkPackageName(pkgName9)).eql(false);
   });
 
   it('should put a star on a package', () => {

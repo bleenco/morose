@@ -286,7 +286,7 @@ export function updatePackage(req: auth.AuthRequest, res: express.Response): voi
               });
           });
         }
-    }).catch(() => res.status(412).json(jsonErrorResponse) );
+    }).catch(error => res.status(error.errorCode).json({ message: error.errorMessage}));
   }
 }
 
