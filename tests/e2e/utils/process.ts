@@ -236,3 +236,27 @@ export function npmInstall(pkgName: string): Promise<any> {
       .catch(() => reject());
   });
 }
+
+export function lsOwner(pkgName: string): Promise<any> {
+  return new Promise((resolve, reject) => {
+    exec('npm', ['-q', 'owner', 'ls', pkgName])
+      .then(res => resolve(res))
+      .catch(() => reject());
+  });
+}
+
+export function addOwner(pkgName: string, user: string): Promise<any> {
+  return new Promise((resolve, reject) => {
+    exec('npm', ['-q', 'owner', 'add', user, pkgName])
+      .then(res => resolve(res))
+      .catch(() => reject());
+  });
+}
+
+export function rmOwner(pkgName: string, user: string): Promise<any> {
+  return new Promise((resolve, reject) => {
+    exec('npm', ['-q', 'owner', 'rm', user, pkgName])
+      .then(res => resolve(res))
+      .catch(() => reject());
+  });
+}
