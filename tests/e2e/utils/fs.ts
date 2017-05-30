@@ -93,6 +93,14 @@ export function writeMultipleFiles(fs: { [path: string]: string }) {
   return Promise.all(Object.keys(fs).map(fileName => writeFile(fileName, fs[fileName])));
 }
 
+export function writeJsonFile(filePath: string, data: any = {}): Promise<null> {
+  return writeFile(filePath, JSON.stringify(data, null, 2));
+}
+
+export function readJsonFile(filePath: string): Promise<any> {
+  return readFile(filePath).then(data => JSON.parse(data));
+}
+
 export function replaceInFile(filePath: string, match: RegExp, replacement: string) {
   return readFile(filePath)
     .then((content: string) => writeFile(filePath, content.replace(match, replacement)));

@@ -12,5 +12,5 @@ export function createPackageJson(filePath: string, pkgName: string): Promise<nu
     dependencies: {}
   };
 
-  return fs.writeFile(filePath, JSON.stringify(pkgJson, null, 2));
+  return fs.writeJsonFile(filePath, pkgJson);
 }
