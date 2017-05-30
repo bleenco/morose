@@ -3,7 +3,7 @@ import { createPackageJson } from '../../utils/utils';
 
 export default function() {
   return Promise.resolve()
-    .then(() => createPackageJson('package.json'))
+    .then(() => createPackageJson('package.json', 'test-package'))
     .then(() => npmPublish())
     .then(res => {
       if (res.code !== 0 && res.stderr.indexOf('code ENEEDAUTH') !== -1) {

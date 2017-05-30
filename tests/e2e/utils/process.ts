@@ -2,7 +2,7 @@ import * as child_process from 'child_process';
 import { blue, yellow } from 'chalk';
 const treeKill = require('tree-kill');
 const suppose = require('suppose');
-import * as fs from 'fs';
+import * as fs from './fs';
 
 interface ExecOptions {
   silent?: boolean;
@@ -223,6 +223,15 @@ export function npmLogin(uname: string, passwd: string, email: string): Promise<
 export function npmPublish(): Promise<any> {
   return new Promise((resolve, reject) => {
     exec('npm', ['-q', 'publish'])
+      .then(res => resolve(res))
+      .catch(() => reject());
+  });
+}
+
+export function npmInstall(pkgName: string): Promise<any> {
+  return new Promise((resolve, reject) => {
+    fs.deleteFile('package.json')
+      .then(() => exec('npm', ['install', pkgName]))
       .then(res => resolve(res))
       .catch(() => reject());
   });

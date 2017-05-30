@@ -120,7 +120,7 @@ export function getTeamUsers(team: string, organization: string, auth: any): any
 
 export function checkPackageName(pkgName: string): boolean {
   let regexStart = /^[a-z0-9()'!*@,;+-]{1}/g;
-  let regexWord = /^[a-z0-9._()'!*@,;+-]{1,213}$/g;
+  let regexWord = /^[a-z0-9._()'!*@,;+-/]{1,213}$/g;
   return regexStart.test(pkgName) && regexWord.test(pkgName);
 }
 
@@ -576,7 +576,7 @@ export function userHasWritePermissions(
             return true;
           } else {
             let organizations = getUserOrganizations(username, auth);
-            if (organizations.indexOf(o => o.name === splitName) !== -1) {
+            if (organizations.findIndex(o => o.name === splitName) !== -1) {
               return true;
             } else {
               return false;

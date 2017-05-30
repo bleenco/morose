@@ -48,7 +48,7 @@ router.delete('/-/user/token/:token', routes.logout);
 router.get('/-/whoami', routes.whoami);
 router.get('/-/ping', routes.ping);
 router.get('/:package/:version?', routes.getPackage);
-router.get('/:package(*)/-/:tarball', auth.hasAccess, routes.getTarball);
+router.get('/:package(*)/-/:tarball', routes.getTarball);
 router.get('/-/package/(*)/collaborators?', auth.hasAccess, routes.getCollaborators);
 router.get('/-/org/*/package*', auth.hasAccess, routes.organizationAccess);
 router.get('/-/team/*/package*', auth.hasAccess, routes.organizationAccess);
