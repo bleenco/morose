@@ -260,3 +260,51 @@ export function rmOwner(pkgName: string, user: string): Promise<any> {
       .catch(() => reject());
   });
 }
+
+export function lsPackagesAccess(pattern: string): Promise<any> {
+  return new Promise((resolve, reject) => {
+    exec('npm', ['-q', 'access', 'ls-packages', pattern])
+      .then(res => resolve(res))
+      .catch(() => reject());
+  });
+}
+
+export function lsCollaboratorsAccess(pattern: string): Promise<any> {
+  return new Promise((resolve, reject) => {
+    exec('npm', ['-q', 'access', 'ls-collaborators', pattern])
+      .then(res => resolve(res))
+      .catch(() => reject());
+  });
+}
+
+export function lsGrantAccess(permission: string, team: string, pkg: string): Promise<any> {
+  return new Promise((resolve, reject) => {
+    exec('npm', ['-q', 'access', 'grant', permission, team, pkg])
+      .then(res => resolve(res))
+      .catch(() => reject());
+  });
+}
+
+export function lsRevokeAccess(team: string, pkg: string): Promise<any> {
+  return new Promise((resolve, reject) => {
+    exec('npm', ['-q', 'access', 'revoke', team, pkg])
+      .then(res => resolve(res))
+      .catch(() => reject());
+  });
+}
+
+export function lsRestrictAccess(pkg: string): Promise<any> {
+  return new Promise((resolve, reject) => {
+    exec('npm', ['-q', 'access', 'restricted', pkg])
+      .then(res => resolve(res))
+      .catch(() => reject());
+  });
+}
+
+export function lsPublicAccess(pkg: string): Promise<any> {
+  return new Promise((resolve, reject) => {
+    exec('npm', ['-q', 'access', 'public', pkg])
+      .then(res => resolve(res))
+      .catch(() => reject());
+  });
+}

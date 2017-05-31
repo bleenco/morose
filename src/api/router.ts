@@ -40,7 +40,7 @@ router.post('/org/user/delete', web.deleteUserFromOrganization);
 router.post('/org/delete', web.deleteOrganization);
 router.post('/org/user/role', web.changeUserRole);
 router.post('/pkg/publish', web.publishPackage);
-router.post('/:/-/package/*/access', routes.setPackageAccess);
+router.post('/-/package/*/access', routes.setPackageAccess);
 
 router.put(/\/\-\/user\/org\.couchdb\.user\:(.*)/, routes.doAuth);
 router.get(/\/\-\/user\/org\.couchdb\.user\:(.*)/, routes.getUser);

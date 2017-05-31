@@ -216,7 +216,7 @@ export function getTarball(req: auth.AuthRequest, res: express.Response) {
             });
         });
       } else {
-        res.status(404).json({ message: 'not found' });
+        res.status(404).json({ error: 'not found' });
       }
     }
   });
@@ -253,7 +253,7 @@ export function updatePackage(req: auth.AuthRequest, res: express.Response): voi
       });
     }
   } else {
-    let jsonErrorResponse: any = { message: 'error saving package version' };
+    let jsonErrorResponse: any = { error: 'error saving package version' };
     let organization: string = null;
     let teams: any = null;
     if (name[0] === '@') {
@@ -286,7 +286,7 @@ export function updatePackage(req: auth.AuthRequest, res: express.Response): voi
               });
           });
         }
-    }).catch(error => res.status(error.errorCode).json({ message: error.errorMessage}));
+    }).catch(error => res.status(error.errorCode).json({ error: error.errorMessage}));
   }
 }
 
@@ -329,7 +329,7 @@ export function organizationAccess(req: auth.AuthRequest, res: express.Response)
 
       auth.lsPackages(searchPattern, authFile).then(packages => {
         return res.status(200).json(packages);
-      }).catch(error => res.status(error.errorCode).json({ message: error.errorMessage}));
+      }).catch(error => res.status(error.errorCode).json({ error: error.errorMessage}));
     }
   }
 
@@ -350,12 +350,12 @@ export function setOrganizationAccess(req: auth.AuthRequest, res: express.Respon
         }
         auth.grantAccess(pkg, team, permission, res.locals.remote_user.name, authFile)
         .then(newAuthFile => {
-          if (!newAuthFile) {
+          if (newAuthFile) {
             writeJsonFile(getAuthPath(), newAuthFile).then(() => {
               res.status(200).json({ message: 'Permission granted.' });
             });
           }
-        }).catch(error => res.status(error.errorCode).json({ message: error.errorMessage}));
+        }).catch(error => res.status(error.errorCode).json({ error: error.errorMessage}));
       }
     } else if (request[1] === 'revoke') {
       if (request.length > 3) {
@@ -371,7 +371,7 @@ export function setOrganizationAccess(req: auth.AuthRequest, res: express.Respon
               res.status(200).json({ message: 'Permission revoked.' });
             });
           }
-        }).catch(error => res.status(error.errorCode).json({ message: error.errorMessage}));
+        }).catch(error => res.status(error.errorCode).json({ error: error.errorMessage}));
       }
     }
   }
@@ -415,7 +415,7 @@ export function setPackageAccess(req: auth.AuthRequest, res: express.Response): 
               res.status(200).json({ message: 'Package access set to public!' });
             });
           }
-        }).catch(error => res.status(error.errorCode).json({ message: error.errorMessage}));
+        }).catch(error => res.status(error.errorCode).json({ error: error.errorMessage}));
       } else if (request[1] === 'restricted') {
         auth.packageRestrictedAccess(pkg, res.locals.remote_user.name, authFile)
         .then(newAuthFile => {
@@ -424,7 +424,7 @@ export function setPackageAccess(req: auth.AuthRequest, res: express.Response): 
               res.status(200).json({ message: 'Package access set to restricted!' });
             });
           }
-        }).catch(error => res.status(error.errorCode).json({ message: error.errorMessage}));
+        }).catch(error => res.status(error.errorCode).json({ error: error.errorMessage}));
       }
     }
   }

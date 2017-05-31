@@ -578,14 +578,14 @@ export function userHasWritePermissions(
             let organizations = getUserOrganizations(username, auth);
             if (organizations.findIndex(o => o.name === splitName) !== -1) {
               return true;
-            } else {
-              return false;
             }
           }
         }
       } else {
         return true;
       }
+
+      return false;
     });
 }
 
@@ -748,73 +748,94 @@ export function lsCollaborators(pkg: string, username: string, auth: any): Promi
 export function grantAccess(
   pkg: string, team: string, permission: string, user: string, auth: any): Promise<any> {
     return new Promise((resolve, reject) => {
-      if (userHasWritePermissions(user, pkg, auth)) {
-        if (['read-only', 'read-write'].indexOf(permission) !== -1) {
-          let pkgObject = auth.packages.find(p => p.name === pkg);
-          if (pkgObject) {
-            let teamPermissionIndex = pkgObject.teamPermissions.findIndex(tp => tp.team === team);
-            if (teamPermissionIndex !== -1) {
-              pkgObject.teamPermissions.splice(teamPermissionIndex, 1);
+      return userHasWritePermissions(user, pkg, auth).then(hasPermission => {
+        if (hasPermission) {
+          if (['read-only', 'read-write'].indexOf(permission) !== -1) {
+            let pkgObject = auth.packages.find(p => p.name === pkg);
+            if (pkgObject) {
+              let teamPermissionIndex = pkgObject.teamPermissions.findIndex(tp => tp.team === team);
+              if (teamPermissionIndex !== -1) {
+                pkgObject.teamPermissions.splice(teamPermissionIndex, 1);
+              }
+              pkgObject.teamPermissions.push(
+                { team: team, read: true, write: permission === 'read-write' ? true : false });
             }
-            pkgObject.teamPermissions.push(
-              { team: team, read: true, write: permission === 'read-write' ? true : false });
+            resolve(auth);
+          } else {
+            reject({ errorCode: 412,
+              errorMessage: `Error: permission has to be either read-only or read-write.` });
           }
-          resolve(auth);
         } else {
-          reject({ errorCode: 412,
-            errorMessage: `Error: permission has to be either read-only or read-write.` });
+          reject({ errorCode: 403, errorMessage: `You do not have permission to grant `
+          + `permissions for "${pkg}". Are you logged in as the correct user?` });
         }
-      }
-      reject({ errorCode: 403, errorMessage: `You do not have permission to grant permissions `
-      + `for "${pkg}". Are you logged in as the correct user?` });
+      }).catch(() => {
+        reject({ errorCode: 403, errorMessage: `You do not have permission to grant permissions `
+          + `for "${pkg}". Are you logged in as the correct user?` });
+      });
     });
 }
 
 export function revokeAccess(pkg: string, team: string, user: string, auth: any): Promise<any> {
   return new Promise((resolve, reject) => {
-    if (userHasWritePermissions(user, pkg, auth)) {
-      let pkgObject = auth.packages.find(p => p.name === pkg);
-      if (pkgObject) {
-        let teamPermissionIndex = pkgObject.teamPermissions.findIndex(tp => tp.team === team);
-        if (teamPermissionIndex !== -1) {
-          pkgObject.teamPermissions.splice(teamPermissionIndex, 1);
+    return userHasWritePermissions(user, pkg, auth).then(hasPermission => {
+      if (hasPermission) {
+        let pkgObject = auth.packages.find(p => p.name === pkg);
+        if (pkgObject) {
+          let teamPermissionIndex = pkgObject.teamPermissions.findIndex(tp => tp.team === team);
+          if (teamPermissionIndex !== -1) {
+            pkgObject.teamPermissions.splice(teamPermissionIndex, 1);
+          }
         }
+        resolve(auth);
       }
-      resolve(auth);
-    }
-    reject({ errorCode: 403, errorMessage: `You do not have permission to revoke permissions `
-      + `for "${pkg}". Are you logged in as the correct user?` });
+      reject({ errorCode: 403, errorMessage: `You do not have permission to revoke permissions `
+        + `for "${pkg}". Are you logged in as the correct user?` });
+    }).catch(() => {
+      reject({ errorCode: 403, errorMessage: `You do not have permission to revoke permissions `
+        + `for "${pkg}". Are you logged in as the correct user?` });
+    });
   });
 }
 
 export function packagePublicAccess(pkg: string, user: string, auth: any): Promise<any> {
   return new Promise((resolve, reject) => {
-    if (userHasWritePermissions(user, pkg, auth)) {
-      let pkgObject = auth.packages.find(p => p.name === pkg);
-      if (pkgObject) {
-        pkgObject.access = 'public';
-        resolve(auth);
-      } else {
-        reject({ errorCode: 412, errorMessage: `Package "${pkg}" doesn't exists!` });
+    return userHasWritePermissions(user, pkg, auth).then(hasPermission => {
+      if (hasPermission) {
+        let pkgObject = auth.packages.find(p => p.name === pkg);
+        if (pkgObject) {
+          pkgObject.access = 'public';
+          resolve(auth);
+        } else {
+          reject({ errorCode: 412, errorMessage: `Package "${pkg}" doesn't exists!` });
+        }
       }
-    }
-    reject({ errorCode: 403, errorMessage: `You do not have permission to change access `
-      + `for "${pkg}". Are you logged in as the correct user?` });
+      reject({ errorCode: 403, errorMessage: `You do not have permission to change access `
+        + `for "${pkg}". Are you logged in as the correct user?` });
+    }).catch(() => {
+      reject({ errorCode: 403, errorMessage: `You do not have permission to change access `
+        + `for "${pkg}". Are you logged in as the correct user?` });
+    });
   });
 }
 
 export function packageRestrictedAccess(pkg: string, user: string, auth: any): Promise<any> {
   return new Promise((resolve, reject) => {
-    if (userHasWritePermissions(user, pkg, auth)) {
-      let pkgObject = auth.packages.find(p => p.name === pkg);
-      if (pkgObject) {
-        pkgObject.access = 'restricted';
-        resolve(auth);
-      } else {
-        reject({ errorCode: 412, errorMessage: `Package "${pkg}" doesn't exists!` });
+    return userHasWritePermissions(user, pkg, auth).then(hasPermission => {
+      if (hasPermission) {
+        let pkgObject = auth.packages.find(p => p.name === pkg);
+        if (pkgObject) {
+          pkgObject.access = 'restricted';
+          resolve(auth);
+        } else {
+          reject({ errorCode: 412, errorMessage: `Package "${pkg}" doesn't exists!` });
+        }
       }
-    }
-    reject({ errorCode: 403, errorMessage: `You do not have permission to change access `
-      + `for "${pkg}". Are you logged in as the correct user?` });
+      reject({ errorCode: 403, errorMessage: `You do not have permission to change access `
+        + `for "${pkg}". Are you logged in as the correct user?` });
+    }).catch(() => {
+      reject({ errorCode: 403, errorMessage: `You do not have permission to change access `
+        + `for "${pkg}". Are you logged in as the correct user?` });
+    });
   });
 }
