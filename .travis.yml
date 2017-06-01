@@ -18,9 +18,6 @@ matrix:
       env: NODE_SCRIPT=tests/run_e2e.js
     - node_js: "7"
       os: osx
-      env: SCRIPT=test:unit
-    - node_js: "7"
-      os: osx
       env: NODE_SCRIPT=tests/run_e2e.js
 
 before_install:
