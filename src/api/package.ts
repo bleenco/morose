@@ -4,7 +4,8 @@ import {
   ensureDirectory,
   readJsonFile,
   writeTarball,
-  writeJsonFile
+  writeJsonFile,
+  exists
 } from './fs';
 
 export interface IPackage {
@@ -100,7 +101,24 @@ export class Package {
     let data = this.data;
     data._attachments = {};
     return  this.ensureRootFolders()
-      .then(() => writeJsonFile(this.pkgJsonPath, data));
+      .then(() => exists(this.pkgJsonPath))
+      .then(oldVersionExists => {
+        if (oldVersionExists) {
+          return readJsonFile(this.pkgJsonPath)
+            .then((jsonData: IPackage) => {
+              if (jsonData) {
+                Object.keys(jsonData.versions).forEach(v => {
+                  if (!data.versions[v]) {
+                    data.versions[v] = jsonData.versions[v];
+                  }
+                });
+              }
+              return writeJsonFile(this.pkgJsonPath, data);
+            });
+        } else {
+          return writeJsonFile(this.pkgJsonPath, data);
+        }
+      });
   }
 
   saveTarballFromData(): Promise<null> {
