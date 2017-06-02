@@ -14,6 +14,16 @@ export function getRandomPackages(req: express.Request, res: express.Response): 
   return res.status(200).json(pkgs);
 }
 
+export function getPackage(req: express.Request, res: express.Response): express.Response {
+  let pkgName = req.params.package;
+  let index = storage.findIndex(pkg => pkg.name === pkgName);
+  if (index !== -1) {
+    return res.status(200).json({ status: true, data: storage[index] });
+  } else {
+    return res.status(200).json({ status: false });
+  }
+}
+
 export function searchPackages(req: express.Request, res: express.Response): express.Response {
   let pkgs = storage
     .map(pkg => pkg && pkg.name.indexOf(req.query.keyword) !== -1 ? pkg : null)

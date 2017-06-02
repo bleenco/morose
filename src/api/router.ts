@@ -23,8 +23,10 @@ router.use('/css/fonts', express.static(resolve(__dirname, '../app/fonts'), { in
 
 router.get('/statistics', index);
 router.get('/user/login', index);
+router.get('/package/:package(*)', index);
 
 router.get('/api/package/get-random', web.getRandomPackages);
+router.get('/api/package/:package(*)', web.getPackage);
 router.get('/api/package/search', web.searchPackages);
 router.post('/api/user/login', web.login);
 router.post('/api/user/organizations', web.getUserOrganizations);

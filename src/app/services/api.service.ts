@@ -16,6 +16,10 @@ export class ApiService {
     return this.get(`${this.url}/package/get-random`);
   }
 
+  getPackage(pkgName: string): Observable<any[]> {
+    return this.get(`${this.url}/package/${pkgName}`);
+  }
+
   getPackagesByKeyword(keyword: string): Observable<any[]> {
     let params: URLSearchParams = new URLSearchParams();
     params.set('keyword', keyword);
