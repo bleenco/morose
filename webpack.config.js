@@ -27,7 +27,7 @@ module.exports = function (options, webpackOptions) {
       ]
     },
     plugins: [
-      new copy([{ context: './public', from: '**/*' }])
+      new copy([{ context: './src/app/assets/public', from: '**/*' }])
     ]
   });
 
