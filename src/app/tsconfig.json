@@ -8,13 +8,11 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "lib": [
-      "es2015",
+      "es2016",
       "dom"
     ],
     "outDir": "lib",
-    "typeRoots": [
-      "../node_modules/@types"
-    ]
+    "types": ["marked"]
   },
   "exclude": [
     "./main.aot.ts"

@@ -1,8 +1,20 @@
 language: node_js
+dist: trusty
+
+cache:
+  directories:
+    - node_modules
 
 env:
   global:
     - DBUS_SESSION_BUS_ADDRESS=/dev/null
+
+addons:
+  apt:
+    sources:
+      - google-chrome
+    packages:
+      - google-chrome-stable
 
 matrix:
   fast_finish: true
@@ -19,19 +31,25 @@ matrix:
     - node_js: "8"
       os: linux
       env: NODE_SCRIPT=tests/run_e2e.js
-    - node_js: "6"
-      os: osx
-      env: NODE_SCRIPT=tests/run_e2e.js
     - node_js: "8"
-      os: osx
-      env: NODE_SCRIPT=tests/run_e2e.js
+      os: linux
+      env: SCRIPT=protractor:ci
 
 before_install:
   - npm config set spin false
   - npm config set progress false
+  - npm install npm@5 -g
 
 install:
   - npm install
+
+after_install:
+  - ./node_modules/protractor/bin/webdriver-manager update
+
+before_script:
+  - export DISPLAY=:99
+  - sh -e /etc/init.d/xvfb start
+  - sleep 3
 
 script:
   - if [[ "$SCRIPT" ]]; then npm run-script $SCRIPT; fi
