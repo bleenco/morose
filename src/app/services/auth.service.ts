@@ -54,7 +54,7 @@ export class AuthService {
       .toPromise()
       .then(data => {
         return data;
-      })
+      });
   }
 }
 

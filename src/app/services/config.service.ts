@@ -1,7 +1,7 @@
 import { Injectable, Provider } from '@angular/core';
 
 @Injectable()
-export class ConfigService {;
+export class ConfigService {
   wsurl: string;
 
   constructor() {

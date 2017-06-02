@@ -15,5 +15,8 @@
   },
   "files": [
     "src/api/index.ts"
-  ]
+  ],
+  "awesomeTypescriptLoaderOptions": {
+    "silent": true
+  }
 }

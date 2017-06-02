@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 import { resolve } from 'path';
 import { homedir } from 'os';
 import * as minimist from 'minimist';
