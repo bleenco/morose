@@ -6,7 +6,8 @@
     "noImplicitAny": false,
     "sourceMap": false,
     "declaration": false,
-    "outDir": "./dist/api"
+    "outDir": "./dist/api",
+    "types": ["node"]
   },
   "formatCodeOptions": {
     "indentSize": 2,
