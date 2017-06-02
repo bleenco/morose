@@ -7,8 +7,8 @@ import { writeJsonFile } from './fs';
 
 export function getRandomPackages(req: express.Request, res: express.Response): express.Response {
   let max = storage.length;
-  let pkgs = [...Array(9).keys()]
-    .map(() => storage[getRandomInt(0, max)])
+  let pkgs = [...Array(max < 9 ? max : 9).keys()]
+    .map(() => storage[getRandomInt(0, max - 1)])
     .filter(Boolean);
 
   return res.status(200).json(pkgs);
@@ -140,7 +140,7 @@ export function publishPackage(
     auth.publishPackage(
       req.body.pkgName, req.body.username, req.body.organization,
       req.body.teams, req.body.version, authObj)
-      .then(auth => writeJsonFile(getAuthPath(), auth)
-      .then(() => res.status(200).json({ data: true })))
-      .catch(err => res.status(200).json({ message: err }));
+        .then(auth => writeJsonFile(getAuthPath(), auth)
+        .then(() => res.status(200).json({ data: true })))
+        .catch(err => res.status(200).json({ message: err }));
 }

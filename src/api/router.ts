@@ -40,7 +40,6 @@ router.post('/org/user/delete', web.deleteUserFromOrganization);
 router.post('/org/delete', web.deleteOrganization);
 router.post('/org/user/role', web.changeUserRole);
 router.post('/pkg/publish', web.publishPackage);
-router.post('/-/package/*/access', routes.setPackageAccess);
 
 router.put(/\/\-\/user\/org\.couchdb\.user\:(.*)/, routes.doAuth);
 router.get(/\/\-\/user\/org\.couchdb\.user\:(.*)/, routes.getUser);
@@ -58,5 +57,6 @@ router.delete('/-/team/*/package*', auth.hasAccess, routes.setOrganizationAccess
 router.put('/-/team/*/package*', auth.hasAccess, routes.setOrganizationAccess);
 router.put('/:package/:_rev/:revision?', auth.hasAccess, routes.updatePackageOwner);
 router.put('/:package/:revision?', auth.hasAccess, routes.updatePackage);
+router.post('/-/package/*/access', routes.setPackageAccess);
 
 router.all('/*', index);
