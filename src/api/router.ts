@@ -21,7 +21,6 @@ router.use('/js', express.static(resolve(__dirname, '../app/js'), { index: false
 router.use('/images', express.static(resolve(__dirname, '../app/images'), { index: false }));
 router.use('/css/fonts', express.static(resolve(__dirname, '../app/fonts'), { index: false }));
 
-router.get('/statistics', index);
 router.get('/user/login', index);
 router.get('/package/:package(*)', index);
 

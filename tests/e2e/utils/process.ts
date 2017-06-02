@@ -48,7 +48,7 @@ function _run(options: ExecOptions, cmd: string, args: string[]): Promise<Proces
     _processes.push(childProcess);
 
     childProcess.stdout.on('data', (data: Buffer) => {
-      setTimeout(() => resolve(), 2000);
+      setTimeout(() => resolve(), 100);
 
       stdout += data.toString();
       if (options.silent) {
