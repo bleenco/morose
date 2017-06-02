@@ -3,6 +3,7 @@ const { join } = require('path');
 const webpack = require('webpack');
 
 module.exports = {
+	context: __dirname,
 	entry: {
 		server: './src/api/index.ts'
 	},
@@ -21,5 +22,17 @@ module.exports = {
 		rules: [
 			{ test: /\.ts$/, loader: 'awesome-typescript-loader' }
 		]
+	},
+  stats: {
+		warnings: false
+	},
+	devtool: 'sourcemap',
+	node: {
+		console: false,
+		global: false,
+		process: false,
+		Buffer: false,
+		__filename: false,
+		__dirname: false
 	}
 }

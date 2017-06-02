@@ -1,6 +1,6 @@
 {
   "name": "morose",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "description": "npm registry & proxy server",
   "bin": {
     "morose": "./dist/api/server.js"
@@ -9,10 +9,10 @@
     "clean": "rimraf dist",
     "build": "webpack --config webpack.server.js --progress --hide-modules",
     "build:watch": "tsc -w",
-    "prebuild": "npm run clean",
     "compile": "tsc && node ./dist/api/index.js",
     "dev": "nodemon -w src/api -i src/app -e ts --exec \"npm run compile\" & npm start",
-    "build:prod": "npm run build && npm run build:app:prod",
+    "prebuild:prod": "npm run clean",
+    "build:prod": "npm run build & npm run build:app:prod",
     "build:app": "webpack --env.dev --progress --hide-modules",
     "build:app:prod": "webpack --env.aot -p --progress --hide-modules",
     "start": "webpack-dev-server --env.dev --env.serve --progress",
@@ -31,7 +31,7 @@
     "webdriver-manager": "webdriver-manager",
     "webdriver:start": "npm run webdriver-manager start",
     "webdriver:update": "npm run webdriver-manager update",
-    "publish": "npm run build:prod"
+    "prepublish": "npm run build:prod"
   },
   "repository": {
     "type": "git",

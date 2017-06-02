@@ -195,6 +195,10 @@ export function exec(cmd, args) {
   return _exec({ silent: false }, cmd, args);
 }
 
+export function execSilent(cmd, args) {
+  return _exec({ silent: true }, cmd, args);
+}
+
 export function executeSilent(cmd: string): Promise<any> {
   return execute({ silent: true }, cmd);
 }

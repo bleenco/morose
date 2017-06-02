@@ -1,6 +1,6 @@
-import { executeSilent } from '../utils/process';
+import { execSilent } from '../utils/process';
 
 export default function() {
   return Promise.resolve()
-    .then(() => executeSilent('npm link'));
+    .then(() => execSilent('npm', ['link']));
 }
