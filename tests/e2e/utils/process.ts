@@ -308,3 +308,11 @@ export function lsPublicAccess(pkg: string): Promise<any> {
       .catch(() => reject());
   });
 }
+
+export function deprecate(pkg: string, msg: string): Promise<any> {
+  return new Promise((resolve, reject) => {
+    exec('npm', ['-q', 'deprecate', pkg, msg])
+      .then(res => resolve(res))
+      .catch(() => reject());
+  });
+}
