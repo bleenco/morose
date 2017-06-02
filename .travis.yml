@@ -27,13 +27,11 @@ matrix:
       env: NODE_SCRIPT=tests/run_e2e.js
 
 before_install:
-  - curl -o- -L https://yarnpkg.com/install.sh | bash
-  - export PATH="$HOME/.yarn/bin:$PATH"
-  - yarn config set spin false
-  - yarn config set progress false
+  - npm config set spin false
+  - npm config set progress false
 
 install:
-  - yarn
+  - npm install
 
 script:
   - if [[ "$SCRIPT" ]]; then npm run-script $SCRIPT; fi
