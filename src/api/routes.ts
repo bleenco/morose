@@ -253,6 +253,45 @@ export function updatePackage(req: auth.AuthRequest, res: express.Response): voi
           }
       });
     }
+  } else if (request[0] === 'deprecate') {
+    if (request.length > 1) {
+      let pkg = request[1];
+      if (pkg === '[REDACTED]') {
+        pkg = req.body.name;
+      }
+      let message = request.splice(2).join(' ');
+      let authFile = getAuth();
+      let user = auth.getUserByToken(res.locals.remote_user.token, authFile);
+      auth.userHasWritePermissions(user.name, pkg, authFile)
+        .then(hasPermission => {
+          if (hasPermission) {
+            let pkgJsonPath = getFilePath(`packages/${pkg}/package.json`);
+            if (pkg.indexOf('@') !== -1) {
+              pkg = pkg.replace(/^(@.*)(\/)(.*)$/, '$1%2F$3');
+            }
+
+            exists(pkgJsonPath).then(e => {
+              if (e) {
+                readJsonFile(pkgJsonPath)
+                  .then((jsonData: IPackage) => {
+                    Object.keys(jsonData.versions).forEach(key => {
+                      jsonData.versions[key]['deprecated'] = message;
+                    });
+                    writeJsonFile(pkgJsonPath, jsonData);
+                    return res.status(200).json({ message: 'success' });
+                  });
+              } else {
+                return res.status(404).json({});
+              }
+            }).catch(() => res.status(404).json({}));
+          } else {
+            return res.status(403).json({ error: `you do not have permission to deprecate `
+              + `"${pkg}". Are you logged in as the correct user?` });
+          }
+        });
+    } else {
+      res.status(412).json({ error: 'Parameters missing.' });
+    }
   } else {
     let jsonErrorResponse: any = { error: 'error saving package version' };
     let organization: string = null;
