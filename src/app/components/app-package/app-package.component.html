@@ -1,0 +1,23 @@
+<div class="hero">
+  <div class="hero-body">
+    <div class="container">
+      <div class="columns is-multiline">
+        <div class="column is-8 is-offset-2">
+          <div class="content-box">
+            <div class="content-box-head" *ngIf="!loading && pkg">
+              <span>{{ pkg.name }}</span>
+            </div>
+            <div class="content-box-main">
+              <div class="columns is-multiline" *ngIf="!loading && pkg">
+                <div class="column is-12">
+                  <h1>{{ pkg.description }}</h1>
+                  <p [innerHTML]="pkgData.readme | markdown" class="markdown-content"></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

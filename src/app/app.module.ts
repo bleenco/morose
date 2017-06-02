@@ -13,10 +13,10 @@ import { AppNavComponent } from './components/app-nav';
 import { AppFootComponent } from './components/app-foot';
 import { AppLoginComponent } from './components/app-login';
 import { AppLandingComponent } from './components/app-landing';
+import { AppPackageComponent } from './components/app-package';
 import { AppOrganizationsComponent } from './components/app-organizations';
 import { AppAddOrganizationComponent } from './components/app-addorganization';
-import { AppCpuLineChartComponent } from './components/charts/app-cpu-line-chart';
-import { AppNetworkLineChartComponent } from './components/charts/app-network-line-chart';
+import { MarkdownPipe } from './pipes/markdown.pipe';
 
 export function authHttpServiceFactory(http: Http, options: RequestOptions) {
   return new AuthHttp(new AuthConfig({
@@ -33,16 +33,17 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions) {
     AppFootComponent,
     AppLoginComponent,
     AppLandingComponent,
+    AppPackageComponent,
     AppOrganizationsComponent,
     AppAddOrganizationComponent,
-    AppCpuLineChartComponent,
-    AppNetworkLineChartComponent
+    MarkdownPipe
   ],
   imports: [
     BrowserModule,
     CommonModule,
     RouterModule.forRoot([
       { path: '', pathMatch: 'full', component: AppLandingComponent },
+      { path: 'package/:package',  component: AppPackageComponent },
       { path: 'user/login', component: AppLoginComponent },
       { path: 'org/new', component: AppAddOrganizationComponent },
       { path: 'org', component: AppOrganizationsComponent }

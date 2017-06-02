@@ -40,7 +40,7 @@
               </div>
               <div class="columns is-multiline" *ngIf="packages && packages.length">
                 <div class="column is-4" *ngFor="let pkg of packages; let i = index;">
-                  <div class="package-item">
+                  <div class="package-item" [routerLink]="['/package', pkg.name]">
                     <h1>{{ pkg.name }}</h1>
                     <h3>{{ pkg['dist-tags'].latest }}</h3>
                     <p>{{ pkg.description }}</p>
