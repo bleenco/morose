@@ -77,17 +77,15 @@ testsToRun.reduce((previous, relativeName) => {
     let previousDir = null;
     return Promise.resolve()
       .then(() => printHeader(currentFileName))
-      .then(() => {
-        if (allSetups.indexOf(relativeName) === -1) {
-          return morose();
-        }
-      })
+      .then(() => allSetups.indexOf(relativeName) === -1 ? morose() : Promise.resolve(null))
       .then(() => previousDir = process.cwd())
       .then(() => fn(() => clean = false))
       .then(() => console.log('----'))
       .then(() => {
         if (allSetups.indexOf(relativeName) === -1) {
           return killAllProcesses();
+        } else {
+          return Promise.resolve();
         }
       })
       .then(() => printFooter(currentFileName, start), err => {
