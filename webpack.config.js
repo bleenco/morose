@@ -16,7 +16,7 @@ module.exports = function (options, webpackOptions) {
     entry: getEntry(options),
     resolve: { extensions: ['.ts', '.js'] },
     output: {
-      path: root('dist')
+      path: root('dist/app')
     },
     module: {
       rules: [
@@ -33,7 +33,7 @@ module.exports = function (options, webpackOptions) {
 
   config = webpackMerge({}, config, {
     output: {
-      filename: 'app.js'
+      filename: 'js/app.js'
     },
     target: 'web',
     plugins: [
@@ -131,7 +131,7 @@ function getDevStylesConfig() {
 function getProdStylesConfig() {
   return {
     plugins: [
-      new extract('[name].css')
+      new extract('css/[name].css')
     ],
     module: {
       rules: [
