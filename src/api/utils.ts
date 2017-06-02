@@ -53,7 +53,7 @@ export function writeInitConfig(): Promise<null> {
 }
 
 export function writeAuth(secret: string): Promise<null> {
-  let password = Math.random().toString(36).substr(2, 5);
+  let password = 'admin';
   let data = {
     organizations: [
       {
