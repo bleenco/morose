@@ -24,7 +24,7 @@
     "lint": "tslint ./src/api/**/*.ts",
     "protractor:live": "npm run e2e -- --elementExplorer",
     "protractor": "protractor ./protractor.conf.js",
-    "protractor:delay": "sleep 3 && protractor ./protractor.conf.js",
+    "protractor:delay": "sleep 10 && protractor ./protractor.conf.js",
     "protractor:ci": "npm run dev & npm run start & npm run protractor:delay",
     "webdriver": "npm run webdriver:update -- --standalone",
     "pree2e": "npm run webdriver",
