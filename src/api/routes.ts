@@ -2,7 +2,7 @@ import * as express from 'express';
 import * as auth from './auth';
 import * as logger from './logger';
 import { getConfig, getAuthPath, getFilePath, getAuth } from './utils';
-import { writeJsonFile, exists, ensureDirectory, readJsonFile } from './fs';
+import { writeJsonFile, exists, ensureDirectory, readJsonFile, removeFolder } from './fs';
 import { IPackage, Package } from './package';
 import * as proxy from './proxy';
 import { storage, findPackage } from './storage';
@@ -467,6 +467,31 @@ export function setPackageAccess(req: auth.AuthRequest, res: express.Response): 
         }).catch(error => res.status(error.errorCode).json({ error: error.errorMessage}));
       }
     }
+  }
+}
+
+export function unpublishPackage(req: auth.AuthRequest, res: express.Response): void {
+  let request = req.headers.referer.split(' ');
+  if (request.length > 1) {
+    let authFile = getAuth();
+    let pkg = request[1];
+    if (pkg === '[REDACTED]') {
+      pkg = req.params.package;
+    }
+
+    auth.deletePackage(pkg, res.locals.remote_user.name, authFile)
+      .then(newAuthFile => {
+        if (newAuthFile) {
+          writeJsonFile(getAuthPath(), newAuthFile)
+            .then(() => {
+              removeFolder(getFilePath(`packages/${pkg}`));
+              removeFolder(getFilePath(`tarballs/${pkg}`));
+              res.status(200).json({ message: 'Package unpublished!' });
+            });
+        }
+      }).catch(error => res.status(error.errorCode).json({ error: error.errorMessage}));
+  } else {
+    res.status(412).json({ error: 'Parameters missing.' });
   }
 }
 

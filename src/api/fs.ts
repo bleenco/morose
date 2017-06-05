@@ -106,6 +106,18 @@ export function removeFile(filePath: string): Promise<null> {
   });
 }
 
+export function removeFolder(path: string): Promise<null> {
+  return new Promise((resolve, reject) => {
+    fs.rmdir(path, (err: NodeJS.ErrnoException) => {
+      if (err) {
+        reject(err);
+      }
+
+      resolve();
+    });
+  });
+}
+
 export function writeTarball(packageName: string, attachments: any): Promise<null> {
   let name = Object.keys(attachments)[0];
   let destFile = utils.getFilePath(`tarballs/${packageName}/${name}`);

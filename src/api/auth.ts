@@ -589,6 +589,27 @@ export function userHasWritePermissions(
     });
 }
 
+export function deletePackage(pkg: string, user: string, auth: any): Promise<any> {
+  return new Promise((resolve, reject) => {
+    userHasWritePermissions(user, pkg, auth)
+      .then(permission => {
+        if (permission) {
+          let pkgIndex = auth.packages.findIndex(p => p.name === pkg);
+          if (pkgIndex !== -1) {
+            auth.packages.splice(pkgIndex, 1);
+            resolve(auth);
+          } else {
+            reject({ errorCode: 412,
+            errorMessage: `Error: Package ${pkg} does not exists` });
+          }
+        } else {
+          reject({ errorCode: 403, errorMessage: `You do not have permission to unpublish `
+            + `${pkg}. Are you logged in as the correct user?` });
+        }
+      });
+  });
+}
+
 export function lsPackages(pattern: string, auth: any): Promise<any> {
   return new Promise((resolve, reject) => {
     let user = auth.users.find(u => u.name === pattern);

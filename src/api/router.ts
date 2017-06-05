@@ -55,6 +55,7 @@ router.get('/-/team/*/package*', auth.hasAccess, routes.organizationAccess);
 router.get('/-/v1/search', auth.hasAccess, routes.search);
 router.get('/-/_view/starredByUser?', auth.hasAccess, routes.starredByUser);
 router.delete('/-/team/*/package*', auth.hasAccess, routes.setOrganizationAccess);
+router.delete('/:package/-rev/:version?', auth.hasAccess, routes.unpublishPackage);
 router.put('/-/team/*/package*', auth.hasAccess, routes.setOrganizationAccess);
 router.put('/:package/:_rev/:revision?', auth.hasAccess, routes.updatePackageOwner);
 router.put('/:package/:revision?', auth.hasAccess, routes.updatePackage);
