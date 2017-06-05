@@ -82,7 +82,7 @@
     "@types/node": "^7.0.27",
     "@types/request": "^0.0.43",
     "@types/semver": "^5.3.31",
-    "@types/ws": "^0.0.41",
+    "@types/ws": "^3.0.0",
     "add-asset-html-webpack-plugin": "^2.0.1",
     "angular2-jwt": "^0.2.3",
     "awesome-typescript-loader": "^3.1.3",
