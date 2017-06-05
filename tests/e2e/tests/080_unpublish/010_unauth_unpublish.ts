@@ -1,4 +1,4 @@
-import { npmPublish, npmLogin, npmUnPublish, executeSilent } from '../../utils/process';
+import { npmPublish, npmLogin, npmUnpublish, executeSilent } from '../../utils/process';
 import { createPackageJson } from '../../utils/utils';
 
 export default function() {
@@ -7,7 +7,7 @@ export default function() {
     .then(() => npmLogin('admin', 'blabla', 'foo@bar.com'))
     .then(() => npmPublish())
     .then(() => executeSilent('npm logout'))
-    .then(() => npmUnPublish('test-package'))
+    .then(() => npmUnpublish('test-package'))
     .then(res => res.code !== 0 ? Promise.resolve() : Promise.reject(''))
     .catch(() => Promise.reject(''));
 }

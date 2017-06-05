@@ -321,7 +321,7 @@ export function deprecate(pkg: string, msg: string): Promise<any> {
   });
 }
 
-export function npmUnPublish(pkg: string): Promise<any> {
+export function npmUnpublish(pkg: string): Promise<any> {
   return new Promise((resolve, reject) => {
     exec('npm', ['-q', 'unpublish', pkg, '--force'])
       .then(res => resolve(res))
