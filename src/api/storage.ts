@@ -33,3 +33,10 @@ export function findPackage(pkgName: string): IPackage | null {
   let index = storage.findIndex(pkg => pkg.name === pkgName);
   return storage[index] || null;
 }
+
+export function deletePackage(pkgName: string): void {
+  let index = storage.findIndex(pkg => pkg.name === pkgName);
+  if (index !== -1) {
+    storage.splice(index, 1);
+  }
+}

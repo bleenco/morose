@@ -5,7 +5,7 @@ import { getConfig, getAuthPath, getFilePath, getAuth } from './utils';
 import { writeJsonFile, exists, ensureDirectory, readJsonFile, removeFolder } from './fs';
 import { IPackage, Package } from './package';
 import * as proxy from './proxy';
-import { storage, findPackage } from './storage';
+import { storage, findPackage, deletePackage } from './storage';
 import { createReadStream, createWriteStream } from 'fs';
 import * as request from 'request';
 import { dirname } from 'path';
@@ -486,6 +486,7 @@ export function unpublishPackage(req: auth.AuthRequest, res: express.Response): 
             .then(() => {
               removeFolder(getFilePath(`packages/${pkg}`));
               removeFolder(getFilePath(`tarballs/${pkg}`));
+              deletePackage(pkg);
               res.status(200).json({ message: 'Package unpublished!' });
             });
         }
