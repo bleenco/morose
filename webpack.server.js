@@ -26,7 +26,6 @@ module.exports = {
   stats: {
 		warnings: false
 	},
-	devtool: 'sourcemap',
 	node: {
 		console: false,
 		global: false,
