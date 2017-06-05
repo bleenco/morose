@@ -15,13 +15,9 @@ Run npm registry or npm proxy on your own servers.
 
 If you want to use all benefits of npm package system in your company without sending all code to the public, and use your private packages just as easy as public ones.
 
-See using private packages section for details.
-
 - Cache npmjs.org registry.
 
 If you have more than one server you want to install packages on, you might want to use this to decrease latency (presumably "slow" npmjs.org will be connected to only once per package/version) and provide limited failover (if npmjs.org is down, we might still find something useful in the cache).
-
-See using public packages section for details.
 
 - Override public packages.
 
@@ -47,6 +43,40 @@ morose
 npm set registry http://localhost:10000
 ```
 
+### Hacking on morose
+
+#### Running from source
+
+1. Clone this repository
+
+```sh
+git clone https://github.com/bleenco/morose.git --depth 1
+```
+
+2. Build morose project
+
+```sh
+npm run build:prod
+```
+
+3. Link morose to have global command
+
+```sh
+npm link
+```
+
+4. Run command
+
+```sh
+morose
+```
+
+...or, you can skip steps `2.`, `3.` and `4.` and start project in dev mode
+
+```sh
+npm run dev
+```
+
 #### LICENCE
 
-MIT
+**MIT**
