@@ -14,8 +14,6 @@ import { AppFootComponent } from './components/app-foot';
 import { AppLoginComponent } from './components/app-login';
 import { AppLandingComponent } from './components/app-landing';
 import { AppPackageComponent } from './components/app-package';
-import { AppOrganizationsComponent } from './components/app-organizations';
-import { AppAddOrganizationComponent } from './components/app-addorganization';
 import { MarkdownPipe } from './pipes/markdown.pipe';
 
 export function authHttpServiceFactory(http: Http, options: RequestOptions) {
@@ -34,8 +32,6 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions) {
     AppLoginComponent,
     AppLandingComponent,
     AppPackageComponent,
-    AppOrganizationsComponent,
-    AppAddOrganizationComponent,
     MarkdownPipe
   ],
   imports: [
@@ -44,9 +40,7 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions) {
     RouterModule.forRoot([
       { path: '', pathMatch: 'full', component: AppLandingComponent },
       { path: 'package/:package',  component: AppPackageComponent },
-      { path: 'user/login', component: AppLoginComponent },
-      { path: 'org/new', component: AppAddOrganizationComponent },
-      { path: 'org', component: AppOrganizationsComponent }
+      { path: 'user/login', component: AppLoginComponent }
     ]),
     HttpModule,
     FormsModule
