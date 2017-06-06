@@ -1,17 +1,21 @@
 import * as express from 'express';
 import * as jwt from 'jsonwebtoken';
-import { storage } from './storage';
+import { storage, getRandomPackage } from './storage';
 import { getRandomInt, getConfig, getAuth, getAuthPath } from './utils';
 import * as auth from './auth';
 import { writeJsonFile } from './fs';
 
 export function getRandomPackages(req: express.Request, res: express.Response): express.Response {
-  let max = storage.length;
-  let pkgs = [...Array(max < 9 ? max : 9).keys()]
-    .map(() => storage[getRandomInt(0, max - 1)])
-    .filter(Boolean);
+  let set = new Set();
+  let max = storage.length > 9 ? 9 : storage.length;
+  while (set.size < max) {
+    let pkg = getRandomPackage();
+    if (!set.has(pkg)) {
+      set.add(pkg);
+    }
+  }
 
-  return res.status(200).json(pkgs);
+  return res.status(200).json(Array.from(set));
 }
 
 export function getPackage(req: express.Request, res: express.Response): express.Response {
