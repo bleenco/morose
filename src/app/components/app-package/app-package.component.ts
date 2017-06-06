@@ -22,7 +22,8 @@ export class AppPackageComponent implements OnInit {
       .subscribe((pkg: any) => {
         if (pkg.status) {
           this.pkg = pkg.data;
-          this.pkgData = this.pkg.versions[this.pkg['dist-tags'].latest];
+          this.pkgData = this.pkg.readme ?
+            this.pkg : this.pkg.versions[this.pkg['dist-tags'].latest];
         }
 
         this.loading = false;
