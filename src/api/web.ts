@@ -4,6 +4,7 @@ import { storage, getRandomPackage } from './storage';
 import { getRandomInt, getConfig, getAuth, getAuthPath } from './utils';
 import * as auth from './auth';
 import { writeJsonFile } from './fs';
+import * as fuse from 'fuse.js';
 
 export function getRandomPackages(req: express.Request, res: express.Response): express.Response {
   let set = new Set();
@@ -29,11 +30,17 @@ export function getPackage(req: express.Request, res: express.Response): express
 }
 
 export function searchPackages(req: express.Request, res: express.Response): express.Response {
-  let pkgs = storage
-    .map(pkg => pkg && pkg.name.indexOf(req.query.keyword) !== -1 ? pkg : null)
-    .filter(Boolean);
+  let word = req.query.keyword;
+  let search = new fuse(storage, {
+    shouldSort: true,
+    threshold: 0.6,
+    location: 0,
+    distance: 100,
+    maxPatternLength: 32,
+    keys: ['name', 'description', 'version', 'readme']
+  });
 
-  return res.status(200).json(pkgs);
+  return res.status(200).json(search.search(word));
 }
 
 
