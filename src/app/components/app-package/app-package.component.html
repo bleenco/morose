@@ -7,9 +7,9 @@
             <div class="content-box-head" *ngIf="!loading && pkg">
               <span>{{ pkg.name }}</span>
             </div>
-            <div class="content-box-tabs">
+            <div class="content-box-tabs" *ngIf="!loading && pkg">
               <span class="tab" [class.is-active]="tab === 'readme'" (click)="tab = 'readme'">Readme</span>
-              <span class="tab" [class.is-active]="tab === 'versions'" (click)="tab = 'versions'">Versions</span>
+              <span class="tab" [class.is-active]="tab === 'versions'" (click)="tab = 'versions'; selectedVersion = null">Versions</span>
             </div>
             <div class="content-box-main">
               <div class="columns" *ngIf="!loading && pkg && tab === 'readme'">
@@ -19,12 +19,31 @@
                 </div>
               </div>
               <div class="columns is-multiline" *ngIf="!loading && tab === 'versions' && times && times.length">
-                <div class="column is-12">
-                  <p *ngFor="let t of times; let i = index;" class="version-row">
+                <div class="column is-12" *ngIf="!selectedVersion">
+                  <p *ngFor="let t of times; let i = index;" class="version-row" (click)="selectVersion($event, t.version)">
                     <code>{{ t.version }}</code>
                     <span class="publish-time">published {{ t.time | date }}</span>
                   </p>
                 </div>
+                <div class="column is-12" *ngIf="selectedVersion && dependencies && (dependencies.deps || dependencies.dev)">
+                  <h2>Dependencies</h2>
+                  <p *ngFor="let dep of dependencies.deps; let i = index;" class="version-row" [routerLink]="['/package', dep.title]">
+                    <code class="w50p">{{ dep.title }}</code>
+                    <span class="publish-time w50p">{{ dep.version }}</span>
+                  </p>
+                  <h2>Development Dependencies</h2>
+                  <a *ngFor="let dep of dependencies.dev; let i = index;" class="version-row" [routerLink]="['/package', dep.title]">
+                    <code class="w50p">{{ dep.title }}</code>
+                    <span class="publish-time w50p">{{ dep.version }}</span>
+                  </a>
+                </div>
+              </div>
+
+              <div *ngIf="!loading && !pkg && pkgName">
+                <h1 class="has-text-centered">Sorry, package <code>{{ pkgName }}</code> not found on the server!</h1>
+                <p class="has-text-centered">
+                  <button class="button mtop20">Fetch from upstream</button>
+                </p>
               </div>
             </div>
           </div>
