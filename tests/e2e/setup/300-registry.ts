@@ -1,6 +1,9 @@
-import { execSilent } from '../utils/process';
+import { writeFile } from '../utils/fs';
 
 export default function() {
   return Promise.resolve()
-    .then(() => execSilent('npm', ['set', 'registry', 'http://localhost:10000']));
+    .then(() => {
+      let data = 'registry=http://localhost:10000';
+      return writeFile('./.npmrc', data);
+    });
 }

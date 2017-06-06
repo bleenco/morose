@@ -20,7 +20,7 @@
     "test:unit": "node ./tests/run.js",
     "test:e2e": "node ./tests/run_e2e.js",
     "test:protractor": "npm run e2e",
-    "lint": "tslint ./src/api/**/*.ts ./src/app/**/*.ts",
+    "lint": "tslint ./src/api/**/*.ts ./src/app/**/*.ts ./tests/**/*.ts",
     "protractor:live": "npm run e2e -- --elementExplorer",
     "protractor": "protractor ./protractor.conf.js",
     "protractor:delay": "sleep 30 && protractor ./protractor.conf.js",
