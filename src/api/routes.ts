@@ -72,14 +72,16 @@ export function getUser(req: auth.AuthRequest, res: express.Response): void | ex
 
 export function getPackage(req: auth.AuthRequest, res: express.Response): void | express.Response {
   let pkgName: string = req.params.package;
+  let baseUrl = req.protocol + '://' + req.get('host');
+  let config = getConfig();
+  let authFile = getAuth();
 
   if (req.headers.referer && req.headers.referer.split(' ')[0] === 'owner') {
-    let auth = getAuth();
-    let pkg = auth.packages.find(p => p.name === pkgName);
+    let pkg = authFile.packages.find(p => p.name === pkgName);
     if (pkg) {
       let usernames = pkg.owners;
       let users = usernames.map(username => {
-        let user = auth.users.find(u => u.name === username);
+        let user = authFile.users.find(u => u.name === username);
         if (user) {
           return { name: username, email: user.email };
         } else {
@@ -89,18 +91,20 @@ export function getPackage(req: auth.AuthRequest, res: express.Response): void |
 
       res.status(200).json({ name: pkgName, maintainers: users });
     } else {
-      return res.status(404).json('');
+      let pkgJsonPath = getFilePath(`packages/${pkgName}/package.json`);
+      if (pkgName.indexOf('@') !== -1) {
+        pkgName = pkgName.replace(/^(@.*)(\/)(.*)$/g, '$1%2F$3');
+      }
+
+      proxy.getUpstreamPackage(config, pkgJsonPath, baseUrl, pkgName, res);
     }
   } else {
-    let baseUrl = req.protocol + '://' + req.get('host');
-    let config = getConfig();
-    let authFile = getAuth();
     let user = auth.getUserByToken(res.locals.remote_user.token, authFile);
     auth.userHasReadPermissions(user.name, pkgName, authFile).then(hasPermissions => {
       if (hasPermissions) {
         let pkgJsonPath = getFilePath(`packages/${pkgName}/package.json`);
         if (pkgName.indexOf('@') !== -1) {
-          pkgName = pkgName.replace(/^(@.*)(\/)(.*)$/, '$1%2F$3');
+          pkgName = pkgName.replace(/^(@.*)(\/)(.*)$/g, '$1%2F$3');
         }
 
         exists(pkgJsonPath).then(e => {
@@ -108,21 +112,7 @@ export function getPackage(req: auth.AuthRequest, res: express.Response): void |
             readJsonFile(pkgJsonPath)
               .then((jsonData: IPackage) => res.status(200).json(jsonData));
           } else {
-            if (config.useUpstream) {
-              proxy.fetchUpstreamData(config.upstream, pkgName, baseUrl)
-                .then((body: IPackage) => {
-                  if (body.versions) {
-                    body = proxy.changeUpstreamDistUrls(config.upstream, baseUrl, body);
-                    ensureDirectory(dirname(pkgJsonPath)).then(() => {
-                      writeJsonFile(pkgJsonPath, body).then(() => res.status(200).json(body));
-                    });
-                  } else {
-                    return res.status(404).json('');
-                  }
-                });
-            } else {
-              return res.status(404).json('');
-            }
+            proxy.getUpstreamPackage(config, pkgJsonPath, baseUrl, pkgName, res);
           }
         }).catch(() => res.status(404).json(''));
       } else {

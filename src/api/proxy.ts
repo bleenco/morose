@@ -1,6 +1,28 @@
 import * as request from 'request';
 import { IPackage } from './package';
 import * as logger from './logger';
+import * as express from 'express';
+import { writeJsonFile, ensureDirectory } from './fs';
+import { dirname } from 'path';
+
+export function getUpstreamPackage(config: any, pkgJsonPath: string, baseUrl: string,
+                                   pkgName: string, res: express.Response) {
+  if (config.useUpstream) {
+    fetchUpstreamData(config.upstream, pkgName, baseUrl)
+      .then((body: IPackage) => {
+        if (body.versions) {
+          body = changeUpstreamDistUrls(config.upstream, baseUrl, body);
+          ensureDirectory(dirname(pkgJsonPath)).then(() => {
+            writeJsonFile(pkgJsonPath, body).then(() => res.status(200).json(body));
+          });
+        } else {
+          return res.status(404).json('');
+        }
+      });
+  } else {
+    return res.status(404).json('');
+  }
+}
 
 export function fetchUpstreamData(upstreamUrl: string, pkgName: string,
   baseUrl: string): Promise<IPackage> {
