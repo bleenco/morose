@@ -9,7 +9,7 @@ export default function() {
       if (res.code !== 0 && res.stderr.indexOf('code ENEEDAUTH') !== -1) {
         return Promise.resolve();
       }
-      return Promise.reject();
+      return Promise.reject('');
     })
-    .catch(() => Promise.reject());
+    .catch(() => Promise.reject(''));
 }
