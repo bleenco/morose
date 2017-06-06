@@ -1,6 +1,6 @@
 import { IPackage, Package } from './package';
 import { readDir, globSearch, readJsonFile } from './fs';
-import { getFilePath } from './utils';
+import { getFilePath, getRandomInt } from './utils';
 import { info } from './logger';
 import { resolve } from 'path';
 
@@ -38,5 +38,14 @@ export function deletePackage(pkgName: string): void {
   let index = storage.findIndex(pkg => pkg.name === pkgName);
   if (index !== -1) {
     storage.splice(index, 1);
+  }
+}
+
+export function getRandomPackage(): IPackage {
+  let index = getRandomInt(0, storage.length - 1);
+  if (index !== -1) {
+    return storage[index];
+  } else {
+    return null;
   }
 }
