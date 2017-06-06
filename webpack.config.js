@@ -14,7 +14,7 @@ module.exports = function (options, webpackOptions) {
 
   config = webpackMerge({}, config, {
     entry: getEntry(options),
-    resolve: { extensions: ['.ts', '.js'] },
+    resolve: { extensions: ['.ts', '.js', '.json'] },
     output: {
       path: root('dist/app')
     },

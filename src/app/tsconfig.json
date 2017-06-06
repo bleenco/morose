@@ -12,7 +12,7 @@
       "dom"
     ],
     "outDir": "lib",
-    "types": ["marked"]
+    "types": ["marked", "node"]
   },
   "exclude": [
     "./main.aot.ts"
