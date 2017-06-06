@@ -11,9 +11,12 @@ export class AppPackageComponent implements OnInit {
   loading: boolean;
   pkg: any;
   pkgData: any;
+  tab: 'readme' | 'deps' | 'devDeps' | 'versions';
+  times: any[];
 
   constructor(private api: ApiService, private route: ActivatedRoute) {
     this.loading = true;
+    this.tab = 'versions';
   }
 
   ngOnInit() {
@@ -24,6 +27,10 @@ export class AppPackageComponent implements OnInit {
           this.pkg = pkg.data;
           this.pkgData = this.pkg.readme ?
             this.pkg : this.pkg.versions[this.pkg['dist-tags'].latest];
+
+          this.times = Object.keys(this.pkg.time).map(version => {
+            return { version: version, time: this.pkg.time[version] };
+          }).reverse();
         }
 
         this.loading = false;

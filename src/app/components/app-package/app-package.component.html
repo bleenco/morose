@@ -7,11 +7,23 @@
             <div class="content-box-head" *ngIf="!loading && pkg">
               <span>{{ pkg.name }}</span>
             </div>
+            <div class="content-box-tabs">
+              <span class="tab" [class.is-active]="tab === 'readme'" (click)="tab = 'readme'">Readme</span>
+              <span class="tab" [class.is-active]="tab === 'versions'" (click)="tab = 'versions'">Versions</span>
+            </div>
             <div class="content-box-main">
-              <div class="columns is-multiline" *ngIf="!loading && pkg">
+              <div class="columns" *ngIf="!loading && pkg && tab === 'readme'">
                 <div class="column is-12">
                   <h1>{{ pkg.description }}</h1>
                   <p [innerHTML]="pkgData.readme | markdown" class="markdown-content"></p>
+                </div>
+              </div>
+              <div class="columns is-multiline" *ngIf="!loading && tab === 'versions' && times && times.length">
+                <div class="column is-12">
+                  <p *ngFor="let t of times; let i = index;" class="version-row">
+                    <code>{{ t.version }}</code>
+                    <span class="publish-time">published {{ t.time | date }}</span>
+                  </p>
                 </div>
               </div>
             </div>
