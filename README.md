@@ -9,7 +9,11 @@
 
 Run npm registry or npm proxy on your own servers.
 
-### Use cases
+## Compatibility
+
+`morose` is compatible with `npm` version `5` and beyond.
+
+## Use cases
 
 - Use private packages.
 
@@ -23,13 +27,13 @@ If you have more than one server you want to install packages on, you might want
 
 If you want to use a modified version of some 3rd-party package (for example, you found a bug, but maintainer didn't accept pull request yet), you can publish your version locally under the same name.
 
-### Installation
+## Installation
 
 ```sh
 $ npm install morose -g
 ```
 
-### Usage
+## Usage
 
 ### Running a Server
 
@@ -43,9 +47,31 @@ morose
 npm set registry http://localhost:10000
 ```
 
-### Hacking on morose
+## Running tests
 
-#### Running from source
+* server unit tests
+
+```sh
+node tests/run.js
+```
+
+* server end-to-end tests
+
+```sh
+node tests/run_e2e.js
+```
+
+* app end-to-end Protractor tests
+
+First make sure `morose` is running, then;
+
+```sh
+npm run protractor
+```
+
+## Hacking on morose
+
+### Running from source
 
 1. Clone this repository
 
@@ -77,6 +103,6 @@ morose
 npm run dev
 ```
 
-#### LICENCE
+## LICENCE
 
 **MIT**
