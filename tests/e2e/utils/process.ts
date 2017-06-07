@@ -251,7 +251,7 @@ export function lsOwner(pkgName: string): Promise<any> {
 
 export function addOwner(pkgName: string, user: string): Promise<any> {
   return new Promise((resolve, reject) => {
-    exec('npm', ['-q', 'owner', 'add', user, pkgName])
+    exec('npm', ['-q', 'owner', 'add', user, pkgName, '--fetch-retries', '0'])
       .then(res => resolve(res))
       .catch(() => reject());
   });
@@ -315,7 +315,7 @@ export function lsPublicAccess(pkg: string): Promise<any> {
 
 export function deprecate(pkg: string, msg: string): Promise<any> {
   return new Promise((resolve, reject) => {
-    exec('npm', ['-q', 'deprecate', pkg, msg])
+    exec('npm', ['-q', 'deprecate', pkg, msg, '--fetch-retries', '0'])
       .then(res => resolve(res))
       .catch(() => reject());
   });
@@ -323,7 +323,31 @@ export function deprecate(pkg: string, msg: string): Promise<any> {
 
 export function npmUnpublish(pkg: string): Promise<any> {
   return new Promise((resolve, reject) => {
-    exec('npm', ['-q', 'unpublish', pkg, '--force'])
+    exec('npm', ['-q', 'unpublish', pkg, '--force', '--fetch-retries', '0'])
+      .then(res => resolve(res))
+      .catch(() => reject());
+  });
+}
+
+export function npmLsDistTag(pkg: string): Promise<any> {
+  return new Promise((resolve, reject) => {
+    exec('npm', ['-q', 'dist-tag', 'ls', pkg])
+      .then(res => resolve(res))
+      .catch(() => reject());
+  });
+}
+
+export function npmAddDistTag(pkg: string, tag: string): Promise<any> {
+  return new Promise((resolve, reject) => {
+    exec('npm', ['-q', 'dist-tag', 'add', pkg, tag, '--fetch-retries', '0'])
+      .then(res => resolve(res))
+      .catch(() => reject());
+  });
+}
+
+export function npmRmDistTag(pkg: string, tag: string): Promise<any> {
+  return new Promise((resolve, reject) => {
+    exec('npm', ['-q', 'dist-tag', 'rm', pkg, tag])
       .then(res => resolve(res))
       .catch(() => reject());
   });

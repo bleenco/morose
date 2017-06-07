@@ -30,6 +30,7 @@ describe('Publishing packages specific tests', () => {
           organization: '',
           teamPermissions: [],
           memberPermissions: [{ name: 'admin', read: true, write: true }],
+          tags: [],
           stars: [ 'developer' ]
         }
       ]
@@ -60,6 +61,7 @@ describe('Publishing packages specific tests', () => {
           organization: organization,
           teamPermissions: teamPermissions,
           memberPermissions: [{ name: username, read: true, write: true }],
+          tags: [],
           stars: [],
           access: 'restricted'
         });
@@ -84,6 +86,7 @@ describe('Publishing packages specific tests', () => {
           organization: '',
           teamPermissions: [],
           memberPermissions: [{ name: username, read: true, write: true }],
+          tags: [],
           stars: []
         });
       });
@@ -126,6 +129,7 @@ describe('Publishing packages specific tests', () => {
           organization: '',
           teamPermissions: [],
           memberPermissions: [{ name: username, read: true, write: true }],
+          tags: [],
           stars: [ 'developer', username ]
         });
       });
@@ -146,6 +150,7 @@ describe('Publishing packages specific tests', () => {
           organization: '',
           teamPermissions: [],
           memberPermissions: [{ name: username, read: true, write: true }],
+          tags: [],
           stars: [ 'developer' ]
         });
       });
@@ -166,6 +171,7 @@ describe('Publishing packages specific tests', () => {
               organization: '',
               teamPermissions: [],
               memberPermissions: [{ name: username, read: true, write: true }],
+              tags: [],
               stars: [ 'developer' ]
             });
           });
@@ -219,6 +225,7 @@ describe('Publishing packages specific tests', () => {
           organization: '',
           teamPermissions: [{ team: 'developers', read: true, write: true }],
           memberPermissions: [{ name: 'admin', read: true, write: true }],
+          tags: [],
           stars: [ 'developer' ]
         });
       });
@@ -240,6 +247,7 @@ describe('Publishing packages specific tests', () => {
               organization: '',
               teamPermissions: [],
               memberPermissions: [{ name: 'admin', read: true, write: true }],
+              tags: [],
               stars: [ 'developer' ]
             });
           });
@@ -262,6 +270,7 @@ describe('Publishing packages specific tests', () => {
           organization: '',
           teamPermissions: [],
           memberPermissions: [{ name: 'admin', read: true, write: true }],
+          tags: [],
           stars: [ 'developer' ],
           access: 'public'
         });
@@ -282,6 +291,7 @@ describe('Publishing packages specific tests', () => {
           organization: '',
           teamPermissions: [],
           memberPermissions: [{ name: 'admin', read: true, write: true }],
+          tags: [],
           stars: [ 'developer' ],
           access: 'restricted'
         });
