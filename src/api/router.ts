@@ -12,7 +12,7 @@ function index(req: express.Request, res: express.Response): void {
   return res.status(200).sendFile(resolve(__dirname, '../app/index.html'));
 }
 
-router.use(bodyParser.json({ limit: '100Mb' }));
+router.use(bodyParser.json({ limit: '100Mb', strict: false }));
 router.use(auth.middleware);
 router.use(logger.middleware);
 
@@ -49,6 +49,7 @@ router.get('/-/whoami', routes.whoami);
 router.get('/-/ping', routes.ping);
 router.get('/:package/:version?', routes.getPackage);
 router.get('/:package(*)/-/:tarball(*)', routes.getTarball);
+router.get('/-/package/:package(*)/dist-tags', routes.distTag);
 router.get('/-/package/(*)/collaborators?', auth.hasAccess, routes.getCollaborators);
 router.get('/-/org/*/package*', auth.hasAccess, routes.organizationAccess);
 router.get('/-/team/*/package*', auth.hasAccess, routes.organizationAccess);
@@ -56,9 +57,11 @@ router.get('/-/v1/search', auth.hasAccess, routes.search);
 router.get('/-/_view/starredByUser?', auth.hasAccess, routes.starredByUser);
 router.delete('/-/team/*/package*', auth.hasAccess, routes.setOrganizationAccess);
 router.delete('/:package/-rev/:version?', auth.hasAccess, routes.unpublishPackage);
+router.delete('/-/package/:package(*)/dist-tags/(*)', auth.hasAccess, routes.removeDistTag);
 router.put('/-/team/*/package*', auth.hasAccess, routes.setOrganizationAccess);
 router.put('/:package/:_rev/:revision?', auth.hasAccess, routes.updatePackageOwner);
 router.put('/:package/:revision?', auth.hasAccess, routes.updatePackage);
+router.put('/-/package/:package(*)/dist-tags/:tag(*)', routes.addDistTag);
 router.post('/-/package/*/access', routes.setPackageAccess);
 
 router.all('/*', index);

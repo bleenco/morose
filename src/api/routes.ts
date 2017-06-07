@@ -520,3 +520,46 @@ export function search(req: auth.AuthRequest, res: express.Response): void {
   res.status(200).json(results);
 }
 
+export function distTag(req: auth.AuthRequest, res: express.Response): express.Response {
+  let request = req.headers.referer.split(' ');
+  let authFile = getAuth();
+  if (request.length > 2) {
+    let pkg = req.params.package;
+    auth.lsDistTag(pkg, res.locals.remote_user.name, authFile)
+      .then(tags => res.status(tags.code).json(tags.tags))
+      .catch(err => res.status(err.errorCode).json({ error: err.errorMessage}));
+  } else {
+    return res.status(412).json({});
+  }
+}
+
+export function addDistTag(req: auth.AuthRequest, res: express.Response): express.Response {
+  let request = req.headers.referer.split(' ');
+  let authFile = getAuth();
+  if (request.length > 3) {
+    let pkg = req.params.package;
+    let version = req.body;
+    let tag = req.params.tag;
+    auth.addDistTag(pkg, version, tag, res.locals.remote_user.name, authFile)
+      .then(newAuth => writeJsonFile(getAuthPath(), newAuth))
+      .then(() => res.status(200).json({ success: true}))
+      .catch(err => res.status(err.errorCode).json({ error: err.errorMessage}));
+  } else {
+    return res.status(412).json({});
+  }
+}
+
+export function removeDistTag(req: auth.AuthRequest, res: express.Response): express.Response {
+  let request = req.headers.referer.split(' ');
+  let authFile = getAuth();
+  if (request.length > 3) {
+    let pkg = req.params.package;
+    let tag = request[3];
+    auth.removeDistTag(pkg, tag, res.locals.remote_user.name, authFile)
+      .then(newAuth => writeJsonFile(getAuthPath(), newAuth))
+      .then(() => res.status(200).json({ success: true}))
+      .catch(err => res.status(err.errorCode).json({ error: err.errorMessage}));
+  } else {
+    return res.status(412).json({});
+  }
+}

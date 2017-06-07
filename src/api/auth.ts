@@ -434,6 +434,7 @@ export function publishPackage(
                   organization: organization ? organization : '',
                   teamPermissions: permissions,
                   memberPermissions: [{ name: username, read: true, write: true }],
+                  tags: [],
                   stars: []
                 };
                 if (organization) {
@@ -859,4 +860,77 @@ export function packageRestrictedAccess(pkg: string, user: string, auth: any): P
         + `for "${pkg}". Are you logged in as the correct user?` });
     });
   });
+}
+
+export function lsDistTag(pkg: string, user: string, auth: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+      return userHasReadPermissions(user, pkg, auth).then(hasPermission => {
+        if (hasPermission) {
+          let pkgObject = auth.packages.find(p => p.name === pkg);
+          if (pkgObject) {
+            let latestVersion = pkgObject.versions[pkgObject.versions.length - 1];
+            let tags = { latest: latestVersion };
+            pkgObject.tags.forEach(t => {
+              tags[t.tag] = t.version;
+            });
+            resolve({ code: 200, tags: tags});
+          } else {
+            reject({ errorCode: 412, errorMessage: `Package "${pkg}" doesn't exists!` });
+          }
+        }
+        reject({ errorCode: 403, errorMessage: `You do not have permission `
+          + `for "${pkg}". Are you logged in as the correct user?` });
+      }).catch(() => {
+        reject({ errorCode: 403, errorMessage: `You do not have permission `
+          + `for "${pkg}". Are you logged in as the correct user?` });
+      });
+    });
+}
+
+export function removeDistTag(pkg: string, tag: string, user: string, auth: any): Promise<any> {
+  return new Promise((resolve, reject) => {
+    return userHasWritePermissions(user, pkg, auth).then(hasPermission => {
+      if (hasPermission) {
+        let pkgObject = auth.packages.find(p => p.name === pkg);
+        if (pkgObject) {
+          let tagIndex = pkgObject.tags.findIndex(t => t.tag === tag);
+          if (tagIndex !== -1) {
+            pkgObject.tags.splice(tagIndex, 1);
+            resolve(auth);
+          }
+        }
+        reject({ errorCode: 412, errorMessage: `Package "${pkg}" doesn't exists!` });
+      }
+      reject({ errorCode: 403, errorMessage: `You do not have permission `
+        + `for "${pkg}". Are you logged in as the correct user?` });
+    }).catch(() => {
+      reject({ errorCode: 403, errorMessage: `You do not have permission `
+        + `for "${pkg}". Are you logged in as the correct user?` });
+    });
+  });
+}
+
+export function addDistTag(
+  pkg: string, version: string, tag: string, user: string, auth: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+      return userHasWritePermissions(user, pkg, auth).then(hasPermission => {
+        if (hasPermission) {
+          let pkgObject = auth.packages.find(p => p.name === pkg);
+          if (pkgObject) {
+            let tagIndex = pkgObject.tags.findIndex(t => t.version === version);
+            if (tagIndex !== -1) {
+              pkgObject.tags.splice(tagIndex, 1);
+            }
+            pkgObject.tags.push({ tag: tag, version: version });
+            resolve(auth);
+          }
+          reject({ errorCode: 412, errorMessage: `Package "${pkg}" doesn't exists!` });
+        }
+        reject({ errorCode: 403, errorMessage: `You do not have permission `
+          + `for "${pkg}". Are you logged in as the correct user?` });
+      }).catch(() => {
+        reject({ errorCode: 403, errorMessage: `You do not have permission `
+          + `for "${pkg}". Are you logged in as the correct user?` });
+      });
+    });
 }
