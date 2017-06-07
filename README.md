@@ -11,6 +11,17 @@ Run npm registry or npm proxy on your own servers.
 
 `morose` allows you to have a local npm registry with zero configuration. You don't have to install and replicate an entire CouchDB database. `morose` keeps its own small database and, if a package doesn't exist there, it asks npmjs.org for it keeping only those packages you use.
 
+## Table of contents
+
+* [Compatibility](#compatibility)
+* [Use Cases](#use-cases)
+* [Installation](#installation)
+* [Usage](#usage)
+* [Running Tests](#running-tests)
+* [Hacking on morose](#hacking-on-morose)
+* [Setting up nginx reverse proxy](#setting-up-nginx-reverse-proxy)
+* [Inspiration](#inspiration)
+
 ## Compatibility
 
 `morose` is compatible with `npm` version `5` and beyond.
@@ -111,6 +122,23 @@ morose
 
 ```sh
 npm run dev
+```
+
+## Setting up nginx reverse proxy
+
+```nginx
+server {
+  listen 80;
+  server_name morose.example.com;
+
+  location / {
+    proxy_set_header        Host $host;
+    proxy_set_header        X-Real-IP $remote_addr;
+    proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header        X-Forwarded-Proto $scheme;
+    proxy_pass              http://localhost:10000;
+  }
+}
 ```
 
 ## Inspiration
