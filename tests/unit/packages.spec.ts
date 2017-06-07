@@ -234,7 +234,7 @@ describe('Publishing packages specific tests', () => {
   it('should revoke access for a package (npm access revoke).', () => {
     let pkg = 'morose';
     let team = 'bleenco:developers';
-    let username = 'developer';
+    let username = 'admin';
 
     return auth.grantAccess(pkg, team, 'read-write', username, testAuth).then(grantAuth => {
       return auth.revokeAccess(pkg, team, username, grantAuth).then(newAuth => {
@@ -258,7 +258,7 @@ describe('Publishing packages specific tests', () => {
 
   it('should set package access to public (npm access public).', () => {
     let pkg = 'morose';
-    let username = 'developer';
+    let username = 'admin';
     return auth.packagePublicAccess(pkg, username, testAuth)
       .then(newAuth => fs.writeJsonFile(testPath, newAuth))
       .then(() => fs.readJsonFile(testPath))
@@ -279,7 +279,7 @@ describe('Publishing packages specific tests', () => {
 
   it('should set package access to protected (npm access protected).', () => {
     let pkg = 'morose';
-    let username = 'developer';
+    let username = 'admin';
     return auth.packageRestrictedAccess(pkg, username, testAuth)
       .then(newAuth => fs.writeJsonFile(testPath, newAuth))
       .then(() => fs.readJsonFile(testPath))
