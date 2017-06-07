@@ -9,9 +9,15 @@
 
 Run npm registry or npm proxy on your own servers.
 
+`morose` allows you to have a local npm registry with zero configuration. You don't have to install and replicate an entire CouchDB database. `morose` keeps its own small database and, if a package doesn't exist there, it asks npmjs.org for it keeping only those packages you use.
+
 ## Compatibility
 
 `morose` is compatible with `npm` version `5` and beyond.
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/1796022/26878368-85bc3850-4b8d-11e7-9d6b-8bee91a41280.png">
+</p>
 
 ## Use cases
 
@@ -40,6 +46,10 @@ $ npm install morose -g
 ```sh
 morose
 ```
+
+When you start a server for the first time, configuration is created in `~/.morose` directory.
+
+Now you can navigate to `http://localhost:10000` in your browser where your packages can seen and searched.
 
 ### Setting up npm config to use morose
 
@@ -102,6 +112,13 @@ morose
 ```sh
 npm run dev
 ```
+
+## Inspiration
+
+`morose` is heaviliy inspired by `sinopia` and we also used some stuff from there.
+The main reason to make a new package with similar behavior is that `sinopia` is not updated anymore and as far as we know some `npm` commands doesn't work there.
+
+`morose` is build with in the way that is compatible with the newest `npm` releases.
 
 ## LICENCE
 
