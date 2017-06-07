@@ -1,4 +1,4 @@
-import { npmPublish, npmLogin, lsPackagesAccess } from '../../utils/process';
+import { npmPublish, npmLogin, execSilent } from '../../utils/process';
 import { createPackageJson } from '../../utils/utils';
 
 export default function() {
@@ -6,7 +6,7 @@ export default function() {
     .then(() => createPackageJson('package.json', 'test-package', '0.0.1'))
     .then(() => npmLogin('admin', 'blabla', 'foo@bar.com'))
     .then(() => npmPublish())
-    .then(() => lsPackagesAccess('admin'))
+    .then(() => execSilent('npm', ['-q', 'access', 'ls-packages', 'admin']))
     .then(res => {
       if (res.code === 0 && res.stdout.indexOf('"test-package": "read-write"') !== -1) {
         return Promise.resolve();

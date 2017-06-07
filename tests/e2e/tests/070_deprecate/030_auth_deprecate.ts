@@ -1,4 +1,4 @@
-import { npmPublish, npmLogin, deprecate, npmInstall } from '../../utils/process';
+import { npmPublish, npmLogin, execSilent, npmInstall } from '../../utils/process';
 import { createPackageJson } from '../../utils/utils';
 
 export default function() {
@@ -6,7 +6,10 @@ export default function() {
     .then(() => createPackageJson('package.json', '@bleenco/privatepackage', '0.0.1'))
     .then(() => npmLogin('admin', 'blabla', 'foo@bar.com'))
     .then(() => npmPublish())
-    .then(() => deprecate('@bleenco/privatepackage', 'deprecate message'))
+    .then(() => execSilent(
+      'npm',
+      ['-q', 'deprecate', '@bleenco/privatepackage', 'deprecate message', '--fetch-retries', '0']
+    ))
     .then(() => npmInstall('@bleenco/privatepackage'))
     .then(res => {
       if (res.code === 0 && res.stderr.indexOf('deprecate message') !== -1) {

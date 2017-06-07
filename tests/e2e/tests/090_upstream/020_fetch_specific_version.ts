@@ -1,4 +1,4 @@
-import { execSilent, npmInstall } from '../../utils/process';
+import { execSilent } from '../../utils/process';
 import { readJsonFile } from '../../utils/fs';
 
 export default function() {

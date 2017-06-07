@@ -1,4 +1,4 @@
-import { npmPublish, npmLogin, executeSilent, deprecate } from '../../utils/process';
+import { npmPublish, npmLogin, executeSilent, execSilent } from '../../utils/process';
 import { createPackageJson } from '../../utils/utils';
 
 export default function() {
@@ -7,7 +7,8 @@ export default function() {
     .then(() => npmLogin('admin', 'blabla', 'foo@bar.com'))
     .then(() => npmPublish())
     .then(() => executeSilent('npm logout'))
-    .then(() => deprecate('test-package', 'deprecate message'))
+    .then(() => execSilent(
+      'npm', ['-q', 'deprecate', 'test-package', 'deprecate message', '--fetch-retries', '0']))
     .then(res => res.code !== 0 ? Promise.resolve() : Promise.reject(''))
     .catch(() => Promise.reject(''));
 }
