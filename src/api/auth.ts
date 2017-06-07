@@ -527,7 +527,7 @@ export function getStaredPackages(username: string, auth: any): Promise<any> {
 
 export function userHasReadPermissions(username: string, pkg: string, auth: any): Promise<boolean> {
   return getPackage(pkg, auth).then(pkgObject => {
-    if (pkgObject && pkgObject.name[0] === '@') {
+    if (pkgObject) {
       if (pkgObject.access === 'restricted') {
         if (pkgObject.owners.findIndex(o => o === username) !== -1) {
           return true;
@@ -535,13 +535,13 @@ export function userHasReadPermissions(username: string, pkg: string, auth: any)
           if (pkgObject.memberPermissions.findIndex(mp => mp.name === username && mp.read) !== -1) {
             return true;
           } else {
-            let teams = getUserTeams(username, pkgObject.name, auth);
-            teams.forEach(t => {
-              if (pkgObject.teamPermissions.findIndex(tp => tp.team === t.name && tp.read) !== -1) {
+            let teams = getUserTeams(username, pkgObject.organization, auth);
+            return teams.some(t => {
+              if (pkgObject.teamPermissions.findIndex(
+                tp => tp.team === t && tp.read) !== -1) {
                 return true;
               }
             });
-            return false;
           }
         }
       }
@@ -553,37 +553,36 @@ export function userHasReadPermissions(username: string, pkg: string, auth: any)
 export function userHasWritePermissions(
   username: string, pkg: string, auth: any): Promise<boolean> {
     return getPackage(pkg, auth).then(pkgObject => {
-      if (pkg[0] === '@') {
-        if (pkgObject) {
-          if (pkgObject.owners.findIndex(o => o === username) !== -1) {
-            return true;
-          } else {
-            if (pkgObject.memberPermissions.findIndex(
-              mp => mp.name === username && mp.write) !== -1) {
-              return true;
-            } else {
-              let teams = getUserTeams(username, pkgObject.name, auth);
-              return teams.some(t => {
-                if (pkgObject.teamPermissions.findIndex(
-                  tp => tp.team === t.name && tp.write) !== -1) {
-                  return true;
-                }
-              });
-            }
-          }
+      if (pkgObject) {
+        if (pkgObject.owners.findIndex(o => o === username) !== -1) {
+          return true;
         } else {
-          let splitName = pkg.split('/')[0].slice(1);
-          if (splitName === username) {
+          if (pkgObject.memberPermissions.findIndex(
+            mp => mp.name === username && mp.write) !== -1) {
             return true;
           } else {
-            let organizations = getUserOrganizations(username, auth);
-            if (organizations.findIndex(o => o.name === splitName) !== -1) {
-              return true;
-            }
+            let teams = getUserTeams(username, pkgObject.organization, auth);
+            return teams.some(t => {
+              if (pkgObject.teamPermissions.findIndex(
+                tp => tp.team === t && tp.write) !== -1) {
+                return true;
+              }
+            });
           }
         }
       } else {
-        return true;
+        if (pkg[0] !== '@') {
+          return true;
+        }
+        let splitName = pkg.split('/')[0].slice(1);
+        if (splitName === username) {
+          return true;
+        } else {
+          let organizations = getUserOrganizations(username, auth);
+          if (organizations.findIndex(o => o.name === splitName) !== -1) {
+            return true;
+          }
+        }
       }
 
       return false;
