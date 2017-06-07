@@ -1,4 +1,4 @@
-import { npmPublish, npmLogin, npmLsDistTag, npmAddDistTag, executeSilent }
+import { npmPublish, npmLogin, execSilent, executeSilent }
   from '../../utils/process';
 import { createPackageJson } from '../../utils/utils';
 
@@ -8,7 +8,8 @@ export default function() {
     .then(() => npmLogin('admin', 'blabla', 'foo@bar.com'))
     .then(() => npmPublish())
     .then(() => executeSilent('npm logout'))
-    .then(() => npmAddDistTag('test-package@0.0.1', 'tag1'))
+    .then(() => execSilent(
+      'npm', ['-q', 'dist-tag', 'add', 'test-package@0.0.1', 'tag1', '--fetch-retries', '0']))
     .then(res => {
       if (res.code !== 0) {
         return Promise.resolve();

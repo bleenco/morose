@@ -1,4 +1,4 @@
-import { npmPublish, npmLogin, executeSilent, lsGrantAccess } from '../../utils/process';
+import { npmPublish, npmLogin, executeSilent, execSilent } from '../../utils/process';
 import { createPackageJson } from '../../utils/utils';
 
 export default function() {
@@ -8,7 +8,10 @@ export default function() {
     .then(() => npmPublish())
     .then(() => executeSilent('npm logout'))
     .then(() => npmLogin('developer', 'blabla', 'foo@bar.com'))
-    .then(() => lsGrantAccess('read-only', 'bleenco:developers', '@bleenco/test-private-package'))
+    .then(() => execSilent(
+      'npm',
+      ['-q', 'access', 'grant', 'read-only', 'bleenco:developers', '@bleenco/test-private-package']
+    ))
     .then(res => {
       if (res.code !== 0) {
         return Promise.resolve();

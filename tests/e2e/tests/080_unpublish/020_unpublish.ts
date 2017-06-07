@@ -1,4 +1,4 @@
-import { npmPublish, npmLogin, npmUnpublish } from '../../utils/process';
+import { npmPublish, npmLogin, execSilent } from '../../utils/process';
 import { createPackageJson } from '../../utils/utils';
 import * as fs from '../../utils/fs';
 
@@ -9,7 +9,8 @@ export default function() {
     .then(() => createPackageJson('package.json', 'test-package', '0.0.1'))
     .then(() => npmLogin('admin', 'blabla', 'foo@bar.com'))
     .then(() => npmPublish())
-    .then(() => npmUnpublish('test-package'))
+    .then(() => execSilent(
+      'npm', ['-q', 'unpublish', 'test-package', '--force', '--fetch-retries', '0']))
     .then(() => fs.readJsonFile(authPath))
     .then(authObject => {
       if (authObject.packages.filter(p => p.name === 'test-package')) {

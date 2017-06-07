@@ -1,4 +1,4 @@
-import { npmPublish, npmLogin, executeSilent, addOwner } from '../../utils/process';
+import { npmPublish, npmLogin, executeSilent, execSilent } from '../../utils/process';
 import { createPackageJson } from '../../utils/utils';
 
 export default function() {
@@ -7,7 +7,8 @@ export default function() {
     .then(() => npmLogin('admin', 'blabla', 'foo@bar.com'))
     .then(() => npmPublish())
     .then(() => executeSilent('npm logout'))
-    .then(() => addOwner('test-package', 'developer'))
+    .then(() => execSilent(
+      'npm', ['-q', 'owner', 'add', 'developer', 'test-package', '--fetch-retries', '0']))
     .then(res => {
       if (res.code !== 0) {
         return Promise.resolve();
