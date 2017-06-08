@@ -9,11 +9,16 @@ export default function() {
     .then(() => createPackageJson('package.json', 'test-package', '0.0.1'))
     .then(() => npmLogin('admin', 'blabla', 'foo@bar.com'))
     .then(() => npmPublish())
+    .then(() => createPackageJson('package.json', 'test-package', '0.0.2'))
+    .then(() => npmPublish())
+    .then(() => createPackageJson('package.json', 'test-package', '0.0.3'))
+    .then(() => npmPublish())
     .then(() => execSilent(
-      'npm', ['-q', 'unpublish', 'test-package', '--force', '--fetch-retries', '0']))
+      'npm', ['-q', 'unpublish', 'test-package@0.0.2']))
     .then(() => fs.readJsonFile(authPath))
     .then(authObject => {
-      if (!authObject.packages.find(p => p.name === 'test-package')) {
+      let pkg = authObject.packages.find(p => p.name === 'test-package');
+      if (pkg && pkg.versions.length === 2) {
         return Promise.resolve();
       }
       return Promise.reject('');
