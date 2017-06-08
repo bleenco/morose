@@ -127,10 +127,45 @@ export function getPackage(req: auth.AuthRequest, res: express.Response): void |
   }
 }
 
-export function updatePackageOwner(
+export function setPackageDetails(
   req: auth.AuthRequest, res: express.Response): void | express.Response {
     let request = req.headers.referer.split(' ');
-    if (request[0] === 'owner') {
+    if (request[0] === 'unpublish') {
+      let pkg = req.params.package;
+      let tgz = req.params.tgz;
+      if (tgz) {
+        let org = req.params.org;
+        let pkgJsonPath = `packages/${pkg}/package.json`;
+        let tgzPath = `tarballs/${pkg}/${tgz}`;
+        if (org) {
+          pkgJsonPath = `packages/${org}/${pkg}/package.json`;
+          tgzPath = `tarballs/${org}/${pkg}/${org}/${tgz}`;
+        }
+        let version = tgz.replace(`${pkg}-`, '').replace('.tgz', '');
+        if (version) {
+          readJsonFile(getFilePath(pkgJsonPath))
+            .then(pkgJson => {
+              delete pkgJson.versions[version];
+              writeJsonFile(getFilePath(pkgJsonPath), pkgJson)
+              .then(() => res.status(200).json({ message: 'Package unpublished!' }));
+            });
+          removeFile(getFilePath(tgzPath));
+          deletePackageVersion(`${org}/${pkg}`, version);
+        }
+      } else {
+        let versions = Object.keys(req.body.versions);
+        let authFile = getAuth();
+        auth.deletePackageVersion(pkg, versions, res.locals.remote_user.name, authFile)
+          .then(newAuthFile => {
+            if (newAuthFile) {
+              writeJsonFile(getAuthPath(), newAuthFile)
+                .then(() => {
+                  res.status(200).json({ message: 'Package unpublished!' });
+                });
+            }
+          }).catch(error => res.status(error.errorCode).json({ error: error.errorMessage}));
+      }
+    } else if (request[0] === 'owner') {
       if (request[1] === 'add') {
         let pkgName: string = request[3];
         let username: string = request[2];
@@ -461,43 +496,6 @@ export function setPackageAccess(req: auth.AuthRequest, res: express.Response): 
         }).catch(error => res.status(error.errorCode).json({ error: error.errorMessage}));
       }
     }
-  }
-}
-
-export function unpublishPackageVersion(req: auth.AuthRequest, res: express.Response): void {
-  let pkg = req.params.package;
-  let tgz = req.params.tgz;
-  if (tgz) {
-    let org = req.params.org;
-    let pkgJsonPath = `packages/${pkg}/package.json`;
-    let tgzPath = `tarballs/${pkg}/${tgz}`;
-    if (org) {
-      pkgJsonPath = `packages/${org}/${pkg}/package.json`;
-      tgzPath = `tarballs/${org}/${pkg}/${org}/${tgz}`;
-    }
-    let version = tgz.replace(`${pkg}-`, '').replace('.tgz', '');
-    if (version) {
-      readJsonFile(getFilePath(pkgJsonPath))
-        .then(pkgJson => {
-          delete pkgJson.versions[version];
-          writeJsonFile(getFilePath(pkgJsonPath), pkgJson)
-          .then(() => res.status(200).json({ message: 'Package unpublished!' }));
-        });
-      removeFile(getFilePath(tgzPath));
-      deletePackageVersion(`${org}/${pkg}`, version);
-    }
-  } else {
-    let versions = Object.keys(req.body.versions);
-    let authFile = getAuth();
-    auth.deletePackageVersion(pkg, versions, res.locals.remote_user.name, authFile)
-      .then(newAuthFile => {
-        if (newAuthFile) {
-          writeJsonFile(getAuthPath(), newAuthFile)
-            .then(() => {
-              res.status(200).json({ message: 'Package unpublished!' });
-            });
-        }
-      }).catch(error => res.status(error.errorCode).json({ error: error.errorMessage}));
   }
 }
 

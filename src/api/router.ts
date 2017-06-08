@@ -57,14 +57,12 @@ router.get('/-/v1/search', auth.hasAccess, routes.search);
 router.get('/-/_view/starredByUser?', auth.hasAccess, routes.starredByUser);
 router.delete('/-/team/*/package*', auth.hasAccess, routes.setOrganizationAccess);
 router.delete('/:package/-rev/:version?', auth.hasAccess, routes.unpublishPackage);
-router.delete(
-  '/:org?/:package/-/:org?/:tgz/-rev/(*)', auth.hasAccess, routes.unpublishPackageVersion);
+router.delete('/:org?/:package/-/:org?/:tgz/-rev/(*)', auth.hasAccess, routes.setPackageDetails);
 router.delete('/-/package/:package(*)/dist-tags/(*)', auth.hasAccess, routes.removeDistTag);
 router.put('/-/team/*/package*', auth.hasAccess, routes.setOrganizationAccess);
-router.put('/:package/:_rev/:revision?', auth.hasAccess, routes.updatePackageOwner);
+router.put('/:package/:_rev/:revision?', auth.hasAccess, routes.setPackageDetails);
 router.put('/:package/:revision?', auth.hasAccess, routes.updatePackage);
 router.put('/-/package/:package(*)/dist-tags/:tag(*)', routes.addDistTag);
-router.put('/:package/-rev/:version?', auth.hasAccess, routes.unpublishPackageVersion);
 router.post('/-/package/*/access', routes.setPackageAccess);
 
 router.all('/*', index);
