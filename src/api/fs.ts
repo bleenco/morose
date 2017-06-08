@@ -108,7 +108,7 @@ export function removeFile(filePath: string): Promise<null> {
 
 export function removeFolder(path: string): Promise<null> {
   return new Promise((resolve, reject) => {
-    fs.rmdir(path, (err: NodeJS.ErrnoException) => {
+    fse.remove(path, (err: NodeJS.ErrnoException) => {
       if (err) {
         reject(err);
       }

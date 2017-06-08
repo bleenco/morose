@@ -2,10 +2,11 @@ import * as express from 'express';
 import * as auth from './auth';
 import * as logger from './logger';
 import { getConfig, getAuthPath, getFilePath, getAuth } from './utils';
-import { writeJsonFile, exists, ensureDirectory, readJsonFile, removeFolder } from './fs';
+import {
+  writeJsonFile, exists, ensureDirectory, readJsonFile, removeFolder, removeFile } from './fs';
 import { IPackage, Package } from './package';
 import * as proxy from './proxy';
-import { storage, findPackage, deletePackage } from './storage';
+import { storage, findPackage, deletePackage, deletePackageVersion } from './storage';
 import { createReadStream, createWriteStream } from 'fs';
 import * as request from 'request';
 import { dirname } from 'path';
@@ -110,7 +111,10 @@ export function getPackage(req: auth.AuthRequest, res: express.Response): void |
         exists(pkgJsonPath).then(e => {
           if (e) {
             readJsonFile(pkgJsonPath)
-              .then((jsonData: IPackage) => res.status(200).json(jsonData));
+              .then((jsonData: IPackage) => {
+                jsonData._rev = pkgName;
+                return res.status(200).json(jsonData);
+              });
           } else {
             proxy.getUpstreamPackage(config, pkgJsonPath, baseUrl, pkgName, res);
           }
@@ -460,30 +464,58 @@ export function setPackageAccess(req: auth.AuthRequest, res: express.Response): 
   }
 }
 
-export function unpublishPackage(req: auth.AuthRequest, res: express.Response): void {
-  let request = req.headers.referer.split(' ');
-  if (request.length > 1) {
-    let authFile = getAuth();
-    let pkg = request[1];
-    if (pkg === '[REDACTED]') {
-      pkg = req.params.package;
+export function unpublishPackageVersion(req: auth.AuthRequest, res: express.Response): void {
+  let pkg = req.params.package;
+  let tgz = req.params.tgz;
+  if (tgz) {
+    let org = req.params.org;
+    let pkgJsonPath = `packages/${pkg}/package.json`;
+    let tgzPath = `tarballs/${pkg}/${tgz}`;
+    if (org) {
+      pkgJsonPath = `packages/${org}/${pkg}/package.json`;
+      tgzPath = `tarballs/${org}/${pkg}/${org}/${tgz}`;
     }
-
-    auth.deletePackage(pkg, res.locals.remote_user.name, authFile)
+    let version = tgz.replace(`${pkg}-`, '').replace('.tgz', '');
+    if (version) {
+      readJsonFile(getFilePath(pkgJsonPath))
+        .then(pkgJson => {
+          delete pkgJson.versions[version];
+          writeJsonFile(getFilePath(pkgJsonPath), pkgJson)
+          .then(() => res.status(200).json({ message: 'Package unpublished!' }));
+        });
+      removeFile(getFilePath(tgzPath));
+      deletePackageVersion(`${org}/${pkg}`, version);
+    }
+  } else {
+    let versions = Object.keys(req.body.versions);
+    let authFile = getAuth();
+    auth.deletePackageVersion(pkg, versions, res.locals.remote_user.name, authFile)
       .then(newAuthFile => {
         if (newAuthFile) {
           writeJsonFile(getAuthPath(), newAuthFile)
             .then(() => {
-              removeFolder(getFilePath(`packages/${pkg}`));
-              removeFolder(getFilePath(`tarballs/${pkg}`));
-              deletePackage(pkg);
               res.status(200).json({ message: 'Package unpublished!' });
             });
         }
       }).catch(error => res.status(error.errorCode).json({ error: error.errorMessage}));
-  } else {
-    res.status(412).json({ error: 'Parameters missing.' });
   }
+}
+
+export function unpublishPackage(req: auth.AuthRequest, res: express.Response): void {
+  let pkg = req.params.package;
+  let authFile = getAuth();
+  auth.deletePackage(pkg, res.locals.remote_user.name, authFile)
+    .then(newAuthFile => {
+      if (newAuthFile) {
+        writeJsonFile(getAuthPath(), newAuthFile)
+          .then(() => {
+            removeFolder(getFilePath(`packages/${pkg}`));
+            removeFolder(getFilePath(`tarballs/${pkg}`));
+            deletePackage(pkg);
+            res.status(200).json({ message: 'Package unpublished!' });
+          });
+      }
+    }).catch(error => res.status(error.errorCode).json({ error: error.errorMessage}));
 }
 
 export function search(req: auth.AuthRequest, res: express.Response): void {
