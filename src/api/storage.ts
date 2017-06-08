@@ -41,6 +41,13 @@ export function deletePackage(pkgName: string): void {
   }
 }
 
+export function deletePackageVersion(pkgName: string, version: string): void {
+  let index = storage.findIndex(pkg => pkg.name === pkgName);
+  if (index !== -1) {
+    delete storage[index].versions[version];
+  }
+}
+
 export function getRandomPackage(): IPackage {
   let index = getRandomInt(0, storage.length - 1);
   if (index !== -1) {
