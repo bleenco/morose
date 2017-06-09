@@ -109,7 +109,7 @@ export function getTeamUsers(team: string, organization: string, auth: any): any
   let users = [];
   let org = auth.organizations.find(o => o.name === organization);
   if (org) {
-    org.teams.filter(t => t.team === team).members.forEach(m => {
+    org.teams.find(t => t.name === team).members.forEach(m => {
       if (!users[m]) {
         users.push(m);
       }
