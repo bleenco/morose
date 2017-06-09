@@ -61,7 +61,7 @@ describe('Publishing packages specific tests', () => {
     return fs.removeFile(testPath);
   });
 
-  it('should accept write access', () => {
+  it('should accept write access for new unscoped package', () => {
     let pkgName = 'testpackage';
     let username = 'developer';
 
@@ -69,7 +69,7 @@ describe('Publishing packages specific tests', () => {
       .then(permission => expect(permission).eql(true));
   });
 
-  it('should accept write access', () => {
+  it('should accept write access for new user scoped package', () => {
     let pkgName = '@developer/testpackage';
     let username = 'developer';
 
@@ -77,7 +77,7 @@ describe('Publishing packages specific tests', () => {
       .then(permission => expect(permission).eql(true));
   });
 
-  it('should reject write access', () => {
+  it('should reject write access for scoped package', () => {
     let pkgName = '@bleenco/testpackage';
     let username = 'developer';
 
@@ -85,7 +85,7 @@ describe('Publishing packages specific tests', () => {
       .then(permission => expect(permission).eql(false));
   });
 
-  it('should accept write access', () => {
+  it('should accept write access for scoped package because user is owner', () => {
     let pkgName = '@bleenco/testpackage';
     let username = 'admin';
 
@@ -93,7 +93,7 @@ describe('Publishing packages specific tests', () => {
       .then(permission => expect(permission).eql(true));
   });
 
-  it('should accept write access', () => {
+  it('should accept write access for unscoped package because user is owner', () => {
     let pkgName = 'morose';
     let username = 'admin';
 
@@ -101,7 +101,7 @@ describe('Publishing packages specific tests', () => {
       .then(permission => expect(permission).eql(true));
   });
 
-  it('should reject write access', () => {
+  it('should reject write access for unscoped package', () => {
     let pkgName = 'morose';
     let username = 'developer';
 
@@ -109,23 +109,25 @@ describe('Publishing packages specific tests', () => {
       .then(permission => expect(permission).eql(false));
   });
 
-  it('should accept write access', () => {
-    let pkgName = 'morose';
-    let username = 'tester';
+  it(`should accept write access for unscoped package because user has write permissions`,
+    () => {
+      let pkgName = 'morose';
+      let username = 'tester';
 
-    return auth.userHasWritePermissions(username, pkgName, testAuth)
-      .then(permission => expect(permission).eql(true));
+      return auth.userHasWritePermissions(username, pkgName, testAuth)
+        .then(permission => expect(permission).eql(true));
   });
 
-  it('should accept write access', () => {
-    let pkgName = 'morose';
-    let username = 'manager';
+  it(`should accept write access for unscoped package because user's team has write permissions`,
+    () => {
+      let pkgName = 'morose';
+      let username = 'manager';
 
-    return auth.userHasWritePermissions(username, pkgName, testAuth)
-      .then(permission => expect(permission).eql(true));
+      return auth.userHasWritePermissions(username, pkgName, testAuth)
+        .then(permission => expect(permission).eql(true));
   });
 
-  it('should accept read access', () => {
+  it('should accept read access of public package', () => {
     let pkgName = 'morose';
     let username = 'developer';
 
@@ -133,7 +135,7 @@ describe('Publishing packages specific tests', () => {
       .then(permission => expect(permission).eql(true));
   });
 
-  it('should reject read access', () => {
+  it('should reject read access of restricted package', () => {
     let pkgName = '@bleenco/package';
     let username = 'developer';
 
@@ -141,7 +143,7 @@ describe('Publishing packages specific tests', () => {
       .then(permission => expect(permission).eql(false));
   });
 
-  it('should acccept read access', () => {
+  it('should acccept read access of restricted package because user is owner', () => {
     let pkgName = '@bleenco/package';
     let username = 'admin';
 
@@ -149,7 +151,7 @@ describe('Publishing packages specific tests', () => {
       .then(permission => expect(permission).eql(true));
   });
 
-  it('should acccept read access', () => {
+  it('should acccept read access of restricted package because user has read permissions', () => {
     let pkgName = '@bleenco/package';
     let username = 'tester';
 
@@ -157,11 +159,12 @@ describe('Publishing packages specific tests', () => {
       .then(permission => expect(permission).eql(true));
   });
 
-  it('should acccept read access', () => {
-    let pkgName = '@bleenco/package';
-    let username = 'manager';
+  it(`should acccept read access of restricted package because user's team has read permissions`,
+    () => {
+      let pkgName = '@bleenco/package';
+      let username = 'manager';
 
-    return auth.userHasReadPermissions(username, pkgName, testAuth)
-      .then(permission => expect(permission).eql(true));
+      return auth.userHasReadPermissions(username, pkgName, testAuth)
+        .then(permission => expect(permission).eql(true));
   });
 });
