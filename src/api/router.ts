@@ -50,7 +50,7 @@ router.get('/-/ping', routes.ping);
 router.get('/:package/:version?', routes.getPackage);
 router.get('/:package(*)/-/:tarball(*)', routes.getTarball);
 router.get('/-/package/:package(*)/dist-tags', routes.distTag);
-router.get('/-/package/(*)/collaborators?', auth.hasAccess, routes.getCollaborators);
+router.get('/-/package/:package(*)/collaborators?', auth.hasAccess, routes.getCollaborators);
 router.get('/-/org/*/package*', auth.hasAccess, routes.organizationAccess);
 router.get('/-/team/*/package*', auth.hasAccess, routes.organizationAccess);
 router.get('/-/v1/search', auth.hasAccess, routes.search);

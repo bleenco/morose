@@ -245,10 +245,7 @@ export function updatePackage(req: auth.AuthRequest, res: express.Response): voi
     }
   } else if (request[0] === 'deprecate') {
     if (request.length > 1) {
-      let pkg = request[1];
-      if (pkg === '[REDACTED]') {
-        pkg = req.body.name;
-      }
+      let pkg = req.params.package;
       let message = request.splice(2).join(' ');
       let authFile = getAuth();
       let user = auth.getUserByToken(res.locals.remote_user.token, authFile);
@@ -264,8 +261,15 @@ export function updatePackage(req: auth.AuthRequest, res: express.Response): voi
               if (e) {
                 readJsonFile(pkgJsonPath)
                   .then((jsonData: IPackage) => {
-                    Object.keys(jsonData.versions).forEach(key => {
-                      jsonData.versions[key]['deprecated'] = message;
+                    Object.keys(req.body.versions).forEach(v => {
+                      let deprecated = req.body.versions[v].deprecated;
+                      if (jsonData.versions[v]) {
+                        if (deprecated) {
+                          jsonData.versions[v]['deprecated'] = deprecated;
+                        } else {
+                          jsonData.versions[v]['deprecated'] = '';
+                        }
+                      }
                     });
                     writeJsonFile(pkgJsonPath, jsonData);
                     return res.status(200).json({ message: 'success' });
@@ -291,7 +295,7 @@ export function updatePackage(req: auth.AuthRequest, res: express.Response): voi
       if (splitName !== user.name) {
         organization = splitName;
         teams = auth.getUserTeams(user.name, organization, authFile).map(t => {
-          return { team: t.name, read: true, write: true };
+          return { team: t, read: true, write: true };
         });
       }
     }
@@ -374,10 +378,7 @@ export function setOrganizationAccess(req: auth.AuthRequest, res: express.Respon
       if (request.length > 4) {
         let permission = request[2];
         let team = request[3];
-        let pkg = request[4];
-        if (request[4] === '[REDACTED]') {
-          pkg = req.body.package;
-        }
+        let pkg = req.body.package;
         auth.grantAccess(pkg, team, permission, res.locals.remote_user.name, authFile)
         .then(newAuthFile => {
           if (newAuthFile) {
@@ -390,10 +391,7 @@ export function setOrganizationAccess(req: auth.AuthRequest, res: express.Respon
     } else if (request[1] === 'revoke') {
       if (request.length > 3) {
         let team = request[2];
-        let pkg = request[3];
-        if (request[3] === '[REDACTED]') {
-          pkg = req.body.package;
-        }
+        let pkg = req.body.package;
         auth.revokeAccess(pkg, team, res.locals.remote_user.name, authFile)
         .then(newAuthFile => {
           if (newAuthFile) {
@@ -413,11 +411,7 @@ export function getCollaborators(req: auth.AuthRequest, res: express.Response): 
   let searchPattern = '';
   if (request.length > 2) {
     if (request[1] === 'ls-collaborators') {
-      let pkgName = request[2];
-      if (request[2] === '[REDACTED]') {
-        pkgName = req.params[0].split('/');
-        pkgName = `${pkgName[2]}/${pkgName[3]}`;
-      }
+      let pkgName = req.params.package;
       if (request.length > 3) {
         searchPattern = request[3];
       }
