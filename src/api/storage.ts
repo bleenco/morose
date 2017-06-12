@@ -25,7 +25,7 @@ export function initializeStorage(): Promise<null> {
 }
 
 export function updatePkgStorage(pkgName: string): Promise<null> {
-  let pkg = new Package(null, name);
+  let pkg = new Package(null, pkgName);
   return pkg.initDataFromPkgJson();
 }
 
@@ -45,6 +45,15 @@ export function deletePackageVersion(pkgName: string, version: string): void {
   let index = storage.findIndex(pkg => pkg.name === pkgName);
   if (index !== -1) {
     delete storage[index].versions[version];
+  }
+}
+
+export function addPackage(pkg: IPackage): void {
+  let index = storage.findIndex(p => p.name === pkg.name);
+  if (index !== -1) {
+    storage[index] = pkg;
+  } else {
+    storage.push(pkg);
   }
 }
 
