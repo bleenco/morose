@@ -6,7 +6,7 @@ import {
   writeJsonFile, exists, ensureDirectory, readJsonFile, removeFolder, removeFile } from './fs';
 import { IPackage, Package } from './package';
 import * as proxy from './proxy';
-import { storage, findPackage, deletePackage, deletePackageVersion } from './storage';
+import { storage, findPackage, deletePackage, deletePackageVersion, addPackage } from './storage';
 import { createReadStream, createWriteStream } from 'fs';
 import * as request from 'request';
 import { dirname } from 'path';
@@ -91,7 +91,7 @@ export function getPackage(req: auth.AuthRequest, res: express.Response): void |
       }).filter(Boolean);
 
       res.status(200).json({ name: pkgName, maintainers: users });
-    } else {
+    } else if (config.useUpstream) {
       let pkgJsonPath = getFilePath(`packages/${pkgName}/package.json`);
       if (pkgName.indexOf('@') !== -1) {
         pkgName = pkgName.replace(/^(@.*)(\/)(.*)$/g, '$1%2F$3');
@@ -103,22 +103,26 @@ export function getPackage(req: auth.AuthRequest, res: express.Response): void |
     let user = auth.getUserByToken(res.locals.remote_user.token, authFile);
     auth.userHasReadPermissions(user.name, pkgName, authFile).then(hasPermissions => {
       if (hasPermissions) {
-        let pkgJsonPath = getFilePath(`packages/${pkgName}/package.json`);
-        if (pkgName.indexOf('@') !== -1) {
-          pkgName = pkgName.replace(/^(@.*)(\/)(.*)$/g, '$1%2F$3');
-        }
-
-        exists(pkgJsonPath).then(e => {
-          if (e) {
-            readJsonFile(pkgJsonPath)
-              .then((jsonData: IPackage) => {
-                jsonData._rev = pkgName;
-                return res.status(200).json(jsonData);
-              });
-          } else {
-            proxy.getUpstreamPackage(config, pkgJsonPath, baseUrl, pkgName, res);
+        let cachedPackage = findPackage(pkgName);
+        if (cachedPackage) {
+          res.status(200).json(cachedPackage);
+        } else {
+          let pkgJsonPath = getFilePath(`packages/${pkgName}/package.json`);
+          if (pkgName.indexOf('@') !== -1) {
+            pkgName = pkgName.replace(/^(@.*)(\/)(.*)$/g, '$1%2F$3');
           }
-        }).catch(() => res.status(404).json(''));
+
+          exists(pkgJsonPath).then(e => {
+            if (e) {
+              readJsonFile(pkgJsonPath)
+                .then((jsonData: IPackage) => res.status(200).json(jsonData));
+            } else if (config.useUpstream) {
+              proxy.getUpstreamPackage(config, pkgJsonPath, baseUrl, pkgName, res);
+            } else {
+              res.status(404).json('');
+            }
+          }).catch(() => res.status(404).json(''));
+        }
       } else {
         return res.status(401).json({ error: `you do not have permission for `
               + `"${pkgName}". Are you logged in as the correct user?` });
@@ -311,6 +315,7 @@ export function updatePackage(req: auth.AuthRequest, res: express.Response): voi
                       }
                     });
                     writeJsonFile(pkgJsonPath, jsonData);
+                    addPackage(jsonData);
                     return res.status(200).json({ message: 'success' });
                   });
               } else {
@@ -351,6 +356,7 @@ export function updatePackage(req: auth.AuthRequest, res: express.Response): voi
             let pkg = new Package(data);
             pkg.saveTarballFromData()
               .then(() => pkg.initPkgJsonFromData())
+              .then(() => addPackage(data))
               .then(() => {
                 return res.status(200).json({ message: 'package published' });
               })
@@ -386,7 +392,7 @@ export function starredByUser(req: auth.AuthRequest, res: express.Response): exp
   });
 
   return res.status(200);
- }
+}
 
 export function organizationAccess(req: auth.AuthRequest, res: express.Response): express.Response {
   let request = req.headers.referer.split(' ');
