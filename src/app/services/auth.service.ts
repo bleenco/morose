@@ -29,6 +29,11 @@ export class AuthService {
     return this.jwtHelper.decodeToken(localStorage.getItem('morose_token'));
   }
 
+  isLoggedIn(): boolean {
+    let token = localStorage.getItem('morose_token');
+    return token ? true : false;
+  }
+
   login(username: string, password: string): Promise<boolean> {
     return this.api.login(username, password)
       .toPromise()
