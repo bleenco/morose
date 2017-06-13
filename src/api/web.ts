@@ -101,6 +101,12 @@ export function newUser(req: express.Request, res: express.Response): express.Re
     .catch(err => res.status(200).json({ message: err }));
 }
 
+export function getUser(req: express.Request, res: express.Response): express.Response | void {
+  let username = req.body.username;
+  let authObject = getAuth();
+  return res.status(200).json(auth.getUserByUsername(username, authObject));
+}
+
 export function newOrganization(
   req: express.Request, res: express.Response): express.Response | void {
     let authObj = getAuth();
