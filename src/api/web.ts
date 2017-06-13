@@ -6,17 +6,37 @@ import * as auth from './auth';
 import { writeJsonFile } from './fs';
 import * as fuse from 'fuse.js';
 
-export function getRandomPackages(req: express.Request, res: express.Response): express.Response {
+export function getRandomPackages(req: express.Request, res: express.Response): any {
+  let username: any = auth.decodeToken(req.query.token);
+  username = username && username.name || 'anonymous';
   let set = new Set();
   let max = storage.length > 9 ? 9 : storage.length;
-  while (set.size < max) {
-    let pkg = getRandomPackage();
-    if (!set.has(pkg)) {
-      set.add(pkg);
-    }
-  }
+  let authData = getAuth();
 
-  return res.status(200).json(Array.from(set));
+  const findUserPackage = () => {
+    return new Promise(resolve => {
+      let pkg = getRandomPackage();
+      auth.userHasReadPermissions(username, pkg.name, authData)
+        .then(hasPermission => resolve({ pkg, hasPermission }));
+    });
+  };
+
+  const loop = (i) => {
+    return findUserPackage().then((data: any) => {
+      if (data.hasPermission && !set.has(data.pkg)) {
+        set.add(data.pkg);
+        i -= 1;
+      }
+
+      if (i > 0) {
+        return loop(i);
+      }
+    });
+  };
+
+  loop(max).then(() => {
+    return res.status(200).json(Array.from(set));
+  });
 }
 
 export function getPackage(req: express.Request, res: express.Response): express.Response {
@@ -49,7 +69,8 @@ export function login(req: express.Request, res: express.Response): express.Resp
   let { username, password } = req.body;
 
   if (auth.checkUser(username, password)) {
-    let token = jwt.sign(username, config.secret);
+    let payload: object = { name: username };
+    let token = jwt.sign(payload, config.secret, { expiresIn: '1Y' });
     return res.status(200).json({ auth: true, token: token });
   } else {
     return res.status(200).json({ auth: false });

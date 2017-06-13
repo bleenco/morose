@@ -34,6 +34,10 @@ export class AuthService {
     return token ? true : false;
   }
 
+  getToken(): string {
+    return localStorage.getItem('morose_token');
+  }
+
   login(username: string, password: string): Promise<boolean> {
     return this.api.login(username, password)
       .toPromise()
@@ -57,9 +61,7 @@ export class AuthService {
   getUserOrganizations(username: string): any {
     return this.api.getOrganizations(username)
       .toPromise()
-      .then(data => {
-        return data;
-      });
+      .then(data => data);
   }
 }
 

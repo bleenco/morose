@@ -1,4 +1,5 @@
 import * as crypto from 'crypto';
+import * as jwt from 'jsonwebtoken';
 import * as express from 'express';
 import { getConfig, getAuth, getAuthPath } from './utils';
 import { writeJsonFile } from './fs';
@@ -958,4 +959,14 @@ export function addDistTag(
           + `for "${pkg}". Are you logged in as the correct user?` });
       });
     });
+}
+
+export function decodeToken(token: string): string | object | boolean {
+  let config: any = getConfig();
+  try {
+    let decoded = jwt.verify(token, config.secret);
+    return decoded;
+  } catch (e) {
+    return false;
+  }
 }
