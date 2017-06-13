@@ -4,16 +4,18 @@ git:
   depth: 3
 
 matrix:
-  - node_js: "7"
+  - node_js: "6"
+    env: SCRIPT=test:unit
+  - node_js: "6"
+    env: NODE_SCRIPT=./tests/run_e2e.js
+  - node_js: "8"
     env: SCRIPT=lint
-  - node_js: "7"
+  - node_js: "8"
     env: SCRIPT=test:unit
-  - node_js: "7"
+  - node_js: "8"
     env: NODE_SCRIPT=./tests/run_e2e.js
-  - node_js: "6"
-    env: SCRIPT=test:unit
-  - node_js: "6"
-    env: NODE_SCRIPT=./tests/run_e2e.js
+  - node_js: "8"
+    env: SCRIPT=protractor:ci
 
 preinstall:
   - npm config set spin false
@@ -21,6 +23,12 @@ preinstall:
 
 install:
   - npm install
+
+postinstall:
+  - sudo /etc/init.d/xvfb start
+  - export DISPLAY=:99
+  - sleep 3
+  - fluxbox &
 
 test:
   - if [[ "$SCRIPT" ]]; then npm run-script $SCRIPT; fi

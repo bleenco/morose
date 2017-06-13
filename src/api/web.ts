@@ -49,7 +49,7 @@ export function login(req: express.Request, res: express.Response): express.Resp
   let { username, password } = req.body;
 
   if (auth.checkUser(username, password)) {
-    let token = jwt.sign({ name: username }, config.secret);
+    let token = jwt.sign(username, config.secret);
     return res.status(200).json({ auth: true, token: token });
   } else {
     return res.status(200).json({ auth: false });
