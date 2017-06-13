@@ -217,6 +217,7 @@ export function newUser(data: UserData, auth: any, config: any): Promise<any> {
       name: name,
       password: hash,
       fullName: fullName,
+      role: 'member',
       email: email,
       tokens: []
     };

@@ -25,8 +25,8 @@ export default function() {
       }
     ],
     users: [
-      { name: 'admin', password: pass, fullName: '', email: '', tokens: [] },
-      { name: 'developer', password: pass, fullName: '', email: '', tokens: [] }
+      { name: 'admin', password: pass, fullName: '', email: '', role: 'admin', tokens: [] },
+      { name: 'developer', password: pass, fullName: '', email: '', role: 'member', tokens: [] }
     ],
     packages: []
   };
