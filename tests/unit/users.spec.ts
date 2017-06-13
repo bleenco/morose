@@ -40,6 +40,7 @@ describe('User roles, affiliation and permission specific tests', () => {
       fullName: 'John White',
       email: 'john.white@gmail.com',
       password: 'johnwhitewhitejohn911',
+      role: 'member',
       tokens: []
     };
 
