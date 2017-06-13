@@ -12,8 +12,13 @@ export class ApiService {
     this.url = `${loc.protocol}//${loc.hostname}${port}/api`;
   }
 
-  getRandomPackages(): Observable<any[]> {
-    return this.get(`${this.url}/package/get-random`);
+  getRandomPackages(token: string | null): Observable<any[]> {
+    let params: URLSearchParams = new URLSearchParams();
+    if (token) {
+      params.set('token', token);
+    }
+
+    return this.get(`${this.url}/package/get-random`, params);
   }
 
   getPackage(pkgName: string): Observable<any[]> {
