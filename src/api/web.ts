@@ -7,20 +7,23 @@ import { writeJsonFile } from './fs';
 import * as fuse from 'fuse.js';
 
 export function getRandomPackages(req: express.Request, res: express.Response): express.Response {
+  let username = req.body.username;
   let set = new Set();
   let max = storage.length > 9 ? 9 : storage.length;
-  while (set.size < max) {
-    let pkg = getRandomPackage();
+  while (max > 0) {
+    let pkg = getRandomPackage(username);
     if (!set.has(pkg)) {
       set.add(pkg);
     }
+    max--;
   }
-
+  console.log(set);
   return res.status(200).json(Array.from(set));
 }
 
 export function getPackage(req: express.Request, res: express.Response): express.Response {
   let pkgName = req.params.package;
+  let username = req.body.username;
   let index = storage.findIndex(pkg => pkg.name === pkgName);
   if (index !== -1) {
     return res.status(200).json({ status: true, data: storage[index] });
@@ -30,7 +33,7 @@ export function getPackage(req: express.Request, res: express.Response): express
 }
 
 export function searchPackages(req: express.Request, res: express.Response): express.Response {
-  let word = req.query.keyword;
+  let { username, word } = req.body;
   let search = new fuse(storage, {
     shouldSort: true,
     threshold: 0.6,

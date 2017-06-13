@@ -52,7 +52,9 @@
     "url": "https://github.com/bleenco/morose/issues"
   },
   "homepage": "https://github.com/bleenco/morose#readme",
-  "dependencies": {},
+  "dependencies": {
+    "await": "^0.2.6"
+  },
   "devDependencies": {
     "@angular/animations": "^4.2.2",
     "@angular/common": "^4.2.2",

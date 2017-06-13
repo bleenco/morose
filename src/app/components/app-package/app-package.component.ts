@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../../services/api.service';
 import { ActivatedRoute, Params } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 import 'rxjs/add/operator/switchMap';
 
 @Component({
@@ -11,14 +12,17 @@ export class AppPackageComponent implements OnInit {
   loading: boolean;
   pkg: any;
   pkgData: any;
+  user: any;
 
-  constructor(private api: ApiService, private route: ActivatedRoute) {
+  constructor(private api: ApiService, private route: ActivatedRoute, private auth: AuthService) {
     this.loading = true;
+    this.user = {};
   }
 
   ngOnInit() {
+    this.user = this.auth.getUser();
     this.route.params
-      .switchMap((params: Params) => this.api.getPackage(params.package))
+      .switchMap((params: Params) => this.api.getPackage(params.package, this.user.name))
       .subscribe((pkg: any) => {
         if (pkg.status) {
           this.pkg = pkg.data;
