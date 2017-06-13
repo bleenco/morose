@@ -16,6 +16,7 @@ import { AppLoginComponent } from './components/app-login';
 import { AppLandingComponent } from './components/app-landing';
 import { AppPackageComponent } from './components/app-package';
 import { AppSettingsComponent } from './components/app-settings';
+import { AppAddUserComponent } from './components/app-add-user';
 import { MarkdownPipe } from './pipes/markdown.pipe';
 
 export function authHttpServiceFactory(http: Http, options: RequestOptions) {
@@ -35,6 +36,7 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions) {
     AppLandingComponent,
     AppPackageComponent,
     AppSettingsComponent,
+    AppAddUserComponent,
     MarkdownPipe
   ],
   imports: [
@@ -44,7 +46,8 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions) {
       { path: '', pathMatch: 'full', component: AppLandingComponent },
       { path: 'package/:package',  component: AppPackageComponent },
       { path: 'settings', component: AppSettingsComponent, canActivate: [AuthGuard] },
-      { path: 'user/login', component: AppLoginComponent }
+      { path: 'user/login', component: AppLoginComponent },
+      { path: 'user/add', component: AppAddUserComponent, canActivate: [AuthGuard] }
     ]),
     HttpModule,
     FormsModule

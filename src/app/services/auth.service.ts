@@ -63,6 +63,12 @@ export class AuthService {
       .toPromise()
       .then(data => data);
   }
+
+  getUserDetails(username: string): any {
+    return this.api.getUserDetails(username)
+      .toPromise()
+      .then(data => data);
+  }
 }
 
 export let AuthServiceProvider: Provider = {

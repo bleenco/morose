@@ -29,6 +29,7 @@ router.get('/api/package/search+*', web.searchPackages);
 router.get('/api/package/:package(*)', web.getPackage);
 router.post('/api/user/login', web.login);
 router.post('/api/user/organizations', web.getUserOrganizations);
+router.post('/api/user/details', web.getUser);
 router.get('/user/login', index);
 router.post('/user/add', web.newUser);
 router.post('/org/add', web.newOrganization);

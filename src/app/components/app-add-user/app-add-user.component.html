@@ -1,0 +1,60 @@
+<div class="hero">
+  <div class="hero-body">
+    <div class="container">
+      <div class="columns is-multiline">
+        <div class="column is-8 is-offset-2">
+          <div class="content-box">
+            <div class="content-box-head">
+              <span>Add new user</span>
+            </div>
+            <div class="content-box-main">
+              <form class="control-form" (ngSubmit)="addUser($event)" #addForm="ngForm">
+                <div class="control-input-container">
+                  <label class="control-label">Username</label>
+                  <input type="text"
+                         class="control-input-field"
+                         name="username"
+                         [(ngModel)]="username"
+                         required>
+                </div>
+                <div class="control-input-container">
+                  <label class="control-label">Password</label>
+                  <input type="password"
+                         class="control-input-field"
+                         name="password"
+                         [(ngModel)]="password"
+                         required>
+                </div>
+                <div class="control-input-container">
+                  <label class="control-label">Full Name</label>
+                  <input type="text"
+                         class="control-input-field"
+                         name="fullname"
+                         [(ngModel)]="fullname"
+                         required>
+                </div>
+                <div class="control-input-container">
+                  <label class="control-label">Email</label>
+                  <input type="text"
+                         class="control-input-field"
+                         name="email"
+                         [(ngModel)]="email"
+                         required>
+                </div>
+
+                <div class="control-input-buttons">
+                  <button type="submit"
+                          class="control-button"
+                          [disabled]="!addForm.form.valid"
+                          required>
+                    Add User
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
