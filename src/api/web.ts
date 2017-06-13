@@ -16,14 +16,18 @@ export function getRandomPackages(req: express.Request, res: express.Response): 
   const findUserPackage = () => {
     return new Promise(resolve => {
       let pkg = getRandomPackage();
-      auth.userHasReadPermissions(username, pkg.name, authData)
-        .then(hasPermission => resolve({ pkg, hasPermission }));
+      if (pkg) {
+        auth.userHasReadPermissions(username, pkg.name, authData)
+          .then(hasPermission => resolve({ pkg, hasPermission }));
+      } else {
+        resolve();
+      }
     });
   };
 
   const loop = (i) => {
     return findUserPackage().then((data: any) => {
-      if (data.hasPermission && !set.has(data.pkg)) {
+      if (data && data.hasPermission && !set.has(data.pkg)) {
         set.add(data.pkg);
         i -= 1;
       }
