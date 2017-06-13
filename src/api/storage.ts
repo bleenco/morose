@@ -1,8 +1,9 @@
 import { IPackage, Package } from './package';
 import { readDir, globSearch, readJsonFile } from './fs';
-import { getFilePath, getRandomInt } from './utils';
+import { getFilePath, getRandomInt, getAuth } from './utils';
 import { info } from './logger';
 import { resolve } from 'path';
+import { userHasReadPermissions } from './auth';
 
 export let storage: IPackage[] = [];
 
@@ -57,9 +58,13 @@ export function addPackage(pkg: IPackage): void {
   }
 }
 
-export function getRandomPackage(): IPackage {
+export async function getRandomPackage(username: string) {
   let index = getRandomInt(0, storage.length - 1);
-  if (index !== -1) {
+  let auth = getAuth();
+  let permission = await userHasReadPermissions(username, storage[index].name, auth);
+  console.log('krneki');
+  console.log(permission);
+  if (permission) {
     return storage[index];
   } else {
     return null;

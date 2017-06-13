@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../../services/api.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-landing',
@@ -8,11 +9,15 @@ import { ApiService } from '../../services/api.service';
 export class AppLandingComponent implements OnInit {
   packages: any[];
   keyword: string;
+  user: any;
 
-  constructor(private api: ApiService) { }
+  constructor(private api: ApiService, private auth: AuthService) {
+    this.user = {};
+  }
 
   ngOnInit() {
-    this.api.getRandomPackages().subscribe(packages => {
+    this.user = this.auth.getUser();
+    this.api.getRandomPackages(this.user.name).subscribe(packages => {
       this.packages = packages;
       this.triggerResize();
     });
@@ -20,7 +25,7 @@ export class AppLandingComponent implements OnInit {
 
   searchPackages(e: Event): void {
     e.preventDefault();
-    this.api.getPackagesByKeyword(this.keyword.trim()).subscribe(packages => {
+    this.api.getPackagesByKeyword(this.keyword.trim(), this.user.name).subscribe(packages => {
       this.packages = packages;
       this.triggerResize();
     });

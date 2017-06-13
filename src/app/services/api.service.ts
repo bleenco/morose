@@ -12,19 +12,16 @@ export class ApiService {
     this.url = `${loc.protocol}//${loc.hostname}${port}/api`;
   }
 
-  getRandomPackages(): Observable<any[]> {
-    return this.get(`${this.url}/package/get-random`);
+  getRandomPackages(username: string): Observable<any[]> {
+    return this.post(`${this.url}/package/get-random`, { username });
   }
 
-  getPackage(pkgName: string): Observable<any[]> {
-    return this.get(`${this.url}/package/${pkgName}`);
+  getPackage(pkgName: string, username: string): Observable<any[]> {
+    return this.post(`${this.url}/package/${pkgName}`, { username });
   }
 
-  getPackagesByKeyword(keyword: string): Observable<any[]> {
-    let params: URLSearchParams = new URLSearchParams();
-    params.set('keyword', keyword);
-
-    return this.get(`${this.url}/package/search`, params);
+  getPackagesByKeyword(keyword: string, username: string): Observable<any[]> {
+    return this.post(`${this.url}/package/search`, { keyword, username });
   }
 
   getOrganizations(username: string): Observable<any[]> {
