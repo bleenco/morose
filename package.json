@@ -30,8 +30,7 @@
     "preprotractor:ci": "npm run webdriver",
     "webdriver-manager": "webdriver-manager",
     "webdriver:start": "npm run webdriver-manager start",
-    "webdriver:update": "npm run webdriver-manager update",
-    "prepublish": "npm run build:prod"
+    "webdriver:update": "npm run webdriver-manager update"
   },
   "repository": {
     "type": "git",
