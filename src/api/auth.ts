@@ -201,6 +201,16 @@ export function checkUser(username: string, password: string): boolean {
   return index !== -1 ? true : false;
 }
 
+export function changePassword(username: string, password: string): Promise<boolean> {
+  let auth = getAuth();
+  let hash = generateHash(password);
+  let index = auth.users.findIndex(u => u.name === username);
+  auth.users[index].password = hash;
+  return writeJsonFile(getAuthPath(), auth)
+    .then(() => true)
+    .catch(() => false);
+}
+
 function anonymousUser(): any {
   return { name: 'anonymous', groups: ['&all', '$anonymous'], real_groups: [] };
 }

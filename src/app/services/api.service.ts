@@ -50,6 +50,12 @@ export class ApiService {
     return this.post(`${this.url}/user/login`, user);
   }
 
+  changePassword(username: string, password: string): Observable<any> {
+    let user = { username, password };
+
+    return this.post(`${this.url}/user/changepass`, user);
+  }
+
   private get(url: string, searchParams: URLSearchParams = null): Observable<any> {
     return this.http.get(url, { search: searchParams })
       .map(this.extractData)

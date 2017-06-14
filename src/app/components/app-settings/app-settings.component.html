@@ -5,14 +5,51 @@
         <div class="column is-8 is-offset-2">
           <div class="content-box">
             <div class="content-box-head">
-              <span>Settings</span>
+              <span>Change Password</span>
             </div>
             <div class="content-box-main">
-              <div class="columns is-multiline">
-                <div class="column is-12">
-                  <p>{{ user | json }}</p>
-                </div>
+              <div class="notification is-danger" *ngIf="error">
+                <button class="delete" (click)="error = false"></button>
+                {{ errorMessage }}
               </div>
+              <div class="notification is-success" *ngIf="success">
+                <button class="delete" (click)="error = false"></button>
+                Password successfully changed.
+              </div>
+              <form class="control-form" (ngSubmit)="changePassword($event)" #settingsForm="ngForm">
+                <div class="control-input-container">
+                  <label class="control-label">Current password</label>
+                  <input type="password"
+                         class="control-input-field"
+                         name="oldpassword"
+                         [(ngModel)]="oldpassword"
+                         required>
+                </div>
+                <div class="control-input-container">
+                  <label class="control-label">New Password</label>
+                  <input type="password"
+                         class="control-input-field"
+                         name="newpassword1"
+                         [(ngModel)]="newpassword1"
+                         required>
+                </div>
+                <div class="control-input-container">
+                  <label class="control-label">Retype New Password</label>
+                  <input type="password"
+                         class="control-input-field"
+                         name="newpassword2"
+                         [(ngModel)]="newpassword2"
+                         required>
+                </div>
+                <div class="control-input-buttons">
+                  <button type="submit"
+                          class="control-button login-button"
+                          [disabled]="!settingsForm.form.valid"
+                          required>
+                    Change password
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         </div>
