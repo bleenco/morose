@@ -37,10 +37,20 @@ export class AppSettingsComponent implements OnInit {
       name: null,
       email: null
     };
+
+    this.auth.loginStatus.subscribe(loggedIn => {
+      if (loggedIn) {
+        this.auth.getUserDetails(this.auth.user.name).then(data => {
+          this.updateProfileForm.email = data.email;
+          this.updateProfileForm.name = data.fullName;
+        });
+      }
+    });
   }
 
   ngOnInit() {
     this.tab = 'profile';
+    this.auth.checkLogin();
   }
 
   tabClick(tab: string) {
