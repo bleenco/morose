@@ -53,7 +53,13 @@ export class ApiService {
   changePassword(username: string, password: string): Observable<any> {
     let user = { username, password };
 
-    return this.post(`${this.url}/user/changepass`, user);
+    return this.post(`${this.url}/user/change-password`, user);
+  }
+
+  updateProfile(username: string, name: string, email: string): Observable<any> {
+    let user = { username, name, email };
+
+    return this.post(`${this.url}/user/update-profile`, user);
   }
 
   private get(url: string, searchParams: URLSearchParams = null): Observable<any> {

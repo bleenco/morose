@@ -211,6 +211,16 @@ export function changePassword(username: string, password: string): Promise<bool
     .catch(() => false);
 }
 
+export function updateProfile(username: string, name: string, email: string): Promise<boolean> {
+  let auth = getAuth();
+  let index = auth.users.findIndex(u => u.name === username);
+  auth.users[index].fullName = name;
+  auth.users[index].email = email;
+  return writeJsonFile(getAuthPath(), auth)
+    .then(() => true)
+    .catch(() => false);
+}
+
 function anonymousUser(): any {
   return { name: 'anonymous', groups: ['&all', '$anonymous'], real_groups: [] };
 }
