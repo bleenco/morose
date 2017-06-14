@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { UploadOutput, UploadInput, UploadFile } from 'ngx-uploader';
 
 export interface ChangePasswordForm {
   oldpassword: string;
@@ -25,6 +26,8 @@ export class AppSettingsComponent implements OnInit {
   errorMessage: string;
   changePasswordForm: ChangePasswordForm;
   updateProfileForm: UpdateProfileForm;
+  uploadFile: UploadFile;
+  uploadInput: EventEmitter<UploadInput>;
 
   constructor(private auth: AuthService, private router: Router) {
     this.changePasswordForm = {
@@ -46,6 +49,8 @@ export class AppSettingsComponent implements OnInit {
         });
       }
     });
+
+    this.uploadInput = new EventEmitter<UploadInput>();
   }
 
   ngOnInit() {
@@ -103,5 +108,21 @@ export class AppSettingsComponent implements OnInit {
         this.errorMessage = err;
         setTimeout(() => this.error = false, 5000);
       });
+  }
+
+  onUploadOutput(output: UploadOutput): void {
+    console.log(output);
+
+    if (output.type === 'allAddedToQueue') {
+      const event: UploadInput = {
+        type: 'uploadAll',
+        url: 'http://ngx-uploader.com/upload',
+        method: 'POST',
+        data: { username: 'jan' },
+        concurrency: 1
+      };
+
+      // this.uploadInput.emit(event);
+    }
   }
 }

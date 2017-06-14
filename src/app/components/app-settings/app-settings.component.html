@@ -21,8 +21,14 @@
                 <div class="columns is-multiline">
                   <div class="column is-5">
                     <div class="card-image">
-                      <figure class="image is-4by3">
+                      <figure class="image is-250x250 settings-image">
                         <img src="http://www.freeiconspng.com/uploads/profile-icon-9.png" alt="Image">
+                        <span class="upload-text">
+                          Change your avatar
+                        </span>
+                        <label class="upload-button">
+                          <input type="file" ngFileSelect (uploadOutput)="onUploadOutput($event)" [uploadInput]="uploadInput">
+                        </label>
                       </figure>
                     </div>
                   </div>
