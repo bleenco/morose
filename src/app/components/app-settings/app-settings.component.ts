@@ -51,6 +51,8 @@ export class AppSettingsComponent implements OnInit {
   ngOnInit() {
     this.tab = 'profile';
     this.auth.checkLogin();
+    this.updateProfileForm.email = this.auth.userDetails.email;
+    this.updateProfileForm.name = this.auth.userDetails.fullName;
   }
 
   tabClick(tab: string) {
@@ -60,15 +62,12 @@ export class AppSettingsComponent implements OnInit {
   changePassword(e: Event) {
     e.preventDefault();
 
-    this.auth.changePassword(
-      this.changePasswordForm.oldpassword,
-      this.changePasswordForm.newpassword1,
-      this.changePasswordForm.newpassword2)
+    this.auth.changePassword(this.changePasswordForm)
         .then(changed => {
           if (changed) {
             this.success = true;
             this.error = false;
-            setTimeout(() => this.router.navigate(['']), 1000);
+            setTimeout(() => this.success = false, 5000);
           } else {
             this.success = false;
             this.error = true;
@@ -91,7 +90,7 @@ export class AppSettingsComponent implements OnInit {
         if (updated) {
           this.success = true;
           this.error = false;
-          setTimeout(() => this.router.navigate(['']), 1000);
+          setTimeout(() => this.success = false, 5000);
         } else {
           this.success = false;
           this.error = true;
