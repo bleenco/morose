@@ -95,6 +95,14 @@ export class AuthService {
         });
     });
   }
+
+  updateProfile(name: string, email: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.api.updateProfile(this.user.name, name, email)
+        .toPromise()
+        .then(data => resolve(true));
+    });
+  }
 }
 
 export let AuthServiceProvider: Provider = {

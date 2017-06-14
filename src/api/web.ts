@@ -94,6 +94,15 @@ export function changePassword(
       }).catch(() => res.status(200).json({ auth: false }));
 }
 
+export function updateProfile(
+  req: express.Request, res: express.Response): express.Response | void {
+    let { username, name, email } = req.body;
+
+    auth.updateProfile(username, name, email)
+      .then(() => res.status(200).json({ data: true }))
+      .catch(() => res.status(200).json({ data: false }));
+}
+
 export function getUserOrganizations(
   req: express.Request,
   res: express.Response): express.Response {
