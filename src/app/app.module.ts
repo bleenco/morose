@@ -5,6 +5,7 @@ import { RouterModule } from '@angular/router';
 import { HttpModule, Http, RequestOptions } from '@angular/http';
 import { FormsModule } from '@angular/forms';
 import { AuthHttp, AuthConfig } from 'angular2-jwt';
+import { NgUploaderModule } from 'ngx-uploader';
 import { ApiServiceProvider } from './services/api.service';
 import { AuthServiceProvider } from './services/auth.service';
 import { ConfigServiceProvider } from './services/config.service';
@@ -51,7 +52,8 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions) {
       { path: 'user/add', component: AppAddUserComponent, canActivate: [AdminGuard] }
     ]),
     HttpModule,
-    FormsModule
+    FormsModule,
+    NgUploaderModule
   ],
   providers: [
     ApiServiceProvider,
