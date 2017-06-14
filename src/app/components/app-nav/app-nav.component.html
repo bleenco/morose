@@ -21,7 +21,7 @@
       <span class="typcn typcn-cog-outline"></span>
       Settings
     </a>
-    <a *ngIf="userDetails.role === 'admin'" class="nav-dropdown-item" routerLink="/user/add">
+    <a *ngIf="auth.userDetails.role === 'admin'" class="nav-dropdown-item" routerLink="/user/add">
       <span class="typcn typcn-group-outline"></span>
       Add User
     </a>

@@ -9,23 +9,15 @@ import { AuthService } from '../../services/auth.service';
 export class AppNavComponent implements OnInit {
   loggedIn: boolean;
   menuDropped: boolean;
-  userDetails: any;
 
   constructor(
     public auth: AuthService,
     private router: Router,
     private elementRef: ElementRef
   ) {
-    this.userDetails = {};
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         this.menuDropped = false;
-      }
-    });
-    this.auth.loginStatus.subscribe(loggedIn => {
-      this.loggedIn = loggedIn;
-      if (loggedIn) {
-        this.auth.getUserDetails(this.auth.user.name).then(data => this.userDetails = data);
       }
     });
   }
@@ -41,7 +33,6 @@ export class AppNavComponent implements OnInit {
   logout(): void {
     this.auth.logout();
     this.menuDropped = false;
-    this.userDetails = {};
   }
 
   @HostListener('document:click', ['$event'])

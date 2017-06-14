@@ -2,16 +2,26 @@ import { Injectable, Provider, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
 import { ApiService } from './api.service';
 import { JwtHelper } from 'angular2-jwt';
+import { ChangePasswordForm } from '../components/app-settings/app-settings.component';
 
 @Injectable()
 export class AuthService {
   jwtHelper: JwtHelper;
   user: any;
+  userDetails: any;
   loginStatus: EventEmitter<boolean>;
 
   constructor(private api: ApiService, private router: Router) {
     this.jwtHelper = new JwtHelper();
     this.loginStatus = new EventEmitter<boolean>();
+
+    this.loginStatus.subscribe(event => {
+      if (event) {
+        this.getUserDetails(this.user.name).then(data => {
+          this.userDetails = data;
+        });
+      }
+    });
   }
 
   checkLogin(): void {
@@ -76,17 +86,17 @@ export class AuthService {
       .then(data => data);
   }
 
-  changePassword(oldpass: string, pass1: string, pass2: string): Promise<any> {
+  changePassword(passwords: ChangePasswordForm): Promise<any> {
     return new Promise((resolve, reject) => {
-      if (pass1 !== pass2) {
+      if (passwords.newpassword1 !== passwords.newpassword2) {
         reject(`New password doesn't match!`);
       }
 
-      this.api.login(this.user.name, oldpass)
+      this.api.login(this.user.name, passwords.oldpassword)
         .toPromise()
         .then(data => {
           if (data.auth && data.token) {
-            this.api.changePassword(this.user.name, pass1)
+            this.api.changePassword(this.user.name, passwords.newpassword1)
             .toPromise()
             .then(() => resolve(true));
           } else {
