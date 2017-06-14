@@ -81,6 +81,19 @@ export function login(req: express.Request, res: express.Response): express.Resp
   }
 }
 
+export function changePassword(
+  req: express.Request, res: express.Response): express.Response | void {
+    let config = getConfig();
+    let { username, password } = req.body;
+
+    auth.changePassword(username, password)
+      .then(() => {
+        let payload: object = { name: username };
+        let token = jwt.sign(payload, config.secret, { expiresIn: '1Y' });
+        return res.status(200).json({ auth: true, token: token });
+      }).catch(() => res.status(200).json({ auth: false }));
+}
+
 export function getUserOrganizations(
   req: express.Request,
   res: express.Response): express.Response {

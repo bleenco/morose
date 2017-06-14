@@ -28,6 +28,7 @@ router.get('/api/package/get-random', web.getRandomPackages);
 router.get('/api/package/search+*', web.searchPackages);
 router.get('/api/package/:package(*)', web.getPackage);
 router.post('/api/user/login', web.login);
+router.post('/api/user/changepass', web.changePassword);
 router.post('/api/user/organizations', web.getUserOrganizations);
 router.post('/api/user/details', web.getUser);
 router.get('/user/login', index);

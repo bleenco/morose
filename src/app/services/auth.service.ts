@@ -75,6 +75,26 @@ export class AuthService {
       .toPromise()
       .then(data => data);
   }
+
+  changePassword(oldpass: string, pass1: string, pass2: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      if (pass1 !== pass2) {
+        reject(`New password doesn't match!`);
+      }
+
+      this.api.login(this.user.name, oldpass)
+        .toPromise()
+        .then(data => {
+          if (data.auth && data.token) {
+            this.api.changePassword(this.user.name, pass1)
+            .toPromise()
+            .then(() => resolve(true));
+          } else {
+            reject(`Current password is not correct!`);
+          }
+        });
+    });
+  }
 }
 
 export let AuthServiceProvider: Provider = {
