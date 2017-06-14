@@ -8,6 +8,14 @@
               <span>Add new user</span>
             </div>
             <div class="content-box-main">
+              <div class="notification is-danger" *ngIf="error">
+                <button class="delete" (click)="error = false"></button>
+                Adding user failed.
+              </div>
+              <div class="notification is-success" *ngIf="success">
+                <button class="delete" (click)="error = false"></button>
+                User successfully added.
+              </div>
               <form class="control-form" (ngSubmit)="addUser($event)" #addForm="ngForm">
                 <div class="control-input-container">
                   <label class="control-label">Username</label>
@@ -15,6 +23,7 @@
                          class="control-input-field"
                          name="username"
                          [(ngModel)]="username"
+                         pattern="[a-zA-Z0-9._()'!*@,;+-/]{3,64}"
                          required>
                 </div>
                 <div class="control-input-container">
@@ -35,13 +44,13 @@
                 </div>
                 <div class="control-input-container">
                   <label class="control-label">Email</label>
-                  <input type="text"
+                  <input type="email"
                          class="control-input-field"
                          name="email"
                          [(ngModel)]="email"
-                         required>
+                         required
+                         email/>
                 </div>
-
                 <div class="control-input-buttons">
                   <button type="submit"
                           class="control-button"
