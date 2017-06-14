@@ -31,7 +31,7 @@ router.post('/api/user/login', web.login);
 router.post('/api/user/organizations', web.getUserOrganizations);
 router.post('/api/user/details', web.getUser);
 router.get('/user/login', index);
-router.post('/user/add', web.newUser);
+router.post('/api/user/add', web.newUser);
 router.post('/org/add', web.newOrganization);
 router.post('/team/add', web.newTeam);
 router.post('/org/user/add', web.addUserToOrganization);

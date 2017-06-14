@@ -40,6 +40,10 @@ export class ApiService {
     return this.post(`${this.url}/user/details`, { username });
   }
 
+  addUser(name: string, password: string, fullName: string, email: string): Observable<any[]> {
+    return this.post(`${this.url}/user/add`, { name, password, fullName, email });
+  }
+
   login(username: string, password: string): Observable<any> {
     let user = { username, password };
 

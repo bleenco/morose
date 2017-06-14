@@ -69,6 +69,12 @@ export class AuthService {
       .toPromise()
       .then(data => data);
   }
+
+  addUser(username: string, password: string, fullname: string, email: string): any {
+    return this.api.addUser(username, password, fullname, email)
+      .toPromise()
+      .then(data => data);
+  }
 }
 
 export let AuthServiceProvider: Provider = {
