@@ -9,7 +9,6 @@ import { AuthService } from '../../services/auth.service';
 export class AppNavComponent implements OnInit {
   loggedIn: boolean;
   menuDropped: boolean;
-  user: any;
   userDetails: any;
 
   constructor(
@@ -17,20 +16,22 @@ export class AppNavComponent implements OnInit {
     private router: Router,
     private elementRef: ElementRef
   ) {
-    this.user = {};
     this.userDetails = {};
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         this.menuDropped = false;
       }
     });
+    this.auth.loginStatus.subscribe(loggedIn => {
+      this.loggedIn = loggedIn;
+      if (loggedIn) {
+        this.auth.getUserDetails(this.auth.user.name).then(data => this.userDetails = data);
+      }
+    });
   }
 
   ngOnInit() {
-    this.auth.loginStatus.subscribe(loggedIn => this.loggedIn = loggedIn);
     this.auth.checkLogin();
-    this.user = this.auth.getUser();
-    this.auth.getUserDetails(this.user.name).then(data => this.userDetails = data);
   }
 
   toggleMenu() {
@@ -40,6 +41,7 @@ export class AppNavComponent implements OnInit {
   logout(): void {
     this.auth.logout();
     this.menuDropped = false;
+    this.userDetails = {};
   }
 
   @HostListener('document:click', ['$event'])

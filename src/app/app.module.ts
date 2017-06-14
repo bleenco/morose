@@ -9,6 +9,7 @@ import { ApiServiceProvider } from './services/api.service';
 import { AuthServiceProvider } from './services/auth.service';
 import { ConfigServiceProvider } from './services/config.service';
 import { AuthGuardProvider, AuthGuard } from './services/auth-guard.service';
+import { AdminGuardProvider, AdminGuard } from './services/admin-guard.service';
 import { AppComponent } from './app.component';
 import { AppNavComponent } from './components/app-nav';
 import { AppFootComponent } from './components/app-foot';
@@ -47,7 +48,7 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions) {
       { path: 'package/:package',  component: AppPackageComponent },
       { path: 'settings', component: AppSettingsComponent, canActivate: [AuthGuard] },
       { path: 'user/login', component: AppLoginComponent },
-      { path: 'user/add', component: AppAddUserComponent, canActivate: [AuthGuard] }
+      { path: 'user/add', component: AppAddUserComponent, canActivate: [AdminGuard] }
     ]),
     HttpModule,
     FormsModule
@@ -57,6 +58,7 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions) {
     AuthServiceProvider,
     ConfigServiceProvider,
     AuthGuardProvider,
+    AdminGuardProvider,
     { provide: AuthHttp, useFactory: authHttpServiceFactory, deps: [Http, RequestOptions] }
   ],
   bootstrap: [ AppComponent ]
