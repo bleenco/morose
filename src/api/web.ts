@@ -132,7 +132,7 @@ export function getUser(req: express.Request, res: express.Response): express.Re
 export function newOrganization(
   req: express.Request, res: express.Response): express.Response | void {
     let authObj = getAuth();
-    auth.newOrganization(req.body.organization, req.body.username, authObj)
+    auth.newOrganization(req.body.name, req.body.username, authObj)
       .then(auth => writeJsonFile(getAuthPath(), auth)
       .then(() => res.status(200).json({ data: true })))
       .catch(err => res.status(200).json({ message: err }));
@@ -226,7 +226,6 @@ export function uploadAvatar(req: express.Request | any, res: express.Response):
   let userIndex = auth.users.findIndex(user => user.name === username);
 
   auth.users[userIndex].avatar = webPath;
-
   Promise.resolve()
     .then(() => writeJsonFile(getAuthPath(), auth))
     .then(() => res.status(200).json({ data: webPath }))

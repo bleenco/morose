@@ -53,6 +53,10 @@ export class ApiService {
     return this.post(`${this.url}/user/add`, { name, password, fullName, email });
   }
 
+  addOrganization(name: string, username: string): Observable<any[]> {
+    return this.post(`${this.url}/org/add`, { name, username });
+  }
+
   login(username: string, password: string): Observable<any> {
     let user = { username, password };
 
