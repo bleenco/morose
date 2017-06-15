@@ -5,7 +5,7 @@ import * as showdown from 'showdown';
   name: 'markdown'
 })
 export class MarkdownPipe implements PipeTransform {
-  public transform(markdown: string, options?: MarkedOptions): string {
+  public transform(markdown: string): string {
     const converter = new showdown.Converter();
     return converter.makeHtml(markdown);
   }
