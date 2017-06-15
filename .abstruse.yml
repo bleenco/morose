@@ -15,7 +15,7 @@ matrix:
   - node_js: "8"
     env: NODE_SCRIPT=./tests/run_e2e.js
   - node_js: "8"
-    env: SCRIPT=protractor:ci
+    env: SCRIPT=protractor:travis
 
 preinstall:
   - npm config set spin false
