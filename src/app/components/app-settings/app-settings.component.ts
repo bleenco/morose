@@ -108,7 +108,7 @@ export class AppSettingsComponent implements OnInit {
         type: 'uploadAll',
         url: `${this.api.url}/user/upload-avatar`,
         method: 'POST',
-        data: { username: 'jan' },
+        data: { username: this.auth.userDetails.name },
         concurrency: 1
       };
 
