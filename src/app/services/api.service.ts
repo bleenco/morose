@@ -34,6 +34,13 @@ export class ApiService {
     return this.get(`${this.url}/package/search`, params);
   }
 
+  getUserProfile(username: string): Observable<any[]> {
+    let params: URLSearchParams = new URLSearchParams();
+    params.set('username', username);
+
+    return this.get(`${this.url}/user/profile`, params);
+  }
+
   getOrganizations(username: string): Observable<any[]> {
     return this.post(`${this.url}/user/organizations`, { username });
   }

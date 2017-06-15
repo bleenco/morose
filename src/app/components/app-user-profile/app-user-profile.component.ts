@@ -4,13 +4,12 @@ import { ActivatedRoute, Params } from '@angular/router';
 import 'rxjs/add/operator/switchMap';
 
 @Component({
-  selector: 'app-package',
-  templateUrl: 'app-package.component.html'
+  selector: 'app-user-profile',
+  templateUrl: 'app-user-profile.component.html'
 })
-export class AppPackageComponent implements OnInit {
+export class AppUserProfileComponent implements OnInit {
   loading: boolean;
-  pkg: any;
-  pkgData: any;
+  user: any;
 
   constructor(private api: ApiService, private route: ActivatedRoute) {
     this.loading = true;
@@ -19,11 +18,10 @@ export class AppPackageComponent implements OnInit {
   ngOnInit() {
     this.route.params
       .switchMap((params: Params) => this.api.getUserProfile(params.username))
-      .subscribe((pkg: any) => {
-        if (pkg.status) {
-          this.pkg = pkg.data;
-          this.pkgData = this.pkg.readme ?
-            this.pkg : this.pkg.versions[this.pkg['dist-tags'].latest];
+      .subscribe((user: any) => {
+        if (user.status) {
+          this.user = user.data;
+          this.user.avatar = this.api.uri + user.data.avatar;
         }
 
         this.loading = false;
