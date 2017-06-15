@@ -22,7 +22,7 @@
                     <div *ngFor="let org of user.organizations; let i = index;">
                       <div class="organization-item">
                         <ul>
-                          <li>{{ org.name }}</li>
+                          <li><a href="org/{{org.name}}">{{ org.name }}</a></li>
                         </ul>
                       </div>
                     </div>

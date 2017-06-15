@@ -263,3 +263,11 @@ export function userProfile(req: express.Request, res: express.Response): any {
 
   return res.status(200).json({status: true, data: user });
 }
+
+export function organizationProfile(req: express.Request, res: express.Response): any {
+  let organization = req.query.organization;
+  let authObject = getAuth();
+  let profile = authObject.organizations.find(org => org.name === organization);
+
+  return res.status(200).json({status: true, data: profile });
+}

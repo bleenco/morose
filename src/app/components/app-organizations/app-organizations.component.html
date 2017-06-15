@@ -19,7 +19,7 @@
                         </h2>
                       </div>
                     </div>
-                    <div class="columns is-multiline" *ngIf="organizations && organizations.length">
+                    <div *ngIf="organizations && organizations.length">
                       <h1>{{ organizations.length }} Organizations:</h1>
                       <div *ngFor="let org of organizations; let i = index;">
                         <div class="organization-item">

@@ -35,7 +35,7 @@ export class AppOrganizationsComponent implements OnInit {
       if (res) {
         this.success = true;
         this.error = false;
-        setTimeout(() => this.router.navigate(['']), 1000);
+        setTimeout(() => this.success = false, 1000);
       } else {
         this.error = true;
         this.success = false;
