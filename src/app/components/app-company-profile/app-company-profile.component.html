@@ -1,0 +1,65 @@
+<div class="hero hero-landing">
+  <div class="hero-body">
+    <div class="container">
+      <div class="columns is-multiline">
+        <div class="column is-8 is-offset-2">
+          <h1><b>@{{ company.name }}</b></h1>
+          <div class="content-box">
+            <div class="content-box-head">
+              <div class="tabs is-boxed">
+                <ul>
+                  <li (click)="tabClick('packages')" [class.is-active]="tab === 'packages'"><a>Packages</a></li>
+                  <li (click)="tabClick('teams')" [class.is-active]="tab === 'teams'"><a>Team</a></li>
+                  <li (click)="tabClick('members')" [class.is-active]="tab === 'members'"><a>Member</a></li>
+                </ul>
+              </div>
+            </div>
+
+
+            <div class="content-box-main">
+              <div class="columns is-multiline">
+                <div *ngIf="tab === 'packages'">
+                  <div *ngIf="!(company.packages && company.packages.length)">
+                    <h1>Company has no Packages</h1>
+                  </div>
+                  <div *ngIf="company.packages && company.packages.length">
+                    <h1>{{ company.packages.length }} Packages:</h1>
+                    <div *ngFor="let pkg of company.packages; let i = index;">
+                      <div class="organization-item">
+                        <ul>
+                          <li>{{ pkg.name }}</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div *ngIf="tab === 'teams'">
+                  <h1>{{ company.teams.length }} Teams:</h1>
+                  <div *ngFor="let team of company.teams; let i = index;">
+                    <div class="organization-item">
+                      <ul>
+                        <li>{{ team.name }}</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+                <div *ngIf="tab === 'members'">
+                  <h1>{{ company.members.length }} Members:</h1>
+                  <div *ngFor="let member of company.members; let i = index;">
+                    <div class="organization-item">
+                      <ul>
+                        <li>{{ member.name }} ({{member.role}})</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

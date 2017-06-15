@@ -20,6 +20,7 @@ import { AppPackageComponent } from './components/app-package';
 import { AppSettingsComponent } from './components/app-settings';
 import { AppAddUserComponent } from './components/app-add-user';
 import { AppUserProfileComponent } from './components/app-user-profile';
+import { AppCompanyProfileComponent } from './components/app-company-profile';
 import { AppOrganizationsComponent } from './components/app-organizations';
 import { MarkdownPipe } from './pipes/markdown.pipe';
 
@@ -42,6 +43,7 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions) {
     AppSettingsComponent,
     AppAddUserComponent,
     AppUserProfileComponent,
+     AppCompanyProfileComponent,
     AppOrganizationsComponent,
     MarkdownPipe
   ],
@@ -52,6 +54,7 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions) {
       { path: '', pathMatch: 'full', component: AppLandingComponent },
       { path: 'package/:package',  component: AppPackageComponent },
       { path: 'profile/:username',  component: AppUserProfileComponent },
+      { path: 'org/:organization',  component: AppCompanyProfileComponent },
       { path: 'settings', component: AppSettingsComponent, canActivate: [AuthGuard] },
       { path: 'user/login', component: AppLoginComponent },
       { path: 'user/add', component: AppAddUserComponent, canActivate: [AdminGuard] },
