@@ -232,3 +232,12 @@ export function uploadAvatar(req: express.Request | any, res: express.Response):
     .then(() => res.status(200).json({ data: webPath }))
     .catch(err => res.status(200).json({ message: err }));
 }
+
+export function userProfile(req: express.Request, res: express.Response): any {
+  let username = req.query.username;
+  let auth = getAuth();
+  let user = auth.users.find(user => user.name === username);
+  delete user.password;
+
+  return res.status(200).json({ status: true, data: user });
+}

@@ -1,0 +1,28 @@
+<div class="hero hero-landing">
+  <div class="hero-body">
+    <div class="container">
+      <div class="columns is-multiline" *ngIf="!loading && user">
+        <div class="column is-8 is-offset-2">
+          <div class="content-box">
+            <div class="content-box-head">
+              <span><b>{{ user.name }}</b></span>
+            </div>
+            <div class="content-box-main">
+              <div class="columns is-multiline">
+                <div class="column is-5">
+                  <figure class="image public-profile-image">
+                    <img [src]="user.avatar">
+                  </figure>
+                </div>
+                <div class="column is-7">
+                  <p>{{ user.fullName }}</p>
+                  <p>{{ user.email }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
