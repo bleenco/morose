@@ -17,6 +17,36 @@
                 <div class="column is-7">
                   <p>{{ user.fullName }}</p>
                   <p>{{ user.email }}</p>
+                  <div *ngIf="user.organizations && user.organizations.length">
+                    <h1>{{ user.organizations.length }} Organizations:</h1>
+                    <div *ngFor="let org of user.organizations; let i = index;">
+                      <div class="organization-item">
+                        <ul>
+                          <li>{{ org.name }}</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                  <div *ngIf="user.packages && user.packages.length">
+                    <h1>{{ user.packages.length }} Packages:</h1>
+                    <div *ngFor="let pkg of user.packages; let i = index;">
+                      <div class="organization-item">
+                        <ul>
+                          <li>{{ pkg.name }}</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                  <div *ngIf="user.starredPackages && user.starredPackages.length">
+                    <h1>{{ user.starredPackages.length }} Starred Packages:</h1>
+                    <div *ngFor="let pkg of user.starredPackages; let i = index;">
+                      <div class="organization-item">
+                        <ul>
+                          <li>{{ pkg.name }}</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
