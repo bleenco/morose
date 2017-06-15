@@ -98,6 +98,12 @@ export class AuthService {
       .then(data => data);
   }
 
+  addOrganization(name: string): any {
+    return this.api.addOrganization(name, this.user.name)
+      .toPromise()
+      .then(data => data);
+  }
+
   changePassword(passwords: ChangePasswordForm): Promise<any> {
     return new Promise((resolve, reject) => {
       if (passwords.newpassword1 !== passwords.newpassword2) {

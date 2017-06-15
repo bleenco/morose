@@ -1,0 +1,76 @@
+<div class="hero hero-landing">
+  <div class="hero-body">
+    <div class="container">
+      <div class="columns is-multiline">
+        <div class="column is-10 is-offset-1">
+
+            <div class="columns is-multiline">
+              <div class="column is-6">
+                <div class="content-box">
+                  <div class="content-box-head">
+                    <span>My  Organizations:</span>
+                  </div>
+                  <div class="content-box-main">
+                    <div class="columns" *ngIf="!organizations || !organizations.length">
+                      <div class="column is-6 is-offset-3 has-text-centered">
+                        <h2 class="sorry-msg">
+                          <span class="typcn typcn-info-large-outline"></span>
+                          <span>No organizations</span>
+                        </h2>
+                      </div>
+                    </div>
+                    <div class="columns is-multiline" *ngIf="organizations && organizations.length">
+                      <h1>{{ organizations.length }} Organizations:</h1>
+                      <div *ngFor="let org of organizations; let i = index;">
+                        <div class="organization-item">
+                          <ul>
+                            <li>{{ org.name }}</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="column is-5 is-offset-1">
+                <div class="content-box">
+                  <div class="content-box-head">
+                    <span>Create new organization</span>
+                  </div>
+                  <div class=content-box-main>
+                    <div class="notification is-danger" *ngIf="error">
+                      <button class="delete" (click)="error = false"></button>
+                      Creating organization failed.
+                    </div>
+                    <div class="notification is-success" *ngIf="success">
+                      <button class="delete" (click)="error = false"></button>
+                      Organization successfully created.
+                    </div>
+                    <form class="control-form" (ngSubmit)="addOrganization($event)" #addForm="ngForm">
+                      <div class="control-input-container">
+                        <label class="control-label">Name</label>
+                        <input type="text"
+                              class="control-input-field"
+                              name="name"
+                              [(ngModel)]="name"
+                              pattern="[a-zA-Z0-9._()'!*@,;+-/]{3,64}"
+                              required>
+                      </div>
+                      <div class="control-input-buttons">
+                        <button type="submit"
+                                class="control-button"
+                                [disabled]="!addForm.form.valid"
+                                required>
+                          Add Organization
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

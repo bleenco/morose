@@ -51,7 +51,7 @@ router.post('/api/user/upload-avatar', upload.any(), web.uploadAvatar);
 router.get('/user/login', index);
 router.get('/api/user/profile', web.userProfile);
 router.post('/api/user/add', web.newUser);
-router.post('/org/add', web.newOrganization);
+router.post('/api/org/add', web.newOrganization);
 router.post('/team/add', web.newTeam);
 router.post('/org/user/add', web.addUserToOrganization);
 router.post('/team/user/add', web.addUserToTeam);
