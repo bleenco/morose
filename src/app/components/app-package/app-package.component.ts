@@ -18,7 +18,7 @@ export class AppPackageComponent implements OnInit {
 
   ngOnInit() {
     this.route.params
-      .switchMap((params: Params) => this.api.getUserProfile(params.username))
+      .switchMap((params: Params) => this.api.getPackage(params.package))
       .subscribe((pkg: any) => {
         if (pkg.status) {
           this.pkg = pkg.data;
