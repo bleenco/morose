@@ -5,10 +5,12 @@ import { Observable } from 'rxjs';
 @Injectable()
 export class ApiService {
   url: string;
+  uri: string;
 
   constructor(private http: Http) {
     let loc: Location = window.location;
     let port: string = loc.port === '8000' ? ':10000' : `:${loc.port}`; // dev mode
+    this.uri = `${loc.protocol}//${loc.hostname}${port}`;
     this.url = `${loc.protocol}//${loc.hostname}${port}/api`;
   }
 
