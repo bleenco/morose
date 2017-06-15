@@ -1,7 +1,6 @@
 import { browser, by, element } from 'protractor';
 
 describe('User Login', () => {
-
   beforeEach(() => {
     browser.get('/');
   });
@@ -12,7 +11,7 @@ describe('User Login', () => {
       .then(() => element(by.css('.control-input-field[name="password"]')).sendKeys('admin'))
       .then(() => element(by.css('.login-button')).click())
       .then(() => browser.getCurrentUrl())
-      .then(url => expect(url).toEqual('http://localhost:8000/'))
+      .then(url => expect(url).toEqual('http://localhost:10000/'))
       .then(() => {
         expect(element(by.css('.drop-menu-act')).getText()).toContain('Hello');
         expect(element(by.css('.drop-menu-act')).getText()).toContain('admin');
@@ -20,7 +19,7 @@ describe('User Login', () => {
       .then(() => element(by.css('.drop-menu-act')).click())
       .then(() => element.all(by.css('.nav-dropdown-item')).last().click())
       .then(() => browser.getCurrentUrl())
-      .then(url => expect(url).toEqual('http://localhost:8000/user/login'));
+      .then(url => expect(url).toEqual('http://localhost:10000/user/login'));
   });
 
   it('should redirect to / if already logged in and want to access /user/login', () => {
@@ -29,14 +28,14 @@ describe('User Login', () => {
       .then(() => element(by.css('.control-input-field[name="password"]')).sendKeys('admin'))
       .then(() => element(by.css('.login-button')).click())
       .then(() => browser.getCurrentUrl())
-      .then(url => expect(url).toEqual('http://localhost:8000/'))
+      .then(url => expect(url).toEqual('http://localhost:10000/'))
       .then(() => browser.get('/user/login'))
       .then(() => browser.getCurrentUrl())
-      .then(url => expect(url).toEqual('http://localhost:8000/'))
+      .then(url => expect(url).toEqual('http://localhost:10000/'))
       .then(() => element(by.css('.drop-menu-act')).click())
       .then(() => element.all(by.css('.nav-dropdown-item')).last().click())
       .then(() => browser.getCurrentUrl())
-      .then(url => expect(url).toEqual('http://localhost:8000/user/login'));
+      .then(url => expect(url).toEqual('http://localhost:10000/user/login'));
   });
 
   it('shoud be able to logout successfully after valid login', () => {
@@ -45,11 +44,11 @@ describe('User Login', () => {
       .then(() => element(by.css('.control-input-field[name="password"]')).sendKeys('admin'))
       .then(() => element(by.css('.login-button')).click())
       .then(() => browser.getCurrentUrl())
-      .then(url => expect(url).toEqual('http://localhost:8000/'))
+      .then(url => expect(url).toEqual('http://localhost:10000/'))
       .then(() => element(by.css('.drop-menu-act')).click())
       .then(() => element.all(by.css('.nav-dropdown-item')).last().click())
       .then(() => browser.getCurrentUrl())
-      .then(url => expect(url).toEqual('http://localhost:8000/user/login'));
+      .then(url => expect(url).toEqual('http://localhost:10000/user/login'));
   });
 
   it('shoud be able to logout successfully after valid login', () => {
@@ -58,11 +57,11 @@ describe('User Login', () => {
       .then(() => element(by.css('.control-input-field[name="password"]')).sendKeys('admin'))
       .then(() => element(by.css('.login-button')).click())
       .then(() => browser.getCurrentUrl())
-      .then(url => expect(url).toEqual('http://localhost:8000/'))
+      .then(url => expect(url).toEqual('http://localhost:10000/'))
       .then(() => element(by.css('.drop-menu-act')).click())
       .then(() => element.all(by.css('.nav-dropdown-item')).last().click())
       .then(() => browser.getCurrentUrl())
-      .then(url => expect(url).toEqual('http://localhost:8000/user/login'));
+      .then(url => expect(url).toEqual('http://localhost:10000/user/login'));
   });
 
   it('shoud not be able to login with wrong credentials', () => {
@@ -71,7 +70,7 @@ describe('User Login', () => {
       .then(() => element(by.css('.control-input-field[name="password"]')).sendKeys('admin123'))
       .then(() => element(by.css('.login-button')).click())
       .then(() => browser.getCurrentUrl())
-      .then(url => expect(url).toEqual('http://localhost:8000/user/login'))
+      .then(url => expect(url).toEqual('http://localhost:10000/user/login'))
       .then(() => {
         let el = element(by.css('.notification'));
         expect(el.getText()).toContain('Authentication failed');

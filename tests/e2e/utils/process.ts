@@ -203,8 +203,8 @@ export function executeSilent(cmd: string): Promise<any> {
   return execute({ silent: true }, cmd);
 }
 
-export function morose() {
-  return _run({ silent: true }, 'morose', ['--dir', 'morose']);
+export function morose(tempDir = 'morose') {
+  return _run({ silent: true }, 'morose', ['--dir', tempDir]);
 }
 
 export function wait(msecs: number) {
