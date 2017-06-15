@@ -6,6 +6,7 @@ import * as fs from './fs';
 import * as utils from './utils';
 import { initializeStorage } from './storage';
 import { Observable } from 'rxjs';
+import { join } from 'path';
 
 export function start(dir: string, test: boolean): void {
   let app: express.Application = express();
@@ -23,7 +24,7 @@ export function start(dir: string, test: boolean): void {
 function initMorose(): Promise<null> {
   let root = utils.getRootDir();
 
-  return fs.exists(root).then(exists => {
+  return fs.exists(join(root, 'config.json')).then(exists => {
     if (exists) {
       return initializeStorage();
     } else {
