@@ -7,9 +7,9 @@ const argv = minimist(process.argv.slice(2), {
   string: ['dir']
 });
 
-import * as server from './server';
+import { start } from './server';
 
 const dir = argv.dir ? resolve(process.cwd(), argv.dir) : `${homedir()}/.morose`;
 const test = argv.test || false;
 
-server.start(dir, test);
+start(dir, test);

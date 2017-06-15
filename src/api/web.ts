@@ -218,3 +218,17 @@ export function publishPackage(
         .then(() => res.status(200).json({ data: true })))
         .catch(err => res.status(200).json({ message: err }));
 }
+
+export function uploadAvatar(req: express.Request | any, res: express.Response): any {
+  let username = req.body.username;
+  let webPath = `/avatars/${req.files[0].filename}`;
+  let auth = getAuth();
+  let userIndex = auth.users.findIndex(user => user.name === username);
+
+  auth.users[userIndex].avatar = webPath;
+
+  Promise.resolve()
+    .then(() => writeJsonFile(getAuthPath(), auth))
+    .then(() => res.status(200).json({ data: webPath }))
+    .catch(err => res.status(200).json({ message: err }));
+}

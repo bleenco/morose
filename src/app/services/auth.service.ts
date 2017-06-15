@@ -10,17 +10,29 @@ export class AuthService {
   user: any;
   userDetails: any;
   loginStatus: EventEmitter<boolean>;
+  userDetailsUpdated: EventEmitter<null>;
 
   constructor(private api: ApiService, private router: Router) {
     this.jwtHelper = new JwtHelper();
     this.loginStatus = new EventEmitter<boolean>();
+    this.userDetailsUpdated = new EventEmitter<null>();
+    this.userDetails = {};
 
     this.loginStatus.subscribe(event => {
       if (event) {
-        this.getUserDetails(this.user.name).then(data => {
-          this.userDetails = data;
-        });
+        this.updateUserDetails();
+      } else {
+        this.userDetails = {};
       }
+    });
+  }
+
+  updateUserDetails(): void {
+    let user = this.getUser();
+    this.getUserDetails(user.name).then(data => {
+      this.userDetails = data;
+      this.userDetails.avatar = this.api.uri + data.avatar;
+      this.userDetailsUpdated.emit(null);
     });
   }
 
@@ -35,7 +47,7 @@ export class AuthService {
     }
   }
 
-  getUser(): void {
+  getUser(): any {
     return this.jwtHelper.decodeToken(localStorage.getItem('morose_token'));
   }
 

@@ -4,9 +4,23 @@ import * as logger from './logger';
 import * as routes from './routes';
 import * as web from './web';
 import * as auth from './auth';
-import { resolve } from 'path';
+import { resolve, extname } from 'path';
+import * as multer from 'multer';
+import { getFilePath, getRootDir } from './utils';
 
 export let router: express.Router = express.Router();
+
+let storage: multer.StorageEngine = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, getFilePath('avatars'));
+  },
+  filename: (req, file, cb) => {
+    let ext = extname(file.originalname);
+    cb(null, `${Math.random().toString(36).substring(7)}${ext}`);
+  }
+});
+
+let upload: multer.Instance = multer({ storage: storage });
 
 function index(req: express.Request, res: express.Response): void {
   return res.status(200).sendFile(resolve(__dirname, '../app/index.html'));
@@ -20,6 +34,7 @@ router.use('/css', express.static(resolve(__dirname, '../app/css'), { index: fal
 router.use('/js', express.static(resolve(__dirname, '../app/js'), { index: false }));
 router.use('/images', express.static(resolve(__dirname, '../app/images'), { index: false }));
 router.use('/css/fonts', express.static(resolve(__dirname, '../app/fonts'), { index: false }));
+router.use('/avatars', express.static(getFilePath('avatars'), { index: false }));
 
 router.get('/user/login', index);
 router.get('/package/:package(*)', index);
@@ -32,6 +47,7 @@ router.post('/api/user/change-password', web.changePassword);
 router.post('/api/user/update-profile', web.updateProfile);
 router.post('/api/user/organizations', web.getUserOrganizations);
 router.post('/api/user/details', web.getUser);
+router.post('/api/user/upload-avatar', upload.any(), web.uploadAvatar);
 router.get('/user/login', index);
 router.post('/api/user/add', web.newUser);
 router.post('/org/add', web.newOrganization);

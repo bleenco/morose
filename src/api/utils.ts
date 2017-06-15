@@ -5,7 +5,7 @@ import * as fs from 'fs';
 import * as logger from './logger';
 import { generateHash } from './auth';
 
-let home = homedir();
+let home = `${homedir()}/.morose`;
 
 export function setHomeDir(path: string) {
   home = path;
