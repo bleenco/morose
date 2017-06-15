@@ -235,9 +235,32 @@ export function uploadAvatar(req: express.Request | any, res: express.Response):
 
 export function userProfile(req: express.Request, res: express.Response): any {
   let username = req.query.username;
-  let auth = getAuth();
-  let user = auth.users.find(user => user.name === username);
+  let authObject = getAuth();
+  let user = authObject.users.find(user => user.name === username);
+  user.organizations = authObject.organizations
+    .filter(org => org.members.findIndex(u => u.name === username) !== -1);
+  user.packages = authObject.packages
+    .filter(pkgObject => {
+      if (pkgObject.owners.findIndex(o => o === username) !== -1) {
+        return true;
+      } else {
+        if (pkgObject.memberPermissions.findIndex(
+          mp => mp.name === username && mp.write) !== -1) {
+          return true;
+        } else {
+          let teams = auth.getUserTeams(username, pkgObject.organization, authObject);
+          return teams.some(t => {
+            if (pkgObject.teamPermissions.findIndex(
+              tp => tp.team === t && tp.write) !== -1) {
+              return true;
+            }
+          });
+        }
+      }
+    });
+  user.starredPackages = authObject.packages
+    .filter(pkg => pkg.stars.findIndex(s => s === username) !== -1);
   delete user.password;
 
-  return res.status(200).json({ status: true, data: user });
+  return res.status(200).json({status: true, data: user });
 }
