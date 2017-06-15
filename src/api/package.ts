@@ -82,6 +82,18 @@ export class Package {
       .then(() => this.initDataFromPkgJson());
   }
 
+  private prepareData(data: IPackage): IPackage {
+    if (!data.time) {
+      data.time = { modified: new Date().toISOString(), created: new Date().toISOString() };
+    }
+    Object.keys(data.versions).forEach(key => {
+      if (!(key in data.time)) {
+        data.time[key] = new Date().toISOString();
+      }
+    });
+    return data;
+  }
+
   getData(): Promise<IPackage> {
     if (!this.data) {
       return this.initDataFromPkgJson()
@@ -107,6 +119,8 @@ export class Package {
           return readJsonFile(this.pkgJsonPath)
             .then((jsonData: IPackage) => {
               if (jsonData) {
+                data.time = jsonData.time;
+                data = this.prepareData(data);
                 Object.keys(jsonData.versions).forEach(v => {
                   if (!data.versions[v]) {
                     data.versions[v] = jsonData.versions[v];
@@ -116,7 +130,7 @@ export class Package {
               return writeJsonFile(this.pkgJsonPath, data);
             });
         } else {
-          return writeJsonFile(this.pkgJsonPath, data);
+          return writeJsonFile(this.pkgJsonPath, this.prepareData(data));
         }
       });
   }
