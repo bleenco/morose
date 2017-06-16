@@ -268,6 +268,13 @@ export function organizationProfile(req: express.Request, res: express.Response)
   let organization = req.query.organization;
   let authObject = getAuth();
   let profile = authObject.organizations.find(org => org.name === organization);
+  if (profile) {
+    profile.teams.forEach(team => {
+      team.numberOfPackages = authObject.packages.filter(pkg => {
+        return pkg.teamPermissions.findIndex(tp => tp.team === team.name && tp.write) !== -1;
+      }).length;
+    });
+  }
 
   return res.status(200).json({status: true, data: profile });
 }
