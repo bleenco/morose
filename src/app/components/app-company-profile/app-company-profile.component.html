@@ -27,7 +27,7 @@
                     <div *ngFor="let pkg of company.packages; let i = index;">
                       <div class="organization-item">
                         <ul>
-                          <li>{{ pkg.name }}</li>
+                          <li><a href="package/{{pkg}}">{{ pkg }}</a></li>
                         </ul>
                       </div>
                     </div>
@@ -48,7 +48,7 @@
                   <div *ngFor="let member of company.members; let i = index;">
                     <div class="organization-item">
                       <ul>
-                        <li>{{ member.name }} ({{member.role}})</li>
+                        <li><a href="profile/{{member.name}}">{{ member.name }} ({{member.role}})</a></li>
                       </ul>
                     </div>
                   </div>
