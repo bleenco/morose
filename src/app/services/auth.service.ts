@@ -2,7 +2,7 @@ import { Injectable, Provider, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
 import { ApiService } from './api.service';
 import { JwtHelper } from 'angular2-jwt';
-import { ChangePasswordForm } from '../components/app-settings/app-settings.component';
+import { ChangePasswordForm } from '../components/app-user-profile/app-user-profile.component';
 
 @Injectable()
 export class AuthService {

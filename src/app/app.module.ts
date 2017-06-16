@@ -17,7 +17,6 @@ import { AppFootComponent } from './components/app-foot';
 import { AppLoginComponent } from './components/app-login';
 import { AppLandingComponent } from './components/app-landing';
 import { AppPackageComponent } from './components/app-package';
-import { AppSettingsComponent } from './components/app-settings';
 import { AppAddUserComponent } from './components/app-add-user';
 import { AppUserProfileComponent } from './components/app-user-profile';
 import { AppCompanyProfileComponent } from './components/app-company-profile';
@@ -40,7 +39,6 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions) {
     AppLoginComponent,
     AppLandingComponent,
     AppPackageComponent,
-    AppSettingsComponent,
     AppAddUserComponent,
     AppUserProfileComponent,
      AppCompanyProfileComponent,
@@ -55,7 +53,6 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions) {
       { path: 'package/:package',  component: AppPackageComponent },
       { path: 'profile/:username',  component: AppUserProfileComponent },
       { path: 'org/:organization',  component: AppCompanyProfileComponent },
-      { path: 'settings', component: AppSettingsComponent, canActivate: [AuthGuard] },
       { path: 'user/login', component: AppLoginComponent },
       { path: 'user/add', component: AppAddUserComponent, canActivate: [AdminGuard] },
       { path: 'org', component: AppOrganizationsComponent, canActivate: [AuthGuard] }

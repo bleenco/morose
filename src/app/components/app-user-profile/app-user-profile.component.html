@@ -4,51 +4,158 @@
       <div class="columns is-multiline" *ngIf="!loading && user">
         <div class="column is-8 is-offset-2">
           <div class="content-box">
-            <div class="content-box-head">
-              <span><b>{{ user.name }}</b></span>
+            <div class="content-box-head" *ngIf="ownProfile">
+              <div class="tabs is-boxed">
+                <ul>
+                  <li (click)="tabClick('profile')" [class.is-active]="tab === 'profile'"><a>Profile</a></li>
+                  <li (click)="tabClick('settings')" [class.is-active]="tab === 'settings'"><a>Update Profile</a></li>
+                  <li (click)="tabClick('chpass')" [class.is-active]="tab == 'chpass'"><a>Change Password</a></li>
+                </ul>
+              </div>
             </div>
             <div class="content-box-main">
-              <div class="columns is-multiline">
-                <div class="column is-5">
-                  <figure class="image public-profile-image">
-                    <img [src]="user.avatar">
-                  </figure>
+              <div class="content-box" *ngIf="tab === 'profile'">
+                <div class="content-box-head">
+                  <span><b>{{ user.name }}</b></span>
                 </div>
-                <div class="column is-7">
-                  <p>{{ user.fullName }}</p>
-                  <p>{{ user.email }}</p>
-                  <div *ngIf="user.organizations && user.organizations.length">
-                    <h1>{{ user.organizations.length }} Organizations:</h1>
-                    <div *ngFor="let org of user.organizations; let i = index;">
-                      <div class="organization-item">
-                        <ul>
-                          <li><a href="org/{{org.name}}">{{ org.name }}</a></li>
-                        </ul>
-                      </div>
+                <div class="content-box-main">
+                  <div class="columns is-multiline">
+                    <div class="column is-5">
+                      <figure class="image public-profile-image">
+                        <img [src]="user.avatar">
+                      </figure>
                     </div>
-                  </div>
-                  <div *ngIf="user.packages && user.packages.length">
-                    <h1>{{ user.packages.length }} Packages:</h1>
-                    <div *ngFor="let pkg of user.packages; let i = index;">
-                      <div class="organization-item">
-                        <ul>
-                          <li>{{ pkg.name }}</li>
-                        </ul>
+                    <div class="column is-7">
+                      <p>{{ user.fullName }}</p>
+                      <p>{{ user.email }}</p>
+                      <div *ngIf="user.organizations && user.organizations.length">
+                        <h1>{{ user.organizations.length }} Organizations:</h1>
+                        <div *ngFor="let org of user.organizations; let i = index;">
+                          <div class="organization-item">
+                            <ul>
+                              <li><a href="org/{{org.name}}">{{ org.name }}</a></li>
+                            </ul>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                  <div *ngIf="user.starredPackages && user.starredPackages.length">
-                    <h1>{{ user.starredPackages.length }} Starred Packages:</h1>
-                    <div *ngFor="let pkg of user.starredPackages; let i = index;">
-                      <div class="organization-item">
-                        <ul>
-                          <li>{{ pkg.name }}</li>
-                        </ul>
+                      <div *ngIf="user.packages && user.packages.length">
+                        <h1>{{ user.packages.length }} Packages:</h1>
+                        <div *ngFor="let pkg of user.packages; let i = index;">
+                          <div class="organization-item">
+                            <ul>
+                              <li><a href="package/{{pkg.name}}">{{ pkg.name }}</a></li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                      <div *ngIf="user.starredPackages && user.starredPackages.length">
+                        <h1>{{ user.starredPackages.length }} Starred Packages:</h1>
+                        <div *ngFor="let pkg of user.starredPackages; let i = index;">
+                          <div class="organization-item">
+                            <ul>
+                              <li><a href="package/{{pkg.name}}">{{ pkg.name }}</a></li>
+                            </ul>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
+              <div class="content-box-main" *ngIf="tab === 'settings'">
+                <div class="notification is-danger" *ngIf="error">
+                  <button class="delete" (click)="error = false"></button>
+                  {{ errorMessage }}
+                </div>
+                <div class="columns is-multiline">
+                  <div class="column is-5">
+                    <div class="card-image">
+                      <figure class="image is-250x250 settings-image">
+                        <img [src]="user.avatar" alt="Image">
+                        <span class="upload-text">
+                          Change your avatar
+                        </span>
+                        <label class="upload-button">
+                          <input type="file" ngFileSelect (uploadOutput)="onUploadOutput($event)" [uploadInput]="uploadInput">
+                        </label>
+                      </figure>
+                    </div>
+                  </div>
+                  <div class="column is-7">
+                    <form class="control-form" (ngSubmit)="updateProfile($event)" #profileForm="ngForm">
+                      <div class="control-input-container">
+                        <label class="control-label">Name</label>
+                        <input type="text"
+                              class="control-input-field"
+                              name="name"
+                              [(ngModel)]="user.fullName"
+                              required>
+                      </div>
+                      <div class="control-input-container">
+                        <label class="control-label">Email</label>
+                        <input type="email"
+                              class="control-input-field"
+                              name="email"
+                              [(ngModel)]="user.email"
+                              required>
+                      </div>
+                      <div class="control-input-buttons">
+                        <button type="submit"
+                                class="control-button login-button"
+                                [disabled]="!profileForm.form.valid"
+                                required>
+                          Update profile
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+              <div class="content-box" *ngIf="tab == 'chpass'">
+                <div class="notification is-danger" *ngIf="error">
+                  <button class="delete" (click)="error = false"></button>
+                  {{ errorMessage }}
+                </div>
+                <div class="notification is-success" *ngIf="success">
+                  <button class="delete" (click)="error = false"></button>
+                  Password successfully changed.
+                </div>
+                <form class="control-form" (ngSubmit)="changePassword($event)" #chpassForm="ngForm">
+                  <div class="control-input-container">
+                    <label class="control-label">Current password</label>
+                    <input type="password"
+                          class="control-input-field"
+                          name="oldpassword"
+                          [(ngModel)]="changePasswordForm.oldpassword"
+                          required>
+                  </div>
+                  <div class="control-input-container">
+                    <label class="control-label">New Password</label>
+                    <input type="password"
+                          class="control-input-field"
+                          name="newpassword1"
+                          [(ngModel)]="changePasswordForm.newpassword1"
+                          required>
+                  </div>
+                  <div class="control-input-container">
+                    <label class="control-label">Retype New Password</label>
+                    <input type="password"
+                          class="control-input-field"
+                          name="newpassword2"
+                          [(ngModel)]="changePasswordForm.newpassword2"
+                          required>
+                  </div>
+                  <div class="control-input-buttons">
+                    <button type="submit"
+                            class="control-button login-button"
+                            [disabled]="!chpassForm.form.valid"
+                            required>
+                      Change password
+                    </button>
+                  </div>
+                </form>
+              </div>
+
             </div>
           </div>
         </div>

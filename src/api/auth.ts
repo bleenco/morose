@@ -461,6 +461,10 @@ export function publishPackage(
                 };
                 if (organization) {
                   pkg.access = 'restricted';
+                  let index = auth.organizations.findIndex(org => org.name === organization);
+                  if (index !== -1) {
+                    auth.organizations[index].packages.push(pkgName);
+                  }
                 }
                 if (auth.packages
                 .findIndex(p => p.name === pkgName && p.version === version) === -1) {
