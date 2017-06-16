@@ -24,34 +24,79 @@
                   </div>
                   <div *ngIf="company.packages && company.packages.length">
                     <h1>{{ company.packages.length }} Packages:</h1>
-                    <div *ngFor="let pkg of company.packages; let i = index;">
-                      <div class="organization-item">
-                        <ul>
-                          <li><a href="package/{{pkg}}">{{ pkg }}</a></li>
-                        </ul>
-                      </div>
-                    </div>
+                    <table class="table is-bordered is-striped is-narrow">
+                      <thead>
+                        <tr>
+                          <th><abbr title="package">Package</abbr></th>
+                        </tr>
+                      </thead>
+                      <tfoot>
+                        <tr>
+                          <th><abbr title="package">Package</abbr></th>
+                        </tr>
+                      </tfoot>
+                      <tbody>
+                        <tr *ngFor="let pkg of company.packages; let i = index;">
+                          <td><a href="package/{{pkg}}">{{ pkg }}</a></td>
+                        </tr>
+                      </tbody>
+                    </table>
                   </div>
                 </div>
                 <div *ngIf="tab === 'teams'">
                   <h1>{{ company.teams.length }} Teams:</h1>
-                  <div *ngFor="let team of company.teams; let i = index;">
-                    <div class="organization-item">
-                      <ul>
-                        <li>{{ team.name }}</li>
-                      </ul>
-                    </div>
-                  </div>
+                    <table class="table is-bordered is-striped is-narrow">
+                      <thead>
+                        <tr>
+                          <th><abbr title="team">Team Name</abbr></th>
+                          <th><abbr title="members">Members</abbr></th>
+                          <th><abbr title="packages">Packages</abbr></th>
+                          <th><abbr title="action">Action</abbr></th>
+                        </tr>
+                      </thead>
+                      <tfoot>
+                        <tr>
+                          <th><abbr title="team">Team Name</abbr></th>
+                          <th><abbr title="members">Members</abbr></th>
+                          <th><abbr title="packages">Packages</abbr></th>
+                          <th><abbr title="action">Action</abbr></th>
+                        </tr>
+                      </tfoot>
+                      <tbody>
+                        <tr *ngFor="let team of company.teams; let i = index;">
+                          <td><a href="org/{{company.name}}/team/{{team.name}}">{{ team.name }}</a></td>
+                          <td>{{ team.members.length }}</td>
+                          <td>{{ team.numberOfPackages }}</td>
+                          <td><span class="typcn typcn-delete"></span></td>
+                        </tr>
+                      </tbody>
+                    </table>
                 </div>
                 <div *ngIf="tab === 'members'">
                   <h1>{{ company.members.length }} Members:</h1>
-                  <div *ngFor="let member of company.members; let i = index;">
-                    <div class="organization-item">
-                      <ul>
-                        <li><a href="profile/{{member.name}}">{{ member.name }} ({{member.role}})</a></li>
-                      </ul>
-                    </div>
-                  </div>
+                  <table class="table is-bordered is-striped is-narrow">
+                    <thead>
+                      <tr>
+                        <th><abbr title="member">Member</abbr></th>
+                        <th><abbr title="role">Role</abbr></th>
+                        <th><abbr title="action">Action</abbr></th>
+                      </tr>
+                    </thead>
+                    <tfoot>
+                      <tr>
+                        <th><abbr title="member">Member</abbr></th>
+                        <th><abbr title="role">Role</abbr></th>
+                        <th><abbr title="action">Action</abbr></th>
+                      </tr>
+                    </tfoot>
+                    <tbody>
+                      <tr *ngFor="let member of company.members; let i = index;">
+                        <td><a href="profile/{{member.name}}">{{ member.name }}</a></td>
+                        <td> {{member.role}}</td>
+                        <td><span class="typcn typcn-delete"></span></td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
               </div>
             </div>
