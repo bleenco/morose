@@ -278,3 +278,22 @@ export function organizationProfile(req: express.Request, res: express.Response)
 
   return res.status(200).json({status: true, data: profile });
 }
+
+export function teamProfile(req: express.Request, res: express.Response): any {
+  let organization = req.query.organization;
+  let team = req.query.team;
+  let authObject = getAuth();
+  let org = authObject.organizations.find(org => org.name === organization);
+  if (org) {
+    let teamData = org.teams.find(t => t.name === team);
+    if (teamData) {
+      teamData.packages = authObject.packages.filter(pkg => {
+        return pkg.teamPermissions.findIndex(tp => tp.team === team && tp.write) !== -1;
+      });
+      teamData.organization = org.name;
+      return res.status(200).json({status: true, data: teamData });
+    }
+  }
+
+  return res.status(200).json({status: true, data: false });
+}

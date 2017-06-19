@@ -37,7 +37,7 @@
                       </tfoot>
                       <tbody>
                         <tr *ngFor="let pkg of company.packages; let i = index;">
-                          <td><a href="package/{{pkg}}">{{ pkg }}</a></td>
+                          <td><a href="package/{{api.encodeUrl(pkg)}}">{{ pkg }}</a></td>
                         </tr>
                       </tbody>
                     </table>
