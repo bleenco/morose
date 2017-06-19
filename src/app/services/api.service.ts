@@ -48,6 +48,14 @@ export class ApiService {
     return this.get(`${this.url}/org/profile`, params);
   }
 
+  getTeamProfile(organization: string, team: string): Observable<any[]> {
+    let params: URLSearchParams = new URLSearchParams();
+    params.set('organization', organization);
+    params.set('team', team);
+
+    return this.get(`${this.url}/org/team/profile`, params);
+  }
+
   getOrganizations(username: string): Observable<any[]> {
     return this.post(`${this.url}/user/organizations`, { username });
   }
@@ -114,6 +122,10 @@ export class ApiService {
 
     console.error(errMsg);
     return Observable.throw(errMsg);
+  }
+
+  public encodeUrl(url: string) {
+    return encodeURIComponent(url);
   }
 }
 

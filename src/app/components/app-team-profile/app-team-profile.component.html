@@ -1,0 +1,80 @@
+<div class="hero hero-landing">
+  <div class="hero-body">
+    <div class="container">
+      <div class="columns is-multiline">
+        <div class="column is-8 is-offset-2">
+          <h1><b>Team: {{team.organization}}/{{ team.name }}</b></h1>
+          <div class="content-box">
+            <div class="content-box-head">
+              <div class="tabs is-boxed">
+                <ul>
+                  <li (click)="tabClick('packages')" [class.is-active]="tab === 'packages'"><a>Packages</a></li>
+                  <li (click)="tabClick('members')" [class.is-active]="tab === 'members'"><a>Members</a></li>
+                </ul>
+              </div>
+            </div>
+
+
+            <div class="content-box-main">
+              <div class="columns is-multiline">
+                <div *ngIf="tab === 'packages'">
+                  <div *ngIf="!(team.packages && team.packages.length)">
+                    <h1>Team has no Packages</h1>
+                  </div>
+                  <div *ngIf="team.packages && team.packages.length">
+                    <h1>{{ team.packages.length }} Packages:</h1>
+                    <table class="table is-bordered is-striped is-narrow">
+                      <thead>
+                        <tr>
+                          <th><abbr title="package">Package</abbr></th>
+                        </tr>
+                      </thead>
+                      <tfoot>
+                        <tr>
+                          <th><abbr title="package">Package</abbr></th>
+                        </tr>
+                      </tfoot>
+                      <tbody>
+                        <tr *ngFor="let pkg of team.packages; let i = index;">
+                          <td><a href="package/{{api.encodeUrl(pkg.name)}}">{{ pkg.name }}</a></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <div *ngIf="tab === 'members'">
+                  <h1>{{ team.members.length }} Members:</h1>
+                  <table class="table is-bordered is-striped is-narrow">
+                    <thead>
+                      <tr>
+                        <th><abbr title="member">Member</abbr></th>
+                        <th><abbr title="role">Role</abbr></th>
+                        <th><abbr title="action">Action</abbr></th>
+                      </tr>
+                    </thead>
+                    <tfoot>
+                      <tr>
+                        <th><abbr title="member">Member</abbr></th>
+                        <th><abbr title="role">Role</abbr></th>
+                        <th><abbr title="action">Action</abbr></th>
+                      </tr>
+                    </tfoot>
+                    <tbody>
+                      <tr *ngFor="let member of team.members; let i = index;">
+                        <td><a href="profile/{{member}}">{{ member }}</a></td>
+                        <td>Member</td>
+                        <td><span class="typcn typcn-delete"></span></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

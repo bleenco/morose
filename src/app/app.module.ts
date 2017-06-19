@@ -21,6 +21,7 @@ import { AppAddUserComponent } from './components/app-add-user';
 import { AppUserProfileComponent } from './components/app-user-profile';
 import { AppCompanyProfileComponent } from './components/app-company-profile';
 import { AppOrganizationsComponent } from './components/app-organizations';
+import { AppTeamProfileComponent } from './components/app-team-profile';
 import { MarkdownPipe } from './pipes/markdown.pipe';
 
 export function authHttpServiceFactory(http: Http, options: RequestOptions) {
@@ -41,8 +42,9 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions) {
     AppPackageComponent,
     AppAddUserComponent,
     AppUserProfileComponent,
-     AppCompanyProfileComponent,
+    AppCompanyProfileComponent,
     AppOrganizationsComponent,
+    AppTeamProfileComponent,
     MarkdownPipe
   ],
   imports: [
@@ -53,6 +55,7 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions) {
       { path: 'package/:package',  component: AppPackageComponent },
       { path: 'profile/:username',  component: AppUserProfileComponent },
       { path: 'org/:organization',  component: AppCompanyProfileComponent },
+      { path: 'org/:organization/team/:team',  component: AppTeamProfileComponent },
       { path: 'user/login', component: AppLoginComponent },
       { path: 'user/add', component: AppAddUserComponent, canActivate: [AdminGuard] },
       { path: 'org', component: AppOrganizationsComponent, canActivate: [AuthGuard] }
