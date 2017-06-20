@@ -77,6 +77,12 @@ export class AppCompanyProfileComponent implements OnInit {
       .subscribe((company: any) => {
         if (company) {
           this.company = company.data;
+          let member = this.company.members.find(m => m.name === this.auth.user.name);
+          if (member) {
+            this.company.role = member.role;
+          } else {
+            this.company.role = 'member';
+          }
         }
       });
   }
