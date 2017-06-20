@@ -64,12 +64,36 @@ export class ApiService {
     return this.post(`${this.url}/user/details`, { username });
   }
 
+  getUsers(): Observable<any[]> {
+    return this.get(`${this.url}/users`);
+  }
+
   addUser(name: string, password: string, fullName: string, email: string): Observable<any[]> {
     return this.post(`${this.url}/user/add`, { name, password, fullName, email });
   }
 
   addOrganization(name: string, username: string): Observable<any[]> {
     return this.post(`${this.url}/org/add`, { name, username });
+  }
+
+  deleteOrganization(organization: string): Observable<any[]> {
+    return this.post(`${this.url}/org/delete`, { organization });
+  }
+
+  deleteTeam(team: string, organization: string): Observable<any[]> {
+    return this.post(`${this.url}/team/delete`, { team, organization });
+  }
+
+  deleteUser(username: string): Observable<any[]> {
+    return this.post(`${this.url}/user/delete`, { username });
+  }
+
+  deleteUserFromTeam(username: string, team: string, organization: string): Observable<any[]> {
+    return this.post(`${this.url}/team/user/delete`, { username, team, organization });
+  }
+
+  deleteUserFromOrganization(username: string, organization: string): Observable<any[]> {
+    return this.post(`${this.url}/org/user/delete`, { username, organization });
   }
 
   login(username: string, password: string): Observable<any> {

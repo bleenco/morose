@@ -25,7 +25,7 @@ export class AppUserProfileComponent implements OnInit {
   changePasswordForm: ChangePasswordForm;
   uploadFile: UploadFile;
   uploadInput: EventEmitter<UploadInput>;
-  ownProfile: boolean;
+  canModify: boolean;
 
   constructor(private auth: AuthService, private api: ApiService, private route: ActivatedRoute) {
     this.loading = true;
@@ -46,10 +46,10 @@ export class AppUserProfileComponent implements OnInit {
         if (user.status) {
           this.user = user.data;
           this.user.avatar = this.api.uri + user.data.avatar;
-          if (this.user.name === this.auth.user.name) {
-            this.ownProfile = true;
+          if (this.user.name === this.auth.user.name || this.auth.userDetails.role === 'admin') {
+            this.canModify = true;
           } else {
-            this.ownProfile = false;
+            this.canModify = false;
           }
         }
 

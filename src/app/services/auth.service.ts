@@ -92,6 +92,12 @@ export class AuthService {
       .then(data => data);
   }
 
+  getUsers(): any {
+    return this.api.getUsers()
+      .toPromise()
+      .then(data => data);
+  }
+
   addUser(username: string, password: string, fullname: string, email: string): any {
     return this.api.addUser(username, password, fullname, email)
       .toPromise()
@@ -100,6 +106,36 @@ export class AuthService {
 
   addOrganization(name: string): any {
     return this.api.addOrganization(name, this.user.name)
+      .toPromise()
+      .then(data => data);
+  }
+
+  deleteOrganization(name: string): any {
+    return this.api.deleteOrganization(name)
+      .toPromise()
+      .then(data => data);
+  }
+
+  deleteTeam(name: string, organization: string): any {
+    return this.api.deleteTeam(name, organization)
+      .toPromise()
+      .then(data => data);
+  }
+
+  deleteUser(name: string): any {
+    return this.api.deleteUser(name)
+      .toPromise()
+      .then(data => data);
+  }
+
+  deleteUserFromTeam(name: string, team: string, organization: string): any {
+    return this.api.deleteUserFromTeam(name, team, organization)
+      .toPromise()
+      .then(data => data);
+  }
+
+  deleteUserFromOrganization(name: string, organization: string): any {
+    return this.api.deleteUserFromOrganization(name, organization)
       .toPromise()
       .then(data => data);
   }

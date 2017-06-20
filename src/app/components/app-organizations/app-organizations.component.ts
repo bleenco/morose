@@ -15,9 +15,7 @@ export class AppOrganizationsComponent implements OnInit {
   name: string;
 
   constructor(public auth: AuthService, private api: ApiService, private router: Router) {
-    this.auth.getUserOrganizations(this.auth.user.name).then(data => {
-      this.organizations = data;
-    });
+    this.refreshTable();
   }
 
   ngOnInit() {
@@ -35,11 +33,29 @@ export class AppOrganizationsComponent implements OnInit {
       if (res) {
         this.success = true;
         this.error = false;
-        setTimeout(() => this.success = false, 1000);
+        this.refreshTable();
+        this.name = '';
+        setTimeout(() => this.success = false, 5000);
       } else {
         this.error = true;
         this.success = false;
       }
     });
+  }
+
+  refreshTable(): void {
+    this.auth.getUserOrganizations(this.auth.user.name).then(data => {
+      this.organizations = data;
+    });
+  }
+
+  deleteOrganization(organization: string): void {
+    if (confirm('Are you sure? This step cannot be reverted!')) {
+      this.auth.deleteOrganization(organization).then(res => {
+        if (res) {
+          this.refreshTable();
+        }
+      });
+    }
   }
 }

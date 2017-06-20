@@ -21,13 +21,26 @@
                     </div>
                     <div *ngIf="organizations && organizations.length">
                       <h1>{{ organizations.length }} Organizations:</h1>
-                      <div *ngFor="let org of organizations; let i = index;">
-                        <div class="organization-item">
-                          <ul>
-                            <li><a href="org/{{org.name}}">{{ org.name }}</a></li>
-                          </ul>
-                        </div>
-                      </div>
+                      <table class="table is-bordered is-striped is-narrow">
+                        <thead>
+                          <tr>
+                            <th><abbr title="organization">Organization</abbr></th>
+                            <th><abbr title="action">Action</abbr></th>
+                          </tr>
+                        </thead>
+                        <tfoot>
+                          <tr>
+                            <th><abbr title="organization">Organization</abbr></th>
+                            <th><abbr title="action">Action</abbr></th>
+                          </tr>
+                        </tfoot>
+                        <tbody>
+                          <tr *ngFor="let org of organizations; let i = index;">
+                            <td><a href="org/{{org.name}}">{{ org.name }}</a></td>
+                            <td><span (click)="deleteOrganization(org.name)" class="typcn typcn-delete"></span></td>
+                          </tr>
+                        </tbody>
+                      </table>
                     </div>
                   </div>
                 </div>

@@ -13,8 +13,6 @@
                 </ul>
               </div>
             </div>
-
-
             <div class="content-box-main">
               <div class="columns is-multiline">
                 <div *ngIf="tab === 'packages'">
@@ -63,7 +61,7 @@
                       <tr *ngFor="let member of team.members; let i = index;">
                         <td><a href="profile/{{member}}">{{ member }}</a></td>
                         <td>Member</td>
-                        <td><span class="typcn typcn-delete"></span></td>
+                        <td><span (click)="deleteMember(member)" class="typcn typcn-delete"></span></td>
                       </tr>
                     </tbody>
                   </table>

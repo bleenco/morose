@@ -345,16 +345,16 @@ export function addUserToTeam(data: OrganizationTeamData, auth: any): Promise<an
 }
 
 export function deleteTeam(team: string, organization: string, auth: any): Promise<any> {
-  return new Promise((resolve, reject) => {
-    let orgIndex = auth.organizations.findIndex(org => org.name === organization);
-    if (orgIndex !== -1) {
-      let teamIndex = auth.organizations[orgIndex].teams.findIndex(t => t.name === team);
-      if (teamIndex !== -1) {
-        auth.organizations[orgIndex].teams.splice(teamIndex, 1);
-        resolve(auth);
+    return new Promise((resolve, reject) => {
+      let orgIndex = auth.organizations.findIndex(org => org.name === organization);
+      if (orgIndex !== -1) {
+        let teamIndex = auth.organizations[orgIndex].teams.findIndex(t => t.name === team);
+        if (teamIndex !== -1) {
+          auth.organizations[orgIndex].teams.splice(teamIndex, 1);
+          resolve(auth);
+        }
       }
-    }
-  });
+    });
 }
 
 export function deleteUserFromTeam(data: OrganizationTeamData, auth: any): Promise<any> {
@@ -365,9 +365,9 @@ export function deleteUserFromTeam(data: OrganizationTeamData, auth: any): Promi
       let teamIndex = auth.organizations[orgIndex].teams.findIndex(t => t.name === team);
       if (teamIndex !== -1) {
         let userIndex = auth.organizations[orgIndex].teams[teamIndex]
-          .members.findIndex(u => u === username);
-        if (userIndex !== -1) {
-          auth.organizations[orgIndex].teams[teamIndex].members.splice(userIndex, 1);
+        .members.findIndex(u => u === username);
+      if (userIndex !== -1) {
+        auth.organizations[orgIndex].teams[teamIndex].members.splice(userIndex, 1);
           resolve(auth);
         } else {
           reject();
@@ -399,12 +399,24 @@ export function deleteUserFromOrganization(
     });
 }
 
-export function deleteOrganization(organization: string, auth: any): Promise<any> {
+export function deleteUser(username: string, auth: any): Promise<any> {
   return new Promise((resolve, reject) => {
-    let index = auth.organizations.findIndex(org => org.name === organization);
-    auth.organizations.splice(index, 1);
-    resolve(auth);
+    let usrIndex = auth.users.findIndex(usr => usr.name === username);
+    if (usrIndex !== -1) {
+      auth.users.splice(usrIndex, 1);
+      resolve(auth);
+    } else {
+      reject();
+    }
   });
+}
+
+export function deleteOrganization(organization: string, auth: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let index = auth.organizations.findIndex(org => org.name === organization);
+      auth.organizations.splice(index, 1);
+      resolve(auth);
+    });
 }
 
 export function changeUserRole(

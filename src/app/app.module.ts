@@ -17,7 +17,7 @@ import { AppFootComponent } from './components/app-foot';
 import { AppLoginComponent } from './components/app-login';
 import { AppLandingComponent } from './components/app-landing';
 import { AppPackageComponent } from './components/app-package';
-import { AppAddUserComponent } from './components/app-add-user';
+import { AppUsersComponent } from './components/app-users';
 import { AppUserProfileComponent } from './components/app-user-profile';
 import { AppCompanyProfileComponent } from './components/app-company-profile';
 import { AppOrganizationsComponent } from './components/app-organizations';
@@ -40,7 +40,7 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions) {
     AppLoginComponent,
     AppLandingComponent,
     AppPackageComponent,
-    AppAddUserComponent,
+    AppUsersComponent,
     AppUserProfileComponent,
     AppCompanyProfileComponent,
     AppOrganizationsComponent,
@@ -57,7 +57,7 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions) {
       { path: 'org/:organization',  component: AppCompanyProfileComponent },
       { path: 'org/:organization/team/:team',  component: AppTeamProfileComponent },
       { path: 'user/login', component: AppLoginComponent },
-      { path: 'user/add', component: AppAddUserComponent, canActivate: [AdminGuard] },
+      { path: 'users', component: AppUsersComponent, canActivate: [AdminGuard] },
       { path: 'org', component: AppOrganizationsComponent, canActivate: [AuthGuard] }
     ]),
     HttpModule,
