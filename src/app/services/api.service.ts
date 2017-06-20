@@ -76,6 +76,18 @@ export class ApiService {
     return this.post(`${this.url}/org/add`, { name, username });
   }
 
+  addUserToOrganization(username: string, organization: string, role: string): Observable<any[]> {
+    return this.post(`${this.url}/org/user/add`, { username, organization, role });
+  }
+
+  addUserToTeam(username: string, team: string, organization: string): Observable<any[]> {
+    return this.post(`${this.url}/org/team/user/add`, { username, team, organization });
+  }
+
+  addTeam(team: string, organization: string, username: string): Observable<any[]> {
+    return this.post(`${this.url}/org/team/add`, { team, organization, username });
+  }
+
   deleteOrganization(organization: string): Observable<any[]> {
     return this.post(`${this.url}/org/delete`, { organization });
   }

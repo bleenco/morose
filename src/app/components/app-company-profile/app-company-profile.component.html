@@ -71,6 +71,40 @@
                       </tr>
                     </tbody>
                   </table>
+                  <div class="content-box">
+                    <div class="content-box-head">
+                      <span>Create new team</span>
+                    </div>
+                    <div class=content-box-main>
+                      <div class="notification is-danger" *ngIf="error">
+                        <button class="delete" (click)="error = false"></button>
+                        Creating team failed.
+                      </div>
+                      <div class="notification is-success" *ngIf="success">
+                        <button class="delete" (click)="error = false"></button>
+                        Team successfully created.
+                      </div>
+                      <form class="control-form" (ngSubmit)="addTeam($event)" #addForm="ngForm">
+                        <div class="control-input-container">
+                          <label class="control-label">Name</label>
+                          <input type="text"
+                                class="control-input-field"
+                                name="name"
+                                [(ngModel)]="name"
+                                pattern="[a-zA-Z0-9._()'!*@,;+-/]{3,64}"
+                                required>
+                        </div>
+                        <div class="control-input-buttons">
+                          <button type="submit"
+                                  class="control-button"
+                                  [disabled]="!addForm.form.valid"
+                                  required>
+                            Add Team
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
                 </div>
                 <div *ngIf="tab === 'members'">
                   <h1>{{ company.members.length }} Members:</h1>
@@ -97,11 +131,52 @@
                       </tr>
                     </tbody>
                   </table>
+                  <div class="content-box">
+                    <div class="content-box-head">
+                      <span>Add new member</span>
+                    </div>
+                    <div class=content-box-main>
+                      <div class="notification is-danger" *ngIf="error">
+                        <button class="delete" (click)="error = false"></button>
+                        Adding member failed.
+                      </div>
+                      <div class="notification is-success" *ngIf="success">
+                        <button class="delete" (click)="error = false"></button>
+                        Member successfully added.
+                      </div>
+                      <form class="control-form" (ngSubmit)="addMember($event)" #addMemberForm="ngForm">
+                        <div class="control-input-container">
+                          <label class="control-label">Username</label>
+                          <input type="text"
+                                class="control-input-field"
+                                name="username"
+                                [(ngModel)]="username"
+                                pattern="[a-zA-Z0-9._()'!*@,;+-/]{3,64}"
+                                required>
+                        </div>
+                        <label class="control-label">Role</label>
+                        <select class="control-input-field"
+                                name="role"
+                                [(ngModel)]="role"
+                                required>
+                          <option value="member">Member</option>
+                          <option value="admin">Admin</option>
+                          <option value="owner">Owner</option>
+                        </select>
+                        <div class="control-input-buttons">
+                          <button type="submit"
+                                  class="control-button"
+                                  [disabled]="!addMemberForm.form.valid"
+                                  required>
+                            Add User
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-
-
           </div>
         </div>
       </div>

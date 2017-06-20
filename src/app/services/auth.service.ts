@@ -110,6 +110,24 @@ export class AuthService {
       .then(data => data);
   }
 
+  addUserToOrganization(user: string, organization: string, role: string): any {
+    return this.api.addUserToOrganization(user, organization, role)
+      .toPromise()
+      .then(data => data);
+  }
+
+  addUserToTeam(user: string, team: string, organization: string): any {
+    return this.api.addUserToTeam(user, team, organization)
+      .toPromise()
+      .then(data => data);
+  }
+
+  addTeam(team: string, organization: string): any {
+    return this.api.addTeam(team, organization, this.user.name)
+      .toPromise()
+      .then(data => data);
+  }
+
   deleteOrganization(name: string): any {
     return this.api.deleteOrganization(name)
       .toPromise()
