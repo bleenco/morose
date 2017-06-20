@@ -1,0 +1,105 @@
+<div class="hero">
+  <div class="hero-body">
+    <div class="container">
+      <div class="columns is-multiline">
+        <div class="column is-8 is-offset-2">
+          <div class="content-box">
+            <div class="content-box-head">
+              <div class="tabs is-boxed">
+                <ul>
+                  <li (click)="tabClick('list')" [class.is-active]="tab === 'list'"><a>Users</a></li>
+                  <li (click)="tabClick('add')" [class.is-active]="tab === 'add'"><a>Add New User</a></li>
+                </ul>
+              </div>
+            </div>
+            <div class="content-box-main">
+              <div *ngIf="tab==='list'">
+                <h1>{{ users.length }} Users:</h1>
+                <table class="table is-bordered is-striped is-narrow">
+                  <thead>
+                    <tr>
+                      <th><abbr title="name">Name</abbr></th>
+                      <th><abbr title="username">Username</abbr></th>
+                      <th><abbr title="email">Email</abbr></th>
+                      <th><abbr title="action">Action</abbr></th>
+                    </tr>
+                  </thead>
+                  <tfoot>
+                    <tr>
+                      <th><abbr title="name">Name</abbr></th>
+                      <th><abbr title="username">Username</abbr></th>
+                      <th><abbr title="email">Email</abbr></th>
+                      <th><abbr title="action">Action</abbr></th>
+                    </tr>
+                  </tfoot>
+                  <tbody>
+                    <tr *ngFor="let user of users; let i = index;">
+                      <td><a href="profile/{{user.name}}">{{ user.fullName }}</a></td>
+                      <td>{{ user.name }}</td>
+                      <td>{{ user.email }}</td>
+                      <td><span (click)="deleteUser(user.name)" class="typcn typcn-delete"></span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div *ngIf="tab==='add'">
+                <div class="notification is-danger" *ngIf="error">
+                  <button class="delete" (click)="error = false"></button>
+                  Adding user failed.
+                </div>
+                <div class="notification is-success" *ngIf="success">
+                  <button class="delete" (click)="error = false"></button>
+                  User successfully added.
+                </div>
+                <form class="control-form" (ngSubmit)="addUser($event)" #addForm="ngForm">
+                  <div class="control-input-container">
+                    <label class="control-label">Username</label>
+                    <input type="text"
+                          class="control-input-field"
+                          name="username"
+                          [(ngModel)]="username"
+                          pattern="[a-zA-Z0-9._()'!*@,;+-/]{3,64}"
+                          required>
+                  </div>
+                  <div class="control-input-container">
+                    <label class="control-label">Password</label>
+                    <input type="password"
+                          class="control-input-field"
+                          name="password"
+                          [(ngModel)]="password"
+                          required>
+                  </div>
+                  <div class="control-input-container">
+                    <label class="control-label">Full Name</label>
+                    <input type="text"
+                          class="control-input-field"
+                          name="fullname"
+                          [(ngModel)]="fullname"
+                          required>
+                  </div>
+                  <div class="control-input-container">
+                    <label class="control-label">Email</label>
+                    <input type="email"
+                          class="control-input-field"
+                          name="email"
+                          [(ngModel)]="email"
+                          required
+                          email/>
+                  </div>
+                  <div class="control-input-buttons">
+                    <button type="submit"
+                            class="control-button"
+                            [disabled]="!addForm.form.valid"
+                            required>
+                      Add User
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

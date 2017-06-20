@@ -129,6 +129,11 @@ export function getUser(req: express.Request, res: express.Response): express.Re
   return res.status(200).json(auth.getUserByUsername(username, authObject));
 }
 
+export function getUsers(req: express.Request, res: express.Response): express.Response {
+  let authObj = getAuth();
+  return res.status(200).json({ status: true, data: authObj.users });
+}
+
 export function newOrganization(
   req: express.Request, res: express.Response): express.Response | void {
     let authObj = getAuth();
@@ -185,6 +190,15 @@ export function deleteUserFromOrganization(
   req: express.Request, res: express.Response): express.Response | void {
     let authObj = getAuth();
     auth.deleteUserFromOrganization(req.body.username, req.body.organization, authObj)
+      .then(auth => writeJsonFile(getAuthPath(), auth)
+      .then(() => res.status(200).json({ data: true })))
+      .catch(err => res.status(200).json({ message: err }));
+}
+
+export function deleteUser(
+  req: express.Request, res: express.Response): express.Response | void {
+    let authObj = getAuth();
+    auth.deleteUser(req.body.username, authObj)
       .then(auth => writeJsonFile(getAuthPath(), auth)
       .then(() => res.status(200).json({ data: true })))
       .catch(err => res.status(200).json({ message: err }));

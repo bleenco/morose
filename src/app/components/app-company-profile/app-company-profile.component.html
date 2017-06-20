@@ -45,32 +45,32 @@
                 </div>
                 <div *ngIf="tab === 'teams'">
                   <h1>{{ company.teams.length }} Teams:</h1>
-                    <table class="table is-bordered is-striped is-narrow">
-                      <thead>
-                        <tr>
-                          <th><abbr title="team">Team Name</abbr></th>
-                          <th><abbr title="members">Members</abbr></th>
-                          <th><abbr title="packages">Packages</abbr></th>
-                          <th><abbr title="action">Action</abbr></th>
-                        </tr>
-                      </thead>
-                      <tfoot>
-                        <tr>
-                          <th><abbr title="team">Team Name</abbr></th>
-                          <th><abbr title="members">Members</abbr></th>
-                          <th><abbr title="packages">Packages</abbr></th>
-                          <th><abbr title="action">Action</abbr></th>
-                        </tr>
-                      </tfoot>
-                      <tbody>
-                        <tr *ngFor="let team of company.teams; let i = index;">
-                          <td><a href="org/{{company.name}}/team/{{team.name}}">{{ team.name }}</a></td>
-                          <td>{{ team.members.length }}</td>
-                          <td>{{ team.numberOfPackages }}</td>
-                          <td><span class="typcn typcn-delete"></span></td>
-                        </tr>
-                      </tbody>
-                    </table>
+                  <table class="table is-bordered is-striped is-narrow">
+                    <thead>
+                      <tr>
+                        <th><abbr title="team">Team Name</abbr></th>
+                        <th><abbr title="members">Members</abbr></th>
+                        <th><abbr title="packages">Packages</abbr></th>
+                        <th><abbr title="action">Action</abbr></th>
+                      </tr>
+                    </thead>
+                    <tfoot>
+                      <tr>
+                        <th><abbr title="team">Team Name</abbr></th>
+                        <th><abbr title="members">Members</abbr></th>
+                        <th><abbr title="packages">Packages</abbr></th>
+                        <th><abbr title="action">Action</abbr></th>
+                      </tr>
+                    </tfoot>
+                    <tbody>
+                      <tr *ngFor="let team of company.teams; let i = index;">
+                        <td><a href="org/{{company.name}}/team/{{team.name}}">{{ team.name }}</a></td>
+                        <td>{{ team.members.length }}</td>
+                        <td>{{ team.numberOfPackages }}</td>
+                        <td><span (click)="deleteTeam(team.name)" class="typcn typcn-delete"></span></td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
                 <div *ngIf="tab === 'members'">
                   <h1>{{ company.members.length }} Members:</h1>
@@ -93,7 +93,7 @@
                       <tr *ngFor="let member of company.members; let i = index;">
                         <td><a href="profile/{{member.name}}">{{ member.name }}</a></td>
                         <td> {{member.role}}</td>
-                        <td><span class="typcn typcn-delete"></span></td>
+                        <td><span (click)="deleteMember(member.name)" class="typcn typcn-delete"></span></td>
                       </tr>
                     </tbody>
                   </table>
