@@ -11,6 +11,11 @@ import 'rxjs/add/operator/switchMap';
 export class AppCompanyProfileComponent implements OnInit {
   company: any;
   tab: string;
+  error: boolean;
+  success: boolean;
+  name: string;
+  username: string;
+  role: string;
 
   constructor(public auth: AuthService, private api: ApiService, private route: ActivatedRoute) {
     this.tab = 'packages';
@@ -22,6 +27,38 @@ export class AppCompanyProfileComponent implements OnInit {
 
   tabClick(tab: string) {
     this.tab = tab;
+  }
+
+  addTeam(e: Event): void {
+    e.preventDefault();
+    this.auth.addTeam(this.name, this.company.name).then(res => {
+      if (res) {
+        this.success = true;
+        this.error = false;
+        this.refreshTable();
+        this.name = '';
+        setTimeout(() => this.success = false, 5000);
+      } else {
+        this.error = true;
+        this.success = false;
+      }
+    });
+  }
+
+  addMember(e: Event): void {
+    e.preventDefault();
+    this.auth.addUserToOrganization(this.username, this.company.name, this.role).then(res => {
+      if (res) {
+        this.success = true;
+        this.error = false;
+        this.refreshTable();
+        this.username = '';
+        setTimeout(() => this.success = false, 5000);
+      } else {
+        this.error = true;
+        this.success = false;
+      }
+    });
   }
 
   deleteMember(member: string): void {
