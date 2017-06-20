@@ -37,7 +37,7 @@
                         <tbody>
                           <tr *ngFor="let org of organizations; let i = index;">
                             <td><a href="org/{{org.name}}">{{ org.name }}</a></td>
-                            <td><span (click)="deleteOrganization(org.name)" class="typcn typcn-delete"></span></td>
+                            <td><span (click)="deleteOrganization(org.name)" class="typcn typcn-delete" *ngIf="org.role === 'owner'"></span></td>
                           </tr>
                         </tbody>
                       </table>

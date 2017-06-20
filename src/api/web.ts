@@ -110,6 +110,9 @@ export function getUserOrganizations(
     let auth = getAuth();
     let orgs = auth.organizations
       .filter(org => org.members.findIndex(u => u.name === username) !== -1);
+    orgs.forEach(o => {
+      o.role = o.members.find(u => u.name === username).role;
+    });
 
     return res.status(200).json(orgs);
 }

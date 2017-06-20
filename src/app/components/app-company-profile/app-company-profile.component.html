@@ -67,11 +67,11 @@
                         <td><a href="org/{{company.name}}/team/{{team.name}}">{{ team.name }}</a></td>
                         <td>{{ team.members.length }}</td>
                         <td>{{ team.numberOfPackages }}</td>
-                        <td><span (click)="deleteTeam(team.name)" class="typcn typcn-delete"></span></td>
+                        <td><span (click)="deleteTeam(team.name)" class="typcn typcn-delete" *ngIf="company.role === 'owner'"></span></td>
                       </tr>
                     </tbody>
                   </table>
-                  <div class="content-box">
+                  <div class="content-box" *ngIf="company.role === 'owner'">
                     <div class="content-box-head">
                       <span>Create new team</span>
                     </div>
@@ -127,11 +127,11 @@
                       <tr *ngFor="let member of company.members; let i = index;">
                         <td><a href="profile/{{member.name}}">{{ member.name }}</a></td>
                         <td> {{member.role}}</td>
-                        <td><span (click)="deleteMember(member.name)" class="typcn typcn-delete"></span></td>
+                        <td><span (click)="deleteMember(member.name)" class="typcn typcn-delete" *ngIf="company.role === 'owner'"></span></td>
                       </tr>
                     </tbody>
                   </table>
-                  <div class="content-box">
+                  <div class="content-box" *ngIf="company.role === 'owner'">
                     <div class="content-box-head">
                       <span>Add new member</span>
                     </div>
