@@ -51,19 +51,6 @@ describe('User Login', () => {
       .then(url => expect(url).toEqual('http://localhost:10000/user/login'));
   });
 
-  it('shoud be able to logout successfully after valid login', () => {
-    browser.get('/user/login')
-      .then(() => element(by.css('.control-input-field[name="username"]')).sendKeys('admin'))
-      .then(() => element(by.css('.control-input-field[name="password"]')).sendKeys('admin'))
-      .then(() => element(by.css('.login-button')).click())
-      .then(() => browser.getCurrentUrl())
-      .then(url => expect(url).toEqual('http://localhost:10000/'))
-      .then(() => element(by.css('.drop-menu-act')).click())
-      .then(() => element.all(by.css('.nav-dropdown-item')).last().click())
-      .then(() => browser.getCurrentUrl())
-      .then(url => expect(url).toEqual('http://localhost:10000/user/login'));
-  });
-
   it('shoud not be able to login with wrong credentials', () => {
     browser.get('/user/login')
       .then(() => element(by.css('.control-input-field[name="username"]')).sendKeys('admin'))
@@ -79,5 +66,17 @@ describe('User Login', () => {
         let el = element(by.css('.nav-right .nav-item'));
         expect(el.getText()).toContain('Login');
       });
+  });
+
+  it('shoud redirect to /user/login if not logged in and want to access /profile/admin', () => {
+    browser.get('/profile/admin')
+      .then(() => browser.getCurrentUrl())
+      .then(url => expect(url).toEqual('http://localhost:10000/user/login'));
+  });
+
+  it('shoud redirect to /user/login if not logged in and want to access /org/bleenco', () => {
+    browser.get('/org/bleenco')
+      .then(() => browser.getCurrentUrl())
+      .then(url => expect(url).toEqual('http://localhost:10000/user/login'));
   });
 });
