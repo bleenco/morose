@@ -53,9 +53,13 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions) {
     RouterModule.forRoot([
       { path: '', pathMatch: 'full', component: AppLandingComponent },
       { path: 'package/:package',  component: AppPackageComponent },
-      { path: 'profile/:username',  component: AppUserProfileComponent },
-      { path: 'org/:organization',  component: AppCompanyProfileComponent },
-      { path: 'org/:organization/team/:team',  component: AppTeamProfileComponent },
+      { path: 'profile/:username',  component: AppUserProfileComponent, canActivate: [AuthGuard] },
+      { path: 'org/:organization',
+        component: AppCompanyProfileComponent,
+        canActivate: [AuthGuard] },
+      { path: 'org/:organization/team/:team',
+        component: AppTeamProfileComponent,
+        canActivate: [AuthGuard] },
       { path: 'user/login', component: AppLoginComponent },
       { path: 'users', component: AppUsersComponent, canActivate: [AdminGuard] },
       { path: 'org', component: AppOrganizationsComponent, canActivate: [AuthGuard] }

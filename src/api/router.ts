@@ -38,6 +38,11 @@ router.use('/avatars', express.static(getFilePath('avatars'), { index: false }))
 
 router.get('/user/login', index);
 router.get('/package/:package(*)', index);
+router.get('/users', index);
+router.get('/org', index);
+router.get('/org/:organization/team/:team', index);
+router.get('/org/:organization', index);
+router.get('/profile/:username', index);
 
 router.get('/api/package/get-random', web.getRandomPackages);
 router.get('/api/package/search+*', web.searchPackages);
@@ -49,7 +54,6 @@ router.post('/api/user/update-profile', web.updateProfile);
 router.post('/api/user/organizations', web.getUserOrganizations);
 router.post('/api/user/details', web.getUser);
 router.post('/api/user/upload-avatar', upload.any(), web.uploadAvatar);
-router.get('/user/login', index);
 router.get('/api/user/profile', web.userProfile);
 router.get('/api/org/profile', web.organizationProfile);
 router.get('/api/org/team/profile', web.teamProfile);
