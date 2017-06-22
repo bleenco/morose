@@ -161,7 +161,7 @@ export class AuthService {
   changePassword(passwords: ChangePasswordForm): Promise<any> {
     return new Promise((resolve, reject) => {
       if (passwords.newpassword1 !== passwords.newpassword2) {
-        reject(`New password doesn't match!`);
+        return reject(`New password doesn't match!`);
       }
 
       this.api.login(this.user.name, passwords.oldpassword)

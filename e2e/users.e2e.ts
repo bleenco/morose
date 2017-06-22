@@ -35,6 +35,29 @@ describe('Users', () => {
       .then(text => expect(text).toContain('Add User'));
   });
 
+  it(`shouldn't add new user, because password is empty`, () => {
+    browser.get('/users')
+      .then(() => element.all(by.css('li')).get(1).click())
+      .then(() => element(by.css('.control-input-field[name="username"]')).sendKeys('test'))
+      .then(() => element(by.css('.control-input-field[name="fullname"]')).sendKeys('test'))
+      .then(() => element(by.css('.control-input-field[name="email"]')).sendKeys('test@test'))
+      .then(() => element(by.css('.control-button')).click())
+      .then(() => element.all(by.css('li')).get(0).click())
+      .then(() => expect(element(by.css('h1')).getText()).toContain('1 Users'));
+  });
+
+  it(`shouldn't add new user, because email is in wrong format`, () => {
+    browser.get('/users')
+      .then(() => element.all(by.css('li')).get(1).click())
+      .then(() => element(by.css('.control-input-field[name="username"]')).sendKeys('test'))
+      .then(() => element(by.css('.control-input-field[name="password"]')).sendKeys('test'))
+      .then(() => element(by.css('.control-input-field[name="fullname"]')).sendKeys('test'))
+      .then(() => element(by.css('.control-input-field[name="email"]')).sendKeys('test'))
+      .then(() => element(by.css('.control-button')).click())
+      .then(() => element.all(by.css('li')).get(0).click())
+      .then(() => expect(element(by.css('h1')).getText()).toContain('1 Users'));
+  });
+
   it('should add new user', () => {
     browser.get('/users')
       .then(() => element.all(by.css('li')).get(1).click())

@@ -66,6 +66,13 @@ describe('Organization', () => {
       .then(text => expect(text).toContain('1 Members'));
   });
 
+  it(`shouldn't add team, because name is empty`, () => {
+    browser.get('/org/bleenco')
+      .then(() => element.all(by.css('li')).get(1).click())
+      .then(() => element(by.css('.control-button')).click())
+      .then(() => expect(element.all(by.css('h1')).get(1).getText()).toContain('1 Teams'));
+  });
+
   it('should add team', () => {
     browser.get('/org/bleenco')
       .then(() => element.all(by.css('li')).get(1).click())
@@ -94,6 +101,23 @@ describe('Organization', () => {
       .then(() => element.all(by.css('.typcn-delete')).get(1).click())
       .then(() => browser.switchTo().alert().accept())
       .then(() => expect(element.all(by.css('h1')).get(1).getText()).toContain('1 Teams'));
+  });
+
+  it(`shouldn't add user, because username is empty`, () => {
+    browser.get('/org/bleenco')
+      .then(() => element.all(by.css('li')).get(2).click())
+      .then(() => element(by.cssContainingText('option', 'Member')).click())
+      .then(() => element(by.css('.control-button')).click())
+      .then(() => expect(element.all(by.css('h1')).get(1).getText()).toContain('1 Members'));
+  });
+
+  it(`shouldn't add user, because username is already taken`, () => {
+    browser.get('/org/bleenco')
+      .then(() => element.all(by.css('li')).get(2).click())
+      .then(() => element(by.css('.control-input-field[name="username"]')).sendKeys('admin'))
+      .then(() => element(by.cssContainingText('option', 'Member')).click())
+      .then(() => element(by.css('.control-button')).click())
+      .then(() => expect(element.all(by.css('h1')).get(1).getText()).toContain('1 Members'));
   });
 
   it('should add user', () => {
