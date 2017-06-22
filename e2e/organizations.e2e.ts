@@ -28,6 +28,12 @@ describe('Organizations', () => {
       .then(() => expect(element(by.css('h1')).getText()).toContain('1 Organizations'));
   });
 
+  it(`shouldn't add organization, because name is empty`, () => {
+    browser.get('/org')
+      .then(() => element(by.css('.control-button')).click())
+      .then(() => expect(element(by.css('h1')).getText()).toContain('1 Organizations'));
+  });
+
   it('should add organization', () => {
     browser.get('/org')
       .then(() => element(by.css('.control-input-field[name="name"]')).sendKeys('test'))
