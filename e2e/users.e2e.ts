@@ -13,45 +13,52 @@ describe('Users', () => {
       .then(() => element.all(by.css('.nav-dropdown-item')).last().click());
   });
 
-  it('should redirect to /org when logged in and click on third item in menu', () => {
+  it('should redirect to /users when logged in and click on second item in menu', () => {
     browser.get('/')
       .then(() => element(by.css('.drop-menu-act')).click())
-      .then(() => element.all(by.css('.nav-dropdown-item')).get(2).getText())
-      .then(text => expect(text).toEqual('Organisations'))
-      .then(() => element.all(by.css('.nav-dropdown-item')).get(2).click())
+      .then(() => element.all(by.css('.nav-dropdown-item')).get(1).getText())
+      .then(text => expect(text).toEqual('Users'))
+      .then(() => element.all(by.css('.nav-dropdown-item')).get(1).click())
       .then(() => browser.getCurrentUrl())
-      .then(url => expect(url).toEqual('http://localhost:10000/org'));
+      .then(url => expect(url).toEqual('http://localhost:10000/users'));
   });
 
-  it('should see one organization on /org', () => {
-    browser.get('/org')
-      .then(() => expect(element(by.css('h1')).getText()).toContain('1 Organizations'));
+  it('should see one user on /users', () => {
+    browser.get('/users')
+      .then(() => expect(element(by.css('h1')).getText()).toContain('1 Users'));
   });
 
-  it('should add organization', () => {
-    browser.get('/org')
-      .then(() => element(by.css('.control-input-field[name="name"]')).sendKeys('test'))
+  it('should click on second tab and see add user form', () => {
+    browser.get('/users')
+      .then(() => element.all(by.css('li')).get(1).click())
+      .then(() => element(by.css('.control-button')).getText())
+      .then(text => expect(text).toContain('Add User'));
+  });
+
+  it('should add new user', () => {
+    browser.get('/users')
+      .then(() => element.all(by.css('li')).get(1).click())
+      .then(() => element(by.css('.control-input-field[name="username"]')).sendKeys('test'))
+      .then(() => element(by.css('.control-input-field[name="password"]')).sendKeys('test'))
+      .then(() => element(by.css('.control-input-field[name="fullname"]')).sendKeys('test'))
+      .then(() => element(by.css('.control-input-field[name="email"]')).sendKeys('test@test'))
       .then(() => element(by.css('.control-button')).click())
-      .then(() => expect(element(by.css('h1')).getText()).toContain('2 Organizations'));
+      .then(() => element.all(by.css('li')).get(0).click())
+      .then(() => expect(element(by.css('h1')).getText()).toContain('2 Users'));
   });
 
-  it('should see two organization on /org', () => {
-    browser.get('/org')
-      .then(() => expect(element(by.css('h1')).getText()).toContain('2 Organizations'));
-  });
-
-  it('should cancel removeing organization test', () => {
-    browser.get('/org')
+  it('should cancel removeing user test', () => {
+    browser.get('/users')
       .then(() => element.all(by.css('.typcn-delete')).get(1).click())
       .then(() => browser.switchTo().alert().dismiss())
-      .then(() => expect(element(by.css('h1')).getText()).toContain('2 Organizations'));
+      .then(() => expect(element(by.css('h1')).getText()).toContain('2 Users'));
   });
 
-  it('should remove organization test', () => {
-    browser.get('/org')
+  it('should remove user test', () => {
+    browser.get('/users')
       .then(() => element.all(by.css('.typcn-delete')).get(1).click())
       .then(() => browser.switchTo().alert().accept())
-      .then(() => expect(element(by.css('h1')).getText()).toContain('1 Organizations'))
-      .then(() => expect(element(by.css('.table')).getText()).toContain('bleenco'));
+      .then(() => expect(element(by.css('h1')).getText()).toContain('1 Users'))
+      .then(() => expect(element(by.css('.table')).getText()).toContain('admin'));
   });
 });
