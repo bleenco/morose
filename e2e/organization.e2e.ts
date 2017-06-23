@@ -114,7 +114,8 @@ describe('Organization', () => {
   it(`shouldn't add user, because username is already taken`, () => {
     browser.get('/org/bleenco')
       .then(() => element.all(by.css('li')).get(2).click())
-      .then(() => element(by.css('.control-input-field[name="username"]')).sendKeys('admin'))
+      .then(() => element(by.css('ng-select')).click())
+      .then(() => element(by.cssContainingText('li', 'admin')).click())
       .then(() => element(by.cssContainingText('option', 'Member')).click())
       .then(() => element(by.css('.control-button')).click())
       .then(() => expect(element.all(by.css('h1')).get(1).getText()).toContain('1 Members'));
@@ -123,7 +124,8 @@ describe('Organization', () => {
   it('should add user', () => {
     browser.get('/org/bleenco')
       .then(() => element.all(by.css('li')).get(2).click())
-      .then(() => element(by.css('.control-input-field[name="username"]')).sendKeys('test'))
+      .then(() => element(by.css('ng-select')).click())
+      .then(() => element(by.cssContainingText('li', 'test')).click())
       .then(() => element(by.cssContainingText('option', 'Member')).click())
       .then(() => element(by.css('.control-button')).click())
       .then(() => expect(element.all(by.css('h1')).get(1).getText()).toContain('2 Members'));
