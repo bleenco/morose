@@ -14,7 +14,7 @@ export class AppCompanyProfileComponent implements OnInit {
   error: boolean;
   success: boolean;
   name: string;
-  username: string;
+  selectedUser: any;
   role: string;
 
   constructor(public auth: AuthService, private api: ApiService, private route: ActivatedRoute) {
@@ -47,18 +47,20 @@ export class AppCompanyProfileComponent implements OnInit {
 
   addMember(e: Event): void {
     e.preventDefault();
-    this.auth.addUserToOrganization(this.username, this.company.name, this.role).then(res => {
-      if (res) {
-        this.success = true;
-        this.error = false;
-        this.refreshTable();
-        this.username = '';
-        setTimeout(() => this.success = false, 5000);
-      } else {
-        this.error = true;
-        this.success = false;
-      }
-    });
+    if (this.selectedUser) {
+      this.auth.addUserToOrganization(this.selectedUser, this.company.name, this.role).then(res => {
+        if (res) {
+          this.success = true;
+          this.error = false;
+          this.refreshTable();
+          this.selectedUser = null;
+          setTimeout(() => this.success = false, 5000);
+        } else {
+          this.error = true;
+          this.success = false;
+        }
+      });
+    }
   }
 
   deleteMember(member: string): void {
@@ -95,5 +97,9 @@ export class AppCompanyProfileComponent implements OnInit {
         }
       });
     }
+  }
+
+  handleUserUpdated(e: Event) {
+    this.selectedUser = e;
   }
 }

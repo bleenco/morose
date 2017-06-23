@@ -22,7 +22,9 @@ import { AppUserProfileComponent } from './components/app-user-profile';
 import { AppCompanyProfileComponent } from './components/app-company-profile';
 import { AppOrganizationsComponent } from './components/app-organizations';
 import { AppTeamProfileComponent } from './components/app-team-profile';
+import { SelectUserComponent } from './components/select-user/select-user';
 import { MarkdownPipe } from './pipes/markdown.pipe';
+import { SelectModule } from 'ng-select';
 
 export function authHttpServiceFactory(http: Http, options: RequestOptions) {
   return new AuthHttp(new AuthConfig({
@@ -45,6 +47,7 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions) {
     AppCompanyProfileComponent,
     AppOrganizationsComponent,
     AppTeamProfileComponent,
+    SelectUserComponent,
     MarkdownPipe
   ],
   imports: [
@@ -66,7 +69,8 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions) {
     ]),
     HttpModule,
     FormsModule,
-    NgUploaderModule
+    NgUploaderModule,
+    SelectModule
   ],
   providers: [
     ApiServiceProvider,

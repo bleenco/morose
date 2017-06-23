@@ -80,13 +80,7 @@
                       </div>
                       <form class="control-form" (ngSubmit)="addMember($event)" #addMemberForm="ngForm">
                         <div class="control-input-container">
-                          <label class="control-label">Username</label>
-                          <input type="text"
-                                class="control-input-field"
-                                name="username"
-                                [(ngModel)]="username"
-                                pattern="[a-zA-Z0-9._()'!*@,;+-/]{3,64}"
-                                required>
+                          <select-user (userUpdated)="handleUserUpdated($event)"></select-user>
                         </div>
                         <div class="control-input-buttons">
                           <button type="submit"
