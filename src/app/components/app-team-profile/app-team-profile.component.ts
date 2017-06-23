@@ -13,7 +13,7 @@ export class AppTeamProfileComponent implements OnInit {
   tab: string;
   success: boolean;
   error: boolean;
-  username: string;
+  selectedUser: any;
 
   constructor(public auth: AuthService, private api: ApiService, private route: ActivatedRoute) {
     this.tab = 'packages';
@@ -39,18 +39,21 @@ export class AppTeamProfileComponent implements OnInit {
 
   addMember(e: Event): void {
     e.preventDefault();
-    this.auth.addUserToTeam(this.username, this.team.name, this.team.organization).then(res => {
-      if (res) {
-        this.success = true;
-        this.error = false;
-        this.refreshTable();
-        this.username = '';
-        setTimeout(() => this.success = false, 5000);
-      } else {
-        this.error = true;
-        this.success = false;
-      }
-    });
+    if (this.selectedUser) {
+      this.auth.addUserToTeam(this.selectedUser, this.team.name, this.team.organization)
+        .then(res => {
+          if (res) {
+            this.success = true;
+            this.error = false;
+            this.refreshTable();
+            this.selectedUser = null;
+            setTimeout(() => this.success = false, 5000);
+          } else {
+            this.error = true;
+            this.success = false;
+          }
+      });
+    }
   }
 
   deleteMember(member: string): void {
@@ -61,5 +64,9 @@ export class AppTeamProfileComponent implements OnInit {
         }
       });
     }
+  }
+
+  handleUserUpdated(e: Event) {
+    this.selectedUser = e;
   }
 }
