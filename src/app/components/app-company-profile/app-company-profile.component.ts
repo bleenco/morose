@@ -65,6 +65,13 @@ export class AppCompanyProfileComponent implements OnInit {
 
   deleteMember(member: string): void {
     if (confirm('Are you sure? This step cannot be reverted!')) {
+      let deletedMemberRole = this.company.members.find(m => m.name === member).role;
+      if (deletedMemberRole === 'owner') {
+        if (this.company.members.filter(m => m.role === 'owner').length === 1) {
+          alert(`Last owner can't be deleted!`);
+          return;
+        }
+      }
       this.auth.deleteUserFromOrganization(member, this.company.name).then(res => {
         if (res) {
           this.refreshTable();
