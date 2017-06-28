@@ -37,7 +37,7 @@
                       </tfoot>
                       <tbody>
                         <tr *ngFor="let pkg of company.packages; let i = index;">
-                          <td><a href="package/{{api.encodeUrl(pkg)}}">{{ pkg }}</a></td>
+                          <td><a [routerLink]="['/package', pkg]">{{ pkg }}</a></td>
                         </tr>
                       </tbody>
                     </table>
@@ -64,7 +64,7 @@
                     </tfoot>
                     <tbody>
                       <tr *ngFor="let team of company.teams; let i = index;">
-                        <td><a href="org/{{company.name}}/team/{{team.name}}">{{ team.name }}</a></td>
+                        <td><a [routerLink]="['/org', company.name, 'team', team.name]">{{ team.name }}</a></td>
                         <td>{{ team.members.length }}</td>
                         <td>{{ team.numberOfPackages }}</td>
                         <td><span (click)="deleteTeam(team.name)" class="typcn typcn-delete" *ngIf="company.role === 'owner'"></span></td>
@@ -125,7 +125,7 @@
                     </tfoot>
                     <tbody>
                       <tr *ngFor="let member of company.members; let i = index;">
-                        <td><a href="profile/{{member.name}}">{{ member.name }}</a></td>
+                        <td><a [routerLink]="['/profile', member.name]">{{ member.name }}</a></td>
                         <td> {{member.role}}</td>
                         <td><span (click)="deleteMember(member.name)" class="typcn typcn-delete" *ngIf="company.role === 'owner'"></span></td>
                       </tr>

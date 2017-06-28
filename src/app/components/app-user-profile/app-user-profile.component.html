@@ -33,7 +33,7 @@
                         <div *ngFor="let org of user.organizations; let i = index;">
                           <div class="organization-item">
                             <ul>
-                              <li><a href="org/{{org.name}}">{{ org.name }}</a></li>
+                              <li><a [routerLink]="['/org', org.name]">{{ org.name }}</a></li>
                             </ul>
                           </div>
                         </div>
@@ -43,7 +43,7 @@
                         <div *ngFor="let pkg of user.packages; let i = index;">
                           <div class="organization-item">
                             <ul>
-                              <td><a href="package/{{api.encodeUrl(pkg.name)}}">{{ pkg.name }}</a></td>
+                              <td><a [routerLink]="['/package', pkg.name]">{{ pkg.name }}</a></td>
                             </ul>
                           </div>
                         </div>
@@ -53,7 +53,7 @@
                         <div *ngFor="let pkg of user.starredPackages; let i = index;">
                           <div class="organization-item">
                             <ul>
-                              <td><a href="package/{{api.encodeUrl(pkg.name)}}">{{ pkg.name }}</a></td>
+                              <td><a [routerLink]="['/package', pkg.name]">{{ pkg.name }}</a></td>
                             </ul>
                           </div>
                         </div>
