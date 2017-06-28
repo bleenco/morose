@@ -2,89 +2,90 @@
   <div class="hero-body">
     <div class="container">
       <div class="columns is-multiline">
-        <div class="column is-8 is-offset-2">
+        <div class="column is-10 is-offset-1">
+
+          <h1>{{ pkg?.name }}</h1>
+
           <div class="content-box">
-            <div class="content-box-head" *ngIf="!loading && pkg">
-              <span>{{ pkg.name }}</span>
-            </div>
             <div class="content-box-main">
-              <div class="columns is-multiline" *ngIf="!loading && pkg">
-                <div class="column is-12">
-                  <div class="tabs is-small is-boxed">
-                    <ul>
-                      <li [class.is-active]="tab === 'readme'" (click)="tab = 'readme'"><a>Readme</a></li>
-                      <li [class.is-active]="tab === 'versions'" (click)="tab = 'versions'"><a>Versions</a></li>
-                    </ul>
+              <div class="content-box-container">
+                <div class="columns is-multiline" *ngIf="!loading && pkg">
+                  <div class="column is-12">
+                    <div class="tabs">
+                      <ul>
+                        <li [class.is-active]="tab === 'readme'" (click)="tab = 'readme'"><a>Readme</a></li>
+                        <li [class.is-active]="tab === 'versions'" (click)="tab = 'versions'"><a>Versions</a></li>
+                      </ul>
+                    </div>
                   </div>
-                </div>
-                <div class="column is-12" *ngIf="tab === 'readme'">
-                  <h1>{{ pkg.description }}</h1>
-                  <p [innerHTML]="pkgData.readme | markdown" class="markdown-content"></p>
-                </div>
-                <div class="column is-12" *ngIf="tab === 'versions'">
-                  <table class="table">
-                    <thead>
-                      <tr>
-                        <th>Version</th>
-                        <th>Release Date</th>
-                        <th></th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr *ngFor="let v of versions; let i = index">
-                        <td>{{ v.version }}</td>
-                        <td>{{ v.date }}</td>
-                        <td>
-                          <a (click)="versionInfo(v.version)">
-                            <span class="icon">
-                              <span class="typcn typcn-info-outline dark"></span>
-                            </span>
-                          </a>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-                <div class="column is-12" *ngIf="tab === 'info'">
-                  <h3>Version <b>{{ info.version }}</b> information</h3>
-                  <div *ngIf="info.dependencies && info.dependencies.length" class="box">
-                    <h3>Dependencies</h3>
+                  <div class="column is-12" *ngIf="tab === 'readme'">
+                    <h1>{{ pkg.description }}</h1>
+                    <p [innerHTML]="pkgData.readme | markdown" class="markdown-content"></p>
+                  </div>
+                  <div class="column is-12" *ngIf="tab === 'versions'">
                     <table class="table">
                       <thead>
                         <tr>
-                          <th>Package</th>
                           <th>Version</th>
+                          <th>Release Date</th>
+                          <th></th>
                         </tr>
                       </thead>
                       <tbody>
-                        <tr *ngFor="let v of info.dependencies; let i = index">
-                          <td>{{ v.name }}</td>
+                        <tr *ngFor="let v of versions; let i = index">
                           <td>{{ v.version }}</td>
+                          <td>{{ v.date }}</td>
+                          <td>
+                            <a (click)="versionInfo(v.version)" class="button">
+                              <span>Info</span>
+                            </a>
+                          </td>
                         </tr>
                       </tbody>
                     </table>
                   </div>
-                  <div *ngIf="info.devDependencies && info.devDependencies.length" class="box">
-                    <h3>Development Dependencies</h3>
-                    <table class="table">
-                      <thead>
-                        <tr>
-                          <th>Package</th>
-                          <th>Version</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr *ngFor="let v of info.devDependencies; let i = index">
-                          <td>{{ v.name }}</td>
-                          <td>{{ v.version }}</td>
-                        </tr>
-                      </tbody>
-                    </table>
+                  <div class="column is-12" *ngIf="tab === 'info'">
+                    <h3>Version <b>{{ info.version }}</b> information</h3>
+                    <div *ngIf="info.dependencies && info.dependencies.length" class="box">
+                      <h3>Dependencies</h3>
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th>Package</th>
+                            <th>Version</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr *ngFor="let v of info.dependencies; let i = index">
+                            <td>{{ v.name }}</td>
+                            <td>{{ v.version }}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <div *ngIf="info.devDependencies && info.devDependencies.length" class="box">
+                      <h3>Development Dependencies</h3>
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th>Package</th>
+                            <th>Version</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr *ngFor="let v of info.devDependencies; let i = index">
+                            <td>{{ v.name }}</td>
+                            <td>{{ v.version }}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
+
         </div>
       </div>
     </div>
