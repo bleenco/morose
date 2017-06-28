@@ -17,19 +17,6 @@ export class AppLandingComponent implements OnInit {
 
     this.api.getRandomPackages(token).subscribe(packages => {
       this.packages = packages;
-      this.triggerResize();
     });
-  }
-
-  searchPackages(e: Event): void {
-    e.preventDefault();
-    this.api.getPackagesByKeyword(this.keyword.trim()).subscribe(packages => {
-      this.packages = packages;
-      this.triggerResize();
-    });
-  }
-
-  triggerResize(): void {
-    window.dispatchEvent(new Event('resize'));
   }
 }

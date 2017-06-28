@@ -1,5 +1,5 @@
 import { Component, OnInit, HostListener, ElementRef } from '@angular/core';
-import { Router, NavigationEnd } from '@angular/router';
+import { Router, NavigationEnd, NavigationExtras } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -9,6 +9,7 @@ import { AuthService } from '../../services/auth.service';
 export class AppNavComponent implements OnInit {
   loggedIn: boolean;
   menuDropped: boolean;
+  searchKeyword: string;
 
   constructor(
     public auth: AuthService,
@@ -18,8 +19,11 @@ export class AppNavComponent implements OnInit {
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         this.menuDropped = false;
+        this.searchKeyword = '';
       }
     });
+
+    this.searchKeyword = '';
   }
 
   ngOnInit() {
@@ -33,6 +37,16 @@ export class AppNavComponent implements OnInit {
   logout(): void {
     this.auth.logout();
     this.menuDropped = false;
+  }
+
+  searchPackages(e: Event): void {
+    e.preventDefault();
+
+    const navigationExtras: NavigationExtras = {
+      queryParams: { 'keyword': this.searchKeyword }
+    };
+
+    this.router.navigate(['search'], navigationExtras);
   }
 
   @HostListener('document:click', ['$event'])

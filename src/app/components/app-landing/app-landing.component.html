@@ -1,55 +1,111 @@
 <div class="hero hero-landing">
-  <div class="hero-head">
-    <div class="container">
-      <div class="columns">
-        <div class="column is-8 is-offset-2">
-          <form (ngSubmit)="searchPackages($event)" #searchForm="ngForm">
-            <div class="hero-search-input-container">
-              <input type="text"
-                     class="hero-search-input-field"
-                     placeholder="Search packages ..."
-                     name="keyword"
-                     [(ngModel)]="keyword"
-                     required
-                     autocomplete="off">
-              <button type="submit" class="hero-search-input-button" [disabled]="!searchForm.form.valid">
-                <span class="typcn typcn-arrow-right"></span>
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
   <div class="hero-body">
     <div class="container">
       <div class="columns is-multiline">
-        <div class="column is-8 is-offset-2">
+
+        <div class="column is-10 is-offset-1">
+          <div class="columns">
+            <div class="column is-4">
+              <div class="landing-item purple">
+                <span>Total Packages</span>
+                <span class="num">912</span>
+                <span class="svg">
+                  <svg width="32px" height="32px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                    <g id="Screens---Source-Sans-Pro" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" opacity="0.203358209">
+                      <g id="14---Projects" transform="translate(-478.000000, -185.000000)" fill="#FFFFFF">
+                        <g id="Stats" transform="translate(305.000000, 170.000000)">
+                          <g id="Stats-Block-#1">
+                            <path d="M189,43 C182.383,43 177,37.617 177,31 C177,24.383 182.383,19 189,19 C195.617,19 201,24.383 201,31 C201,37.617 195.617,43 189,43 L189,43 Z M189,15 C180.164,15 173,22.164 173,31 C173,39.836 180.164,47 189,47 C197.836,47 205,39.836 205,31 C205,22.164 197.836,15 189,15 L189,15 Z M190.346,23.581 C189.971,23.209 189.462,23 188.929,23 C188.397,23 187.888,23.209 187.513,23.581 L181.579,29.581 C180.796,30.356 180.796,31.612 181.579,32.387 C182.362,33.163 183.63,33.163 184.413,32.387 L187,29.754 L187,32 L187,37.02 C187,38.114 187.886,39 188.98,39 L189.02,39 C190.114,39 191,38.114 191,37.02 L191,32 L191,30.057 L191.26,30.099 L193.509,32.326 C194.218,33.029 195.353,33.2 196.165,32.619 C197.196,31.882 197.281,30.45 196.421,29.598 L190.346,23.581 Z" id="Icon"></path>
+                          </g>
+                        </g>
+                      </g>
+                    </g>
+                  </svg>
+                </span>
+              </div>
+            </div>
+            <div class="column is-4">
+              <div class="landing-item green">
+                <span>Users</span>
+                <span class="num">121</span>
+                <span class="svg">
+                  <svg width="32px" height="32px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                    <g id="Screens---Source-Sans-Pro" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" opacity="0.203358209">
+                      <g id="14---Projects" transform="translate(-478.000000, -185.000000)" fill="#FFFFFF">
+                        <g id="Stats" transform="translate(305.000000, 170.000000)">
+                          <g id="Stats-Block-#1">
+                            <path d="M189,43 C182.383,43 177,37.617 177,31 C177,24.383 182.383,19 189,19 C195.617,19 201,24.383 201,31 C201,37.617 195.617,43 189,43 L189,43 Z M189,15 C180.164,15 173,22.164 173,31 C173,39.836 180.164,47 189,47 C197.836,47 205,39.836 205,31 C205,22.164 197.836,15 189,15 L189,15 Z M190.346,23.581 C189.971,23.209 189.462,23 188.929,23 C188.397,23 187.888,23.209 187.513,23.581 L181.579,29.581 C180.796,30.356 180.796,31.612 181.579,32.387 C182.362,33.163 183.63,33.163 184.413,32.387 L187,29.754 L187,32 L187,37.02 C187,38.114 187.886,39 188.98,39 L189.02,39 C190.114,39 191,38.114 191,37.02 L191,32 L191,30.057 L191.26,30.099 L193.509,32.326 C194.218,33.029 195.353,33.2 196.165,32.619 C197.196,31.882 197.281,30.45 196.421,29.598 L190.346,23.581 Z" id="Icon"></path>
+                          </g>
+                        </g>
+                      </g>
+                    </g>
+                  </svg>
+                </span>
+              </div>
+            </div>
+            <div class="column is-4">
+              <div class="landing-item orange">
+                <span>Organizations</span>
+                <span class="num">10</span>
+                <span class="svg">
+                  <svg width="32px" height="32px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                    <g id="Screens---Source-Sans-Pro" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" opacity="0.203358209">
+                      <g id="14---Projects" transform="translate(-478.000000, -185.000000)" fill="#FFFFFF">
+                        <g id="Stats" transform="translate(305.000000, 170.000000)">
+                          <g id="Stats-Block-#1">
+                            <path d="M189,43 C182.383,43 177,37.617 177,31 C177,24.383 182.383,19 189,19 C195.617,19 201,24.383 201,31 C201,37.617 195.617,43 189,43 L189,43 Z M189,15 C180.164,15 173,22.164 173,31 C173,39.836 180.164,47 189,47 C197.836,47 205,39.836 205,31 C205,22.164 197.836,15 189,15 L189,15 Z M190.346,23.581 C189.971,23.209 189.462,23 188.929,23 C188.397,23 187.888,23.209 187.513,23.581 L181.579,29.581 C180.796,30.356 180.796,31.612 181.579,32.387 C182.362,33.163 183.63,33.163 184.413,32.387 L187,29.754 L187,32 L187,37.02 C187,38.114 187.886,39 188.98,39 L189.02,39 C190.114,39 191,38.114 191,37.02 L191,32 L191,30.057 L191.26,30.099 L193.509,32.326 C194.218,33.029 195.353,33.2 196.165,32.619 C197.196,31.882 197.281,30.45 196.421,29.598 L190.346,23.581 Z" id="Icon"></path>
+                          </g>
+                        </g>
+                      </g>
+                    </g>
+                  </svg>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="column is-10 is-offset-1">
           <div class="content-box">
-            <div class="content-box-head">
-              <span>Popular packages</span>
+            <div class="content-box-title">
+              <div class="columns">
+                <div class="column is-5">
+                  <span>Package</span>
+                </div>
+                <div class="column is-3">
+                  <span>Installs</span>
+                </div>
+                <div class="column is-2">
+                  <span>Version</span>
+                </div>
+                <div class="column is-2"></div>
+              </div>
             </div>
             <div class="content-box-main">
-              <div class="columns" *ngIf="!packages || !packages.length">
-                <div class="column is-6 is-offset-3 has-text-centered">
-                  <h2 class="sorry-msg">
-                    <span class="typcn typcn-info-large-outline"></span>
-                    <span>Sorry! No packages found ...</span>
-                  </h2>
-                </div>
-              </div>
-              <div class="columns is-multiline" *ngIf="packages && packages.length">
-                <div class="column is-4" *ngFor="let pkg of packages; let i = index;">
-                  <div class="package-item" [routerLink]="['/package', pkg.name]">
-                    <h1>{{ pkg.name }}</h1>
-                    <h3>{{ pkg['dist-tags'].latest }}</h3>
-                    <p>{{ pkg.description }}</p>
+              <div class="package-item" *ngFor="let pkg of packages; let i = index;">
+                <div class="columns">
+                  <div class="column is-5">
+                    <span class="centered span-title">
+                      <i class="typcn typcn-archive"></i>
+                      {{ pkg.name }}
+                    </span>
+                  </div>
+                  <div class="column is-3">
+                    <span>24,956</span>
+                    <span class="small">Daily: 451</span>
+                  </div>
+                  <div class="column is-2">
+                    <span class="centered">{{ pkg['dist-tags'].latest }}</span>
+                  </div>
+                  <div class="column is-2">
+                    <a class="button" [routerLink]="['/package', pkg.name]">View Package</a>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
+
       </div>
     </div>
   </div>

@@ -6,24 +6,67 @@
   left: 0
   right: 0
   padding: 0 10px
+  min-height: 70px
 
   .nav-item
-    color: $blue
-    font-size: 12px
-    font-weight: 800
+    color: $green
+    font-size: 14px
+    font-weight: bold
+    color: $text-secondary
+
+    &:hover
+      color: $text-secondary
 
     .typcn
       font-size: 18px
-      margin-right: 5px
+      margin-left: 5px
+      color: $text-secondary
+
+  .nav-left
 
     .nav-logo
-      margin-right: 10px
+      width: 50px
+      height: 50px
+
+  .nav-search
+    height: 100%
+    display: flex
+    align-items: center
+    margin-right: 15px
+    position: relative
+
+    .search-icon
+      position: absolute
+      width: 15px
+      height: 15px
+      right: 10px
+      bottom: 27px
+
+    .nav-search-field
+      border: 1px solid #DFE3E9
+      border-radius: 4px
+      min-width: 250px
+      padding: 10px 40px 10px 15px
+      font-size: 14px
+      outline: none
+
+      &::-webkit-input-placeholder
+        color: #DFE3E9
+
+      &::-moz-placeholder
+        color: #DFE3E9
+
+      &:-ms-input-placeholder
+        color: #DFE3E9
+
+      &:-moz-placeholder
+        color: #DFE3E9
 
   .nav-dropdown
     position: absolute
     z-index: 100
     width: 180px
-    top: 70px
+    top: 90px
     right: 20px
     border-radius: 5px
     padding-top: 12px
@@ -45,7 +88,7 @@
 
     .nav-dropdown-item
       display: block
-      color: $blue
+      color: $text-secondary
       padding: 10px
       font-size: 12px
       position: relative
@@ -59,7 +102,7 @@
         font-size: 20px
 
       &:hover
-        background: $blue
+        background: $green
         color: $white
 
         .typcn
