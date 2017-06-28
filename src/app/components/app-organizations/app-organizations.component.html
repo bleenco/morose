@@ -28,12 +28,6 @@
                             <th><abbr title="action">Action</abbr></th>
                           </tr>
                         </thead>
-                        <tfoot>
-                          <tr>
-                            <th><abbr title="organization">Organization</abbr></th>
-                            <th><abbr title="action">Action</abbr></th>
-                          </tr>
-                        </tfoot>
                         <tbody>
                           <tr *ngFor="let org of organizations; let i = index;">
                             <td><a [routerLink]="['/org', org.name]">{{ org.name }}</a></td>

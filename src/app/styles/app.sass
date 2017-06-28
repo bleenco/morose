@@ -12,7 +12,6 @@
 @import 'content-box'
 @import 'landing'
 @import 'login'
-@import 'statistics'
 @import 'line-chart'
 @import 'organizations'
 @import 'markdown-content'
@@ -38,8 +37,20 @@ html, body
     background-repeat: no-repeat
 
   .hero
-    padding-top: 60px
     background: $background
+
+    h1
+      margin: 0 0 20px 0
+      font-size: 28px
+      display: flex
+      align-items: center
+
+      span
+        font-size: 16px
+        color: $text-secondary
+        border-left: 1px solid $text-secondary
+        margin-left: 20px
+        padding-left: 10px
 
 .app-page
   display: flex

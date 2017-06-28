@@ -57,7 +57,7 @@ export function searchPackages(req: express.Request, res: express.Response): exp
   let word = req.query.keyword;
   let search = new fuse(storage, {
     shouldSort: true,
-    threshold: 0.6,
+    threshold: 0.4,
     location: 0,
     distance: 100,
     maxPatternLength: 32,

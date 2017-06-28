@@ -28,14 +28,31 @@
     height: 100%
     min-height: 300px
 
+    .content-box-tabs
+      background: $white
+      width: 100%
+      border-top: 1px solid $border
+      border-left: 1px solid $border
+      border-right: 1px solid $border
+      padding: 10px 20px 0 20px
+
+    .content-box-container
+      width: 100%
+      padding: 20px
+      background: $white
+      border: 1px solid $border
+
     h1
       font-weight: bold
 
+    h2
+      font-size: 16px
+      font-weight: bold
+      color: $text-secondary
+      margin-bottom: 20px
+
     .markdown-content
       margin: 30px 0
-
-    .tabs
-      border-bottom: 1px solid $border
 
     .table
       font-size: 13px
@@ -76,24 +93,56 @@
         background: #F2F4F7
         cursor: pointer
 
-      .button
-        background: linear-gradient(to top, #F2F4F7, #FFFFFF)
-        border: 1px solid #CED0DA
-        padding: 5px 20px
-        font-size: 14px
-        color: #354052
-        outline: none
-
 .message
 
   .message-body
     font-size: 14px
 
 .tabs
+  width: 100%
+  border-bottom: 1px solid $border
 
-  &.is-boxed
+  a
+    margin-bottom: 0
+    border-bottom: 2px solid transparent
 
-    ul
+  li
 
-      li
-        font-size: 14px
+    &.is-active, &:hover
+
+      a
+        border-bottom-color: $green
+        color: $green
+
+.button
+  background: linear-gradient(to top, #F2F4F7, #FFFFFF)
+  border: 1px solid #CED0DA
+  padding: 5px 20px
+  font-size: 14px
+  color: #354052
+  outline: none
+
+.table
+
+  thead
+    border-top-left-radius: 5px
+    border-top-right-radius: 5px
+    font-size: 14px
+    padding: 10px 20px
+    color: $text-secondary
+    background: $background-secondary
+    border: 1px solid $border
+
+  tbody
+
+    tr
+      font-size: 14px
+      padding: 20px
+      height: 75px
+      background: $white
+      border-bottom: 1px solid $border
+      border-left: 1px solid $border
+      border-right: 1px solid $border
+
+      td
+        vertical-align: inherit !important
