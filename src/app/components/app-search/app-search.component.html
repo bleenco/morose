@@ -1,0 +1,54 @@
+<div class="hero hero-landing">
+  <div class="hero-body">
+    <div class="container">
+      <div class="columns is-multiline">
+
+        <div class="column is-10 is-offset-1" *ngIf="!packages?.length">
+          <img src="/images/bars.svg" class="loader-img">
+        </div>
+
+        <div class="column is-10 is-offset-1" *ngIf="packages?.length">
+          <div class="content-box">
+            <div class="content-box-title">
+              <div class="columns">
+                <div class="column is-5">
+                  <span>Package</span>
+                </div>
+                <div class="column is-3">
+                  <span>Installs</span>
+                </div>
+                <div class="column is-2">
+                  <span>Version</span>
+                </div>
+                <div class="column is-2"></div>
+              </div>
+            </div>
+            <div class="content-box-main">
+              <div class="package-item" *ngFor="let pkg of packages; let i = index;">
+                <div class="columns">
+                  <div class="column is-5">
+                    <span class="centered span-title">
+                      <i class="typcn typcn-archive"></i>
+                      {{ pkg.name }}
+                    </span>
+                  </div>
+                  <div class="column is-3">
+                    <span>24,956</span>
+                    <span class="small">Daily: 451</span>
+                  </div>
+                  <div class="column is-2">
+                    <span class="centered">{{ pkg['dist-tags'].latest }}</span>
+                  </div>
+                  <div class="column is-2">
+                    <a class="button" [routerLink]="['/package', pkg.name]">View Package</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

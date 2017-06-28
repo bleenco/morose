@@ -1,10 +1,47 @@
 .hero-landing
   background: transparent
 
+  .landing-item
+    width: 100%
+    height: 200px
+    border-radius: 4px
+    color: $white
+    position: relative
+
+    span
+      display: block
+      font-size: 14px
+      padding: 10px 20px 0 20px
+
+      &.num
+        border-top: 1px solid $white
+        font-size: 36px
+        margin: 10px 20px
+        padding: 10px 0
+
+      &.svg
+
+        svg
+          width: 60px
+          height: 60px
+          position: absolute
+          bottom: 20px
+          right: 20px
+
+    &.purple
+      background: #3B517C
+
+    &.green
+      background: #66B92E
+
+    &.orange
+      background: #DA932C
+
   .hero-search-input-container
     margin-top: 50px
     display: flex
-    box-shadow: 0 2px 10px rgba(10, 10, 10, 0.1)
+    border-radius: 4px
+    border: 1px solid $border
 
     .hero-search-input-field
       flex: 1
@@ -43,32 +80,3 @@
     width: 100%
     display: block
     margin-top: 90px
-
-  .package-item
-    padding: 10px
-    background: $white
-    border: 1px solid $border
-    height: 100px
-
-    h1
-      font-weight: 200
-      font-size: 16px
-      padding-bottom: 5px
-
-    h3
-      font-weight: 400
-      font-size: 14px
-
-    p
-      margin-top: 10px
-      width: 100%
-      height: 20px
-      font-weight: 400
-      font-size: 13px
-      white-space: nowrap
-      overflow: hidden
-      text-overflow: ellipsis
-
-    &:hover
-      cursor: pointer
-      box-shadow: 0 1px 2px rgba($white-shadow, 0.9)

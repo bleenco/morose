@@ -16,6 +16,7 @@ import { AppNavComponent } from './components/app-nav';
 import { AppFootComponent } from './components/app-foot';
 import { AppLoginComponent } from './components/app-login';
 import { AppLandingComponent } from './components/app-landing';
+import { AppSearchComponent } from './components/app-search';
 import { AppPackageComponent } from './components/app-package';
 import { AppUsersComponent } from './components/app-users';
 import { AppUserProfileComponent } from './components/app-user-profile';
@@ -41,6 +42,7 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions) {
     AppFootComponent,
     AppLoginComponent,
     AppLandingComponent,
+    AppSearchComponent,
     AppPackageComponent,
     AppUsersComponent,
     AppUserProfileComponent,
@@ -55,6 +57,7 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions) {
     CommonModule,
     RouterModule.forRoot([
       { path: '', pathMatch: 'full', component: AppLandingComponent },
+      { path: 'search', component: AppSearchComponent },
       { path: 'package/:package',  component: AppPackageComponent },
       { path: 'profile/:username',  component: AppUserProfileComponent, canActivate: [AuthGuard] },
       { path: 'org/:organization',

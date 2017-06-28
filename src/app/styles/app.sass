@@ -20,7 +20,7 @@
 @import 'user-profile'
 
 html, body
-  background: $blue
+  background: $background
   font-family: $lato
   height: 100%
 
@@ -33,10 +33,13 @@ html, body
     line-height: 0
     font-size: 0
     height: 100%
+    background: url('/images/pkg-morose-logo.png') bottom 100px right 50px
+    background-size: 800px 800px
+    background-repeat: no-repeat
 
   .hero
     padding-top: 60px
-    background: $blue
+    background: $background
 
 .app-page
   display: flex
@@ -45,3 +48,9 @@ html, body
 
 .app-container
   flex: 1 1 auto
+
+.loader-img
+  display: block
+  width: 50px
+  height: 50px
+  margin: 50px auto
