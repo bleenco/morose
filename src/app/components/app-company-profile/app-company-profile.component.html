@@ -3,171 +3,179 @@
     <div class="container">
       <div class="columns is-multiline">
         <div class="column is-8 is-offset-2">
-          <h1><b>@{{ company.name }}</b></h1>
           <div class="content-box">
             <div class="content-box-head">
+              <h1>@{{ company.name }}</h1>
+            </div>
+
+            <div class="content-box-tabs">
               <div class="tabs is-boxed">
                 <ul>
                   <li (click)="tabClick('packages')" [class.is-active]="tab === 'packages'"><a>Packages</a></li>
-                  <li (click)="tabClick('teams')" [class.is-active]="tab === 'teams'"><a>Team</a></li>
-                  <li (click)="tabClick('members')" [class.is-active]="tab === 'members'"><a>Member</a></li>
+                  <li (click)="tabClick('teams')" [class.is-active]="tab === 'teams'"><a>Teams</a></li>
+                  <li (click)="tabClick('members')" [class.is-active]="tab === 'members'"><a>Members</a></li>
                 </ul>
               </div>
             </div>
 
-
             <div class="content-box-main">
               <div class="columns is-multiline">
-                <div *ngIf="tab === 'packages'">
-                  <div *ngIf="!(company.packages && company.packages.length)">
-                    <h1>Company has no Packages</h1>
+                <div class="column is-12">
+                  <div *ngIf="tab === 'packages'">
+                    <div *ngIf="!(company.packages && company.packages.length)">
+                      <article class="message is-danger">
+                        <div class="message-body">
+                          <strong>No packages published under this organization yet.</strong>
+                        </div>
+                      </article>
+                    </div>
+                    <div *ngIf="company.packages && company.packages.length">
+                      <h1>{{ company.packages.length }} Packages:</h1>
+                      <table class="table is-bordered is-striped is-narrow">
+                        <thead>
+                          <tr>
+                            <th><abbr title="package">Package</abbr></th>
+                          </tr>
+                        </thead>
+                        <tfoot>
+                          <tr>
+                            <th><abbr title="package">Package</abbr></th>
+                          </tr>
+                        </tfoot>
+                        <tbody>
+                          <tr *ngFor="let pkg of company.packages; let i = index;">
+                            <td><a [routerLink]="['/package', pkg]">{{ pkg }}</a></td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
-                  <div *ngIf="company.packages && company.packages.length">
-                    <h1>{{ company.packages.length }} Packages:</h1>
+                  <div *ngIf="tab === 'teams'">
+                    <h1>{{ company.teams.length }} Teams:</h1>
                     <table class="table is-bordered is-striped is-narrow">
                       <thead>
                         <tr>
-                          <th><abbr title="package">Package</abbr></th>
+                          <th><abbr title="team">Team Name</abbr></th>
+                          <th><abbr title="members">Members</abbr></th>
+                          <th><abbr title="packages">Packages</abbr></th>
+                          <th><abbr title="action">Action</abbr></th>
                         </tr>
                       </thead>
                       <tfoot>
                         <tr>
-                          <th><abbr title="package">Package</abbr></th>
+                          <th><abbr title="team">Team Name</abbr></th>
+                          <th><abbr title="members">Members</abbr></th>
+                          <th><abbr title="packages">Packages</abbr></th>
+                          <th><abbr title="action">Action</abbr></th>
                         </tr>
                       </tfoot>
                       <tbody>
-                        <tr *ngFor="let pkg of company.packages; let i = index;">
-                          <td><a [routerLink]="['/package', pkg]">{{ pkg }}</a></td>
+                        <tr *ngFor="let team of company.teams; let i = index;">
+                          <td><a [routerLink]="['/org', company.name, 'team', team.name]">{{ team.name }}</a></td>
+                          <td>{{ team.members.length }}</td>
+                          <td>{{ team.numberOfPackages }}</td>
+                          <td><span (click)="deleteTeam(team.name)" class="typcn typcn-delete" *ngIf="company.role === 'owner'"></span></td>
                         </tr>
                       </tbody>
                     </table>
-                  </div>
-                </div>
-                <div *ngIf="tab === 'teams'">
-                  <h1>{{ company.teams.length }} Teams:</h1>
-                  <table class="table is-bordered is-striped is-narrow">
-                    <thead>
-                      <tr>
-                        <th><abbr title="team">Team Name</abbr></th>
-                        <th><abbr title="members">Members</abbr></th>
-                        <th><abbr title="packages">Packages</abbr></th>
-                        <th><abbr title="action">Action</abbr></th>
-                      </tr>
-                    </thead>
-                    <tfoot>
-                      <tr>
-                        <th><abbr title="team">Team Name</abbr></th>
-                        <th><abbr title="members">Members</abbr></th>
-                        <th><abbr title="packages">Packages</abbr></th>
-                        <th><abbr title="action">Action</abbr></th>
-                      </tr>
-                    </tfoot>
-                    <tbody>
-                      <tr *ngFor="let team of company.teams; let i = index;">
-                        <td><a [routerLink]="['/org', company.name, 'team', team.name]">{{ team.name }}</a></td>
-                        <td>{{ team.members.length }}</td>
-                        <td>{{ team.numberOfPackages }}</td>
-                        <td><span (click)="deleteTeam(team.name)" class="typcn typcn-delete" *ngIf="company.role === 'owner'"></span></td>
-                      </tr>
-                    </tbody>
-                  </table>
-                  <div class="content-box" *ngIf="company.role === 'owner'">
-                    <div class="content-box-head">
-                      <span>Create new team</span>
-                    </div>
-                    <div class=content-box-main>
-                      <div class="notification is-danger" *ngIf="error">
-                        <button class="delete" (click)="error = false"></button>
-                        Creating team failed.
+                    <div class="content-box" *ngIf="company.role === 'owner'">
+                      <div class="content-box-head">
+                        <span>Create new team</span>
                       </div>
-                      <div class="notification is-success" *ngIf="success">
-                        <button class="delete" (click)="error = false"></button>
-                        Team successfully created.
-                      </div>
-                      <form class="control-form" (ngSubmit)="addTeam($event)" #addForm="ngForm">
-                        <div class="control-input-container">
-                          <label class="control-label">Name</label>
-                          <input type="text"
-                                class="control-input-field"
-                                name="name"
-                                [(ngModel)]="name"
-                                pattern="[a-zA-Z0-9._()'!*@,;+-/]{3,64}"
-                                required>
+                      <div class=content-box-main>
+                        <div class="notification is-danger" *ngIf="error">
+                          <button class="delete" (click)="error = false"></button>
+                          Creating team failed.
                         </div>
-                        <div class="control-input-buttons">
-                          <button type="submit"
-                                  class="control-button"
-                                  [disabled]="!addForm.form.valid"
+                        <div class="notification is-success" *ngIf="success">
+                          <button class="delete" (click)="error = false"></button>
+                          Team successfully created.
+                        </div>
+                        <form class="control-form" (ngSubmit)="addTeam($event)" #addForm="ngForm">
+                          <div class="control-input-container">
+                            <label class="control-label">Name</label>
+                            <input type="text"
+                                  class="control-input-field"
+                                  name="name"
+                                  [(ngModel)]="name"
+                                  pattern="[a-zA-Z0-9._()'!*@,;+-/]{3,64}"
                                   required>
-                            Add Team
-                          </button>
-                        </div>
-                      </form>
+                          </div>
+                          <div class="control-input-buttons">
+                            <button type="submit"
+                                    class="control-button"
+                                    [disabled]="!addForm.form.valid"
+                                    required>
+                              Add Team
+                            </button>
+                          </div>
+                        </form>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div *ngIf="tab === 'members'">
-                  <h1>{{ company.members.length }} Members:</h1>
-                  <table class="table is-bordered is-striped is-narrow">
-                    <thead>
-                      <tr>
-                        <th><abbr title="member">Member</abbr></th>
-                        <th><abbr title="role">Role</abbr></th>
-                        <th><abbr title="action">Action</abbr></th>
-                      </tr>
-                    </thead>
-                    <tfoot>
-                      <tr>
-                        <th><abbr title="member">Member</abbr></th>
-                        <th><abbr title="role">Role</abbr></th>
-                        <th><abbr title="action">Action</abbr></th>
-                      </tr>
-                    </tfoot>
-                    <tbody>
-                      <tr *ngFor="let member of company.members; let i = index;">
-                        <td><a [routerLink]="['/profile', member.name]">{{ member.name }}</a></td>
-                        <td> {{member.role}}</td>
-                        <td><span (click)="deleteMember(member.name)" class="typcn typcn-delete" *ngIf="company.role === 'owner'"></span></td>
-                      </tr>
-                    </tbody>
-                  </table>
-                  <div class="content-box" *ngIf="company.role === 'owner'">
-                    <div class="content-box-head">
-                      <span>Add new member</span>
-                    </div>
-                    <div class=content-box-main>
-                      <div class="notification is-danger" *ngIf="error">
-                        <button class="delete" (click)="error = false"></button>
-                        Adding member failed.
+                  <div *ngIf="tab === 'members'">
+                    <h1>{{ company.members.length }} Members:</h1>
+                    <table class="table is-bordered is-striped is-narrow">
+                      <thead>
+                        <tr>
+                          <th><abbr title="member">Member</abbr></th>
+                          <th><abbr title="role">Role</abbr></th>
+                          <th><abbr title="action">Action</abbr></th>
+                        </tr>
+                      </thead>
+                      <tfoot>
+                        <tr>
+                          <th><abbr title="member">Member</abbr></th>
+                          <th><abbr title="role">Role</abbr></th>
+                          <th><abbr title="action">Action</abbr></th>
+                        </tr>
+                      </tfoot>
+                      <tbody>
+                        <tr *ngFor="let member of company.members; let i = index;">
+                          <td><a [routerLink]="['/profile', member.name]">{{ member.name }}</a></td>
+                          <td> {{member.role}}</td>
+                          <td><span (click)="deleteMember(member.name)" class="typcn typcn-delete" *ngIf="company.role === 'owner'"></span></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <div class="content-box" *ngIf="company.role === 'owner'">
+                      <div class="content-box-head">
+                        <span>Add new member</span>
                       </div>
-                      <div class="notification is-success" *ngIf="success">
-                        <button class="delete" (click)="error = false"></button>
-                        Member successfully added.
+                      <div class=content-box-main>
+                        <div class="notification is-danger" *ngIf="error">
+                          <button class="delete" (click)="error = false"></button>
+                          Adding member failed.
+                        </div>
+                        <div class="notification is-success" *ngIf="success">
+                          <button class="delete" (click)="error = false"></button>
+                          Member successfully added.
+                        </div>
+                        <form class="control-form" (ngSubmit)="addMember($event)" #addMemberForm="ngForm">
+                          <div class="control-input-container">
+                            <select-user (userUpdated)="handleUserUpdated($event)"></select-user>
+                          </div>
+                          <div class="control-input-container">
+                            <label class="control-label">Role</label>
+                            <select class="control-input-field"
+                                    name="role"
+                                    [(ngModel)]="role"
+                                    required>
+                              <option value="member">Member</option>
+                              <option value="admin">Admin</option>
+                              <option value="owner">Owner</option>
+                            </select>
+                          </div>
+                          <div class="control-input-buttons">
+                            <button type="submit"
+                                    class="control-button"
+                                    [disabled]="!addMemberForm.form.valid"
+                                    required>
+                              Add User
+                            </button>
+                          </div>
+                        </form>
                       </div>
-                      <form class="control-form" (ngSubmit)="addMember($event)" #addMemberForm="ngForm">
-                        <div class="control-input-container">
-                          <select-user (userUpdated)="handleUserUpdated($event)"></select-user>
-                        </div>
-                        <div class="control-input-container">
-                          <label class="control-label">Role</label>
-                          <select class="control-input-field"
-                                  name="role"
-                                  [(ngModel)]="role"
-                                  required>
-                            <option value="member">Member</option>
-                            <option value="admin">Admin</option>
-                            <option value="owner">Owner</option>
-                          </select>
-                        </div>
-                        <div class="control-input-buttons">
-                          <button type="submit"
-                                  class="control-button"
-                                  [disabled]="!addMemberForm.form.valid"
-                                  required>
-                            Add User
-                          </button>
-                        </div>
-                      </form>
                     </div>
                   </div>
                 </div>
