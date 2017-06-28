@@ -8,7 +8,7 @@
               <div class="column is-6">
                 <div class="content-box">
                   <div class="content-box-head">
-                    <span>My  Organizations:</span>
+                    <span>My Organizations:</span>
                   </div>
                   <div class="content-box-main">
                     <div class="columns" *ngIf="!organizations || !organizations.length">
@@ -36,7 +36,7 @@
                         </tfoot>
                         <tbody>
                           <tr *ngFor="let org of organizations; let i = index;">
-                            <td><a href="org/{{org.name}}">{{ org.name }}</a></td>
+                            <td><a [routerLink]="['/org', org.name]">{{ org.name }}</a></td>
                             <td><span (click)="deleteOrganization(org.name)" class="typcn typcn-delete" *ngIf="org.role === 'owner'"></span></td>
                           </tr>
                         </tbody>
