@@ -6,7 +6,7 @@ import { resolve } from 'path';
 
 export let storage: IPackage[] = [];
 
-export function initializeStorage(): Promise<null> {
+export function initializeStorage(): Promise<void> {
   let rootDir = getFilePath('packages');
   let startTime: number = new Date().getTime();
 
@@ -24,7 +24,7 @@ export function initializeStorage(): Promise<null> {
     .catch(err => console.error(err));
 }
 
-export function updatePkgStorage(pkgName: string): Promise<null> {
+export function updatePkgStorage(pkgName: string): Promise<void | IPackage> {
   let pkg = new Package(null, pkgName);
   return pkg.initDataFromPkgJson();
 }

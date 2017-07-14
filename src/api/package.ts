@@ -77,7 +77,7 @@ export class Package {
     this.pkgJsonPath = join(this.packageRoot, 'package.json');
   }
 
-  init(): Promise<null> {
+  init(): Promise<void | IPackage> {
     return this.ensureRootFolders()
       .then(() => this.initDataFromPkgJson());
   }
@@ -103,7 +103,7 @@ export class Package {
     }
   }
 
-  initDataFromPkgJson(): Promise<null> {
+  initDataFromPkgJson(): Promise<void | IPackage> {
     return readJsonFile(this.pkgJsonPath)
       .then((jsonData: IPackage) => this.data = jsonData)
       .catch(err => console.error(err));
@@ -144,7 +144,7 @@ export class Package {
       });
   }
 
-  private ensureRootFolders(): Promise<null> {
+  private ensureRootFolders(): Promise<void> {
     return ensureDirectory(this.packageRoot)
       .then(() => ensureDirectory(this.tarballRoot))
       .catch(err => console.error(err));

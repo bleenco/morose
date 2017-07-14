@@ -12,7 +12,8 @@
       "dom"
     ],
     "outDir": "lib",
-    "types": ["marked", "node"]
+    "types": ["marked", "node"],
+    "skipLibCheck": true
   },
   "exclude": [
     "./main.aot.ts"
