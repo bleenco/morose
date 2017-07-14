@@ -21,7 +21,7 @@ export function start(dir: string, test: boolean): void {
   });
 }
 
-function initMorose(): Promise<null> {
+function initMorose(): Promise<void> {
   let root = utils.getRootDir();
 
   return fs.exists(join(root, 'config.json')).then(exists => {
