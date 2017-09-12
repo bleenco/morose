@@ -7,4 +7,4 @@ pipeline {
             }
         }
     }
-}get done() { return this._donePromise; }
+}
