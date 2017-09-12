@@ -1,0 +1,10 @@
+pipeline {
+    agent { docker 'node:8' }
+    stages {
+        stage('build') {
+            steps {
+                sh 'npm install'
+            }
+        }
+    }
+}get done() { return this._donePromise; }
