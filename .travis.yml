@@ -1,57 +1,49 @@
 language: node_js
 dist: trusty
-
 cache:
   directories:
-    - node_modules
-
+  - node_modules
 env:
   global:
-    - DBUS_SESSION_BUS_ADDRESS=/dev/null
-
+  - DBUS_SESSION_BUS_ADDRESS=/dev/null
+  - secure: RGvx6srLQArLGAq85cQvJ8qp4f2lcViNuJX6ycS5++2pWImD0AQoYY6dAvfpVm/yoERjzaqTcT+8Lb9nysibY+zL9QXEOlGAzFKfiBUmYr1G0PJGwQNxqNjSbMgC/6pxVM3FKe7WQwgHpPOAog5PI3wS7WNrZ7X8GszCyYi3Mqcj7KWibOJnQ4arsQTPKSD12pyA/7p8N0+WrJNun55p/yMoz0akSBpYceJx5YTLN1o2md26RVrfjIC5vDgOIiC9s79qdLLfGIleA3/tgjYwBN9E1CGyQbHIToe0vhuBdI2rE7zAgzwovbcCSCJbajJ6KtABCrkYDZmBhbObpgXUAjw35+bP2fuSv/t/7lczLbVIqBRFkt07zjapVp6vWvTjXwDOg9/fIp+JxP7CH3r+6yB0OILNrL4e4pJxAobkfgfD7wWI7MkQ0UJDuobhmbZB73K+93M56oZgOrQbxC6kqP7SFuNXZGpFwIUt1juO79yK1H4AUsqQ1fAwG9E7gCQU2AwY0b4CRF73BNhlxqjJ9xlMOnA+q8l7hKWafbgIvlA3KM8mukGCAJPrfLflT75o3uaACY/xNJAeCn4YmB0v6BtAd2H1vcxBibOHjMp8opSEjcJsIdzvkioebqyQQpU6Xp3q55AfhvMxaKpT/nUzInl8lFD+Vs+Jmn4VfOT+26s=
 addons:
   apt:
     sources:
-      - google-chrome
+    - google-chrome
     packages:
-      - google-chrome-stable
-
+    - google-chrome-stable
 matrix:
   fast_finish: true
   include:
-    - node_js: "6"
-      os: linux
-      env: SCRIPT=lint
-    - node_js: "6"
-      os: linux
-      env: SCRIPT=test:unit
-    - node_js: "6"
-      os: linux
-      env: NODE_SCRIPT=tests/run_e2e.js
-    - node_js: "8"
-      os: linux
-      env: NODE_SCRIPT=tests/run_e2e.js
-    - node_js: "8"
-      os: linux
-      env: SCRIPT=protractor:travis
-
+  - node_js: '6'
+    os: linux
+    env: SCRIPT=lint
+  - node_js: '6'
+    os: linux
+    env: SCRIPT=test:unit
+  - node_js: '6'
+    os: linux
+    env: NODE_SCRIPT=tests/run_e2e.js
+  - node_js: '8'
+    os: linux
+    env: NODE_SCRIPT=tests/run_e2e.js
+  - node_js: '8'
+    os: linux
+    env: SCRIPT=protractor:travis
 before_install:
-  - npm config set spin false
-  - npm config set progress false
-  - npm install npm@5 -g
-  - npm cache clean --force
-
+- npm config set spin false
+- npm config set progress false
+- npm install npm@5 -g
+- npm cache clean --force
 install:
-  - npm install
-
+- npm install
 after_install:
-  - ./node_modules/protractor/bin/webdriver-manager update
-
+- "./node_modules/protractor/bin/webdriver-manager update"
 before_script:
-  - export DISPLAY=:99
-  - sh -e /etc/init.d/xvfb start
-  - sleep 3
-
+- export DISPLAY=:99
+- sh -e /etc/init.d/xvfb start
+- sleep 3
 script:
-  - if [[ "$SCRIPT" ]]; then npm run-script $SCRIPT; fi
-  - if [[ "$NODE_SCRIPT" ]]; then node $NODE_SCRIPT; fi
+- if [[ "$SCRIPT" ]]; then npm run-script $SCRIPT; fi
+- if [[ "$NODE_SCRIPT" ]]; then node $NODE_SCRIPT; fi

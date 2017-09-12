@@ -1,0 +1,32 @@
+pipeline {
+    agent any
+    stages {
+	stage('before_install') {
+	   steps {
+		sh 'npm config set spin false'
+                sh 'npm config set progress false'
+	   }
+	}
+	stage('install') {
+	   steps {
+		sh 'npm install'
+	   }
+	}
+	stage('before') {
+	   steps {
+		sh 'sudo /etc/init.d/xvfb start'
+                sh 'export DISPLAY=:99'
+		sh 'sleep 3'
+		sh 'fluxbox &'
+	   }
+	}
+        stage('build') {
+            steps {
+                sh 'npm run-script lint'
+                sh 'npm run-script test:unit'
+                sh 'npm run-script protractor:travis'
+                sh 'node ./tests/run_e2e.js'
+            }
+        }
+    }
+}
